@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CrediGo — Case Study · xbigbrainnx</title>
+<meta name="description" content="CrediGo case study — a digital wallet that helps individuals and businesses access flexible loans. Research, design system, and key screens.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="index.html" class="nav-left" aria-label="Home">
+      <div class="nav-avatar">OI</div>
+      <span class="nav-name">Oladele Ibraheem</span>
+    </a>
+
+    <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-controls="nav-links" aria-expanded="false">
+      <span class="nav-toggle-label">MENU</span>
+      <span class="nav-toggle-icon" aria-hidden="true"></span>
+    </button>
+
+    <div class="nav-links" id="nav-links">
+      <a href="index.html#projects" class="active" data-icon="briefcase">Projects</a>
+      <a href="index.html#about" data-icon="info">About</a>
+      <a href="index.html#services" data-icon="layers">Services</a>
+      <a href="index.html#writings" data-icon="pen">Writings</a>
+      <a href="contact.html" data-icon="mail">Contact</a>
+      <a href="life.html" data-icon="leaf">Life</a>
+    </div>
+
+    <div class="nav-right">
+      <span>NEW WEEK</span>
+      <span class="divider">|</span>
+      <span id="clock">4:11 AM</span>
+    </div>
+  </nav>
+
+  <!-- CASE STUDY
+       Admin: change `--case-accent` and `--case-accent-soft` to retheme
+       this entire page for a different project. Every visual element
+       that uses the project color reads from these two variables. -->
+  <main class="case-study" data-case-template="02" data-case-study="cases/credigo">
+
+    <!-- HEADER: breadcrumb + label -->
+    <header class="case-head">
+      <nav class="case-breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span class="sep">/</span>
+        <a href="index.html#projects">Projects</a>
+        <span class="sep">/</span>
+        <span class="current" data-case-page-title data-cms-id="projects.case.02.study.title">CrediGo</span>
+      </nav>
+      <div class="case-eyebrow">
+        <span class="case-eyebrow-pill">CASE STUDY</span>
+        <span class="case-eyebrow-year">2024</span>
+      </div>
+    </header>
+
+    <!-- HERO BANNER — admin uploads the hero artwork. The banner
+         background uses --case-accent so it tints behind whatever
+         is uploaded. -->
+    <section class="case-hero">
+      <div class="case-hero-frame image-slot" data-label="HERO MOCKUP — UPLOAD VIA ADMIN">
+        <img alt="CrediGo hero artwork" loading="lazy" data-admin-image="cases/credigo/hero.png">
+      </div>
+    </section>
+
+    <!-- INTRO: title + tagline + body + problem/outcome + meta sidebar -->
+    <section class="case-intro">
+      <h1 class="case-page-title" data-cms-id="projects.case.02.study.title">CrediGo</h1>
+      <p class="case-tagline" data-cms-id="projects.case.02.study.tagline">
+        A digital lending platform that helps individuals and businesses access flexible loans, fast, secure, and tailored to their needs.
+      </p>
+
+      <div class="case-intro-grid">
+        <div class="case-intro-main">
+          <p class="case-body" data-cms-id="projects.case.02.study.body">
+            CrediGo is a CBN-licensed lending platform designed to make borrowing simple in Nigeria. I designed the full product end-to-end — from the marketing site that brings users in, to the dashboard that keeps them coming back. The brief: build something a first-time borrower can trust in 30 seconds, and a returning borrower can navigate in their sleep.
+          </p>
+
+          <div class="case-po-grid">
+            <div class="case-po-block">
+              <h4 class="case-po-label">Problem</h4>
+              <p class="case-po-body" data-cms-id="projects.case.02.study.problem">
+                How can we design a lending product that feels as safe and intentional as a real bank, but as quick as sending money on Opay?
+              </p>
+            </div>
+            <div class="case-po-block">
+              <h4 class="case-po-label">Outcome</h4>
+              <p class="case-po-body" data-cms-id="projects.case.02.study.outcome">
+                A full digital lending product — marketing landing page, onboarding flow, KYC, multi-product loan selector (HomeFlex / BusinessLoan / QuickFund / CrediMini / FlexLoan / MilestonePay), and a dashboard with loan tracking, repayment goals, and transaction history. Designed for the kind of borrower who reads the fine print.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <aside class="case-meta-side">
+          <div class="case-meta-block">
+            <h5 class="case-meta-label">ROLE</h5>
+            <p class="case-meta-value">UI/UX Designer &amp; Project Manager</p>
+          </div>
+          <div class="case-meta-block">
+            <h5 class="case-meta-label">TEAM</h5>
+            <p class="case-meta-value">Solo (design + brand)</p>
+          </div>
+          <div class="case-meta-block">
+            <h5 class="case-meta-label">INDUSTRY</h5>
+            <p class="case-meta-value">Fintech · Lending</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- RESEARCH -->
+    <section class="case-section">
+      <h2 class="case-section-title">Research</h2>
+      <article class="case-callout">
+        <h4 class="case-callout-title">The starting point</h4>
+        <p data-cms-id="projects.case.02.study.research">
+          I looked at how FairMoney, Carbon, Branch, and Renmoney handle the same flows. The pattern was clear: the apps that win in Nigeria don't try to look like Stripe — they look like trust. Big numbers, clear pricing, no jargon, and one obvious next action on every screen.
+        </p>
+      </article>
+    </section>
+
+    <!-- DESIGN SYSTEM — admin uploads ONE composed image that fills
+         the entire frame (logos, type, colors, icons baked in). -->
+    <section class="case-section">
+      <h2 class="case-section-title">Design System</h2>
+      <div class="case-system-image image-slot" data-label="DESIGN SYSTEM · ONE IMAGE — UPLOAD VIA ADMIN">
+        <img alt="CrediGo design system" loading="lazy" data-admin-image="cases/credigo/design-system.png">
+      </div>
+    </section>
+
+    <!-- KEY SCREENS — sticky stacking parallax. Each card has a title,
+         a desktop/mobile preview, and a short note. As the user scrolls
+         the next card slides up and covers the previous. Admin sets the
+         preview type by toggling `is-desktop` / `is-mobile` on the
+         `.case-screen-preview` element. -->
+    <section class="case-section case-screens-section">
+      <h2 class="case-section-title">Key Screens</h2>
+      <div class="case-screens-stack" data-screens-stack>
+
+        <article class="case-screen-card">
+          <div class="case-screen-preview image-slot is-desktop" data-label="SCREEN 01 · MARKETING LANDING">
+            <img alt="" loading="lazy" data-admin-image="cases/credigo/screen-01.png">
+          </div>
+          <div class="case-screen-meta">
+            <span class="case-screen-step">01 / 06</span>
+            <h4 class="case-screen-title" data-cms-id="projects.case.02.study.screen.01.title">Marketing Landing</h4>
+            <p class="case-screen-desc" data-cms-id="projects.case.02.study.screen.01.desc">
+              The first impression. Big number, clear pricing, two trust signals, and a single primary action — apply for a loan. No jargon, no clever language.
+            </p>
+          </div>
+        </article>
+
+        <article class="case-screen-card">
+          <div class="case-screen-preview image-slot is-desktop" data-label="SCREEN 02 · ONBOARDING">
+            <img alt="" loading="lazy" data-admin-image="cases/credigo/screen-02.png">
+          </div>
+          <div class="case-screen-meta">
+            <span class="case-screen-step">02 / 06</span>
+            <h4 class="case-screen-title" data-cms-id="projects.case.02.study.screen.02.title">Onboarding &amp; KYC</h4>
+            <p class="case-screen-desc" data-cms-id="projects.case.02.study.screen.02.desc">
+              Three steps to a verified account, with progress always visible. We push BVN and ID capture early so the rest of the experience is friction-free.
+            </p>
+          </div>
+        </article>
+
+        <article class="case-screen-card">
+          <div class="case-screen-preview image-slot is-desktop" data-label="SCREEN 03 · LOAN SELECTOR">
+            <img alt="" loading="lazy" data-admin-image="cases/credigo/screen-03.png">
+          </div>
+          <div class="case-screen-meta">
+            <span class="case-screen-step">03 / 06</span>
+            <h4 class="case-screen-title" data-cms-id="projects.case.02.study.screen.03.title">Loan Selector</h4>
+            <p class="case-screen-desc" data-cms-id="projects.case.02.study.screen.03.desc">
+              Six loan products, one filter. The selector shows monthly cost up front and only surfaces eligible products to avoid wasted applications.
+            </p>
+          </div>
+        </article>
+
+        <article class="case-screen-card">
+          <div class="case-screen-preview image-slot is-desktop" data-label="SCREEN 04 · DASHBOARD">
+            <img alt="" loading="lazy" data-admin-image="cases/credigo/screen-04.png">
+          </div>
+          <div class="case-screen-meta">
+            <span class="case-screen-step">04 / 06</span>
+            <h4 class="case-screen-title" data-cms-id="projects.case.02.study.screen.04.title">Dashboard</h4>
+            <p class="case-screen-desc" data-cms-id="projects.case.02.study.screen.04.desc">
+              The home for returning borrowers. Balance and next repayment up top, products and quick actions below. Designed to be navigated in under 5 seconds.
+            </p>
+          </div>
+        </article>
+
+        <article class="case-screen-card">
+          <div class="case-screen-preview image-slot is-desktop" data-label="SCREEN 05 · REPAYMENT">
+            <img alt="" loading="lazy" data-admin-image="cases/credigo/screen-05.png">
+          </div>
+          <div class="case-screen-meta">
+            <span class="case-screen-step">05 / 06</span>
+            <h4 class="case-screen-title" data-cms-id="projects.case.02.study.screen.05.title">Repayment Tracking</h4>
+            <p class="case-screen-desc" data-cms-id="projects.case.02.study.screen.05.desc">
+              A clear schedule with weekly progress, plus auto-debit toggles. The goal is to remove every reason a borrower would default by accident.
+            </p>
+          </div>
+        </article>
+
+        <article class="case-screen-card">
+          <div class="case-screen-preview image-slot is-desktop" data-label="SCREEN 06 · TRANSACTION HISTORY">
+            <img alt="" loading="lazy" data-admin-image="cases/credigo/screen-06.png">
+          </div>
+          <div class="case-screen-meta">
+            <span class="case-screen-step">06 / 06</span>
+            <h4 class="case-screen-title" data-cms-id="projects.case.02.study.screen.06.title">Transaction History</h4>
+            <p class="case-screen-desc" data-cms-id="projects.case.02.study.screen.06.desc">
+              A receipts-first ledger. Every entry is searchable, exportable as PDF, and shows the loan it ties back to — no more "what was this charge?" support tickets.
+            </p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- REFLECTION -->
+    <section class="case-section">
+      <h2 class="case-section-title">Reflection</h2>
+      <article class="case-callout">
+        <h4 class="case-callout-title">What I'd carry forward</h4>
+        <p data-cms-id="projects.case.02.study.reflection">
+          Building CrediGo end-to-end made one thing concrete: trust in fintech is mostly a typography problem. The features matter, but readability, hierarchy, and a single clear next action carry more weight than any specific flow. I'd take this same restraint into the next financial product I touch.
+        </p>
+      </article>
+    </section>
+
+    <!-- OUTLINK -->
+    <div class="case-outlink">
+      <span>View fully on</span>
+      <a href="#" target="_blank" rel="noopener">Behance ↗</a>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h4>xbigbrainnx</h4>
+        <p>2022 — <span id="footer-year">2026</span></p>
+      </div>
+      <div class="footer-col">
+        <h5>NAV</h5>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="index.html#about">About</a></li>
+          <li><a href="index.html#services">Services</a></li>
+          <li><a href="index.html#writings">Writing</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>ELSEWHERE</h5>
+        <ul>
+          <li><a href="#">X</a></li>
+          <li><a href="#">LinkedIn</a></li>
+          <li><a href="#">Behance</a></li>
+          <li><a href="#">Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+    <a href="admin.html" class="footer-portal" aria-label="Admin portal" title="Admin">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+    </a>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-sync.js"></script>
+  <script src="content-schema.js" defer></script>
+  <script src="cms.js" defer></script>
+  <script src="script.js" defer></script>
+</body>
+</html>

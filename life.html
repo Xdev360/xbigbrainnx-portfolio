@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life — xbigbrainnx</title>
+<meta name="description" content="Life beyond the screen — food, gym, writing, blog, apps, arts, family, and products from Oladele Ibraheem.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="index.html" class="nav-left" aria-label="Home">
+      <div class="nav-avatar">OI</div>
+      <span class="nav-name">Oladele Ibraheem</span>
+    </a>
+
+    <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-controls="nav-links" aria-expanded="false">
+      <span class="nav-toggle-label">MENU</span>
+      <span class="nav-toggle-icon" aria-hidden="true"></span>
+    </button>
+
+    <div class="nav-links" id="nav-links">
+      <a href="index.html#projects" data-icon="briefcase">Projects</a>
+      <a href="index.html#about" data-icon="info">About</a>
+      <a href="index.html#services" data-icon="layers">Services</a>
+      <a href="index.html#writings" data-icon="pen">Writings</a>
+      <a href="contact.html" data-icon="mail">Contact</a>
+      <a href="life.html" class="active" data-icon="leaf">Life</a>
+    </div>
+
+    <div class="nav-right">
+      <span>NEW WEEK</span>
+      <span class="divider">|</span>
+      <span id="clock">4:11 AM</span>
+    </div>
+  </nav>
+
+  <!-- LIFE PAGE
+       Each section has a different layout (food = card grid, gym =
+       Instagram-style grid, writing = Substack cards, blog = long-form
+       posts, apps = App-Store style cards, arts = gallery). Only the
+       section matching `data-active-filter` is visible at any time;
+       tabs at the top switch the active section. -->
+  <main class="life" data-active-filter="all" data-life-lock-enabled="true">
+    <!-- Admin: set data-life-lock-enabled="false" to open all sections without a password -->
+
+    <!-- BREADCRUMB -->
+    <nav class="life-breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep">/</span>
+      <span class="current">Life</span>
+    </nav>
+
+    <!-- HERO -->
+    <header class="life-hero">
+      <div class="life-hero-text">
+        <h1 class="life-hero-title">Life beyond <em>the screen.</em></h1>
+        <p class="life-hero-sub" data-cms-id="life.hero.sub">
+          What I cook, train for, write, build, draw and sell when I'm not designing. Updated as it happens.
+        </p>
+        <div class="life-hero-meta">
+          <span>EST. 2024</span>
+          <span class="sep">·</span>
+          <span>UPDATED OFTEN</span>
+        </div>
+      </div>
+      <div class="life-hero-image image-slot life-media" data-label="LIFE COVER — UPLOAD VIA ADMIN">
+        <img alt="" loading="lazy" data-admin-image="life/cover.jpg">
+      </div>
+    </header>
+
+    <!-- FILTER TABS — All first, then one tab per category. -->
+    <nav class="life-tabs" aria-label="Life sections">
+      <button class="life-tab active" type="button" data-life-filter="all">All</button>
+      <button class="life-tab" type="button" data-life-filter="food">Food</button>
+      <button class="life-tab" type="button" data-life-filter="gym">Gym</button>
+      <button class="life-tab" type="button" data-life-filter="writing">Writing</button>
+      <button class="life-tab" type="button" data-life-filter="blog">Blog</button>
+      <button class="life-tab" type="button" data-life-filter="apps">Apps</button>
+      <button class="life-tab" type="button" data-life-filter="arts">Arts</button>
+      <button class="life-tab" type="button" data-life-filter="family">Family</button>
+      <button class="life-tab" type="button" data-life-filter="products">Products</button>
+    </nav>
+
+    <!-- Password gate — shown when a locked section is selected without access -->
+    <div class="life-lock-gate" id="life-lock-gate" hidden>
+      <div class="life-lock-panel">
+        <span class="life-lock-eyebrow">Access</span>
+        <h2 class="life-lock-title">Enter password</h2>
+        <p class="life-lock-sub">This section is private. Enter the password to continue.</p>
+        <form class="life-lock-form" id="life-lock-form">
+          <input class="life-lock-input" id="life-lock-input" type="password" placeholder="Password" autocomplete="off" required>
+          <button class="life-lock-submit" type="submit">Continue</button>
+        </form>
+        <p class="life-lock-error" id="life-lock-error" hidden>Wrong password. Try again.</p>
+        <button class="life-lock-back" type="button" id="life-lock-back">Back to overview</button>
+      </div>
+    </div>
+
+    <!-- ====== ALL — preview strip from each category ====== -->
+    <section class="life-section" data-category="all">
+      <header class="life-section-head">
+        <span class="life-section-eyebrow">Overview</span>
+        <h2 class="life-section-title">A little of everything</h2>
+        <p class="life-section-sub">Quick previews — tap a category tab above to see the full section.</p>
+      </header>
+
+      <div class="life-all">
+
+        <div class="life-all-block">
+          <div class="life-all-block-head">
+            <span class="life-all-block-label">Food</span>
+            <button class="life-all-link" type="button" data-life-filter="food">See all →</button>
+          </div>
+          <div class="life-food-grid life-all-grid" data-cms-render="food">
+            <article class="life-food-card">
+              <div class="life-food-image image-slot life-media" data-label="DISH 01">
+                <img alt="" loading="lazy" data-admin-image="life/food/01.jpg">
+              </div>
+              <h3 class="life-food-name" data-cms-id="life.food.01.name">Plantain frittata</h3>
+            </article>
+            <article class="life-food-card">
+              <div class="life-food-image image-slot life-media" data-label="DISH 02">
+                <img alt="" loading="lazy" data-admin-image="life/food/02.jpg">
+              </div>
+              <h3 class="life-food-name" data-cms-id="life.food.02.name">Jollof rice, Lagos style</h3>
+            </article>
+          </div>
+        </div>
+
+        <div class="life-all-block">
+          <div class="life-all-block-head">
+            <span class="life-all-block-label">Gym</span>
+            <button class="life-all-link" type="button" data-life-filter="gym">See all →</button>
+          </div>
+          <div class="life-gym-grid life-all-gym" data-cms-render="gym">
+            <div class="life-gym-tile image-slot life-media" data-label="GYM 01">
+              <img alt="" loading="lazy" data-admin-image="life/gym/01.jpg">
+            </div>
+            <div class="life-gym-tile image-slot life-media" data-label="GYM 02">
+              <img alt="" loading="lazy" data-admin-image="life/gym/02.jpg">
+            </div>
+            <div class="life-gym-tile image-slot life-media" data-label="GYM 03">
+              <img alt="" loading="lazy" data-admin-image="life/gym/03.jpg">
+            </div>
+          </div>
+        </div>
+
+        <div class="life-all-block">
+          <div class="life-all-block-head">
+            <span class="life-all-block-label">Writing</span>
+            <button class="life-all-link" type="button" data-life-filter="writing">See all →</button>
+          </div>
+          <div class="life-substack-grid life-all-substack" id="life-writing-preview">
+            <article class="life-substack-card">
+              <div class="life-substack-banner image-slot life-media" data-label="SUBSTACK BANNER 01">
+                <img alt="" loading="lazy" data-admin-image="life/writing/01.jpg">
+              </div>
+              <div class="life-substack-body">
+                <h3 class="life-substack-title" data-cms-id="life.writing.01.title">The bookmark trap</h3>
+                <p class="life-substack-about" data-cms-id="life.writing.01.about">On why we keep saving articles we'll never read.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="life-all-block">
+          <div class="life-all-block-head">
+            <span class="life-all-block-label">Blog</span>
+            <button class="life-all-link" type="button" data-life-filter="blog">See all →</button>
+          </div>
+          <article class="life-all-blog-teaser">
+            <span class="life-blog-date" data-cms-id="life.blog.date">January 14, 2026</span>
+            <h3 class="life-blog-title" data-cms-id="life.blog.title">How I began designing</h3>
+            <p class="life-all-teaser-text" data-cms-id="life.blog.dek">The long version of how a kid who drew on everything ended up building interfaces for a living.</p>
+          </article>
+        </div>
+
+        <div class="life-all-block">
+          <div class="life-all-block-head">
+            <span class="life-all-block-label">Apps</span>
+            <button class="life-all-link" type="button" data-life-filter="apps">See all →</button>
+          </div>
+          <div class="life-apps-list" data-cms-render="apps">
+            <a href="#" class="life-app-row" data-cms-id="life.apps.01.url" target="_blank" rel="noopener">
+              <div class="life-app-row-icon image-slot life-media" data-label="APP 01">
+                <img alt="" loading="lazy" data-admin-image="life/apps/01.jpg">
+              </div>
+              <div class="life-app-row-meta">
+                <span class="life-app-row-name" data-cms-id="life.apps.01.name">Bookmark Vault</span>
+                <span class="life-app-row-desc" data-cms-id="life.apps.01.desc">Save links you'll come back to</span>
+              </div>
+              <span class="life-app-row-action" data-cms-id="life.apps.01.cta">Open ↗</span>
+            </a>
+            <a href="#" class="life-app-row" data-cms-id="life.apps.02.url" target="_blank" rel="noopener">
+              <div class="life-app-row-icon image-slot life-media" data-label="APP 02">
+                <img alt="" loading="lazy" data-admin-image="life/apps/02.jpg">
+              </div>
+              <div class="life-app-row-meta">
+                <span class="life-app-row-name" data-cms-id="life.apps.02.name">Mono Clock</span>
+                <span class="life-app-row-desc" data-cms-id="life.apps.02.desc">Monospace clock for second monitors</span>
+              </div>
+              <span class="life-app-row-action" data-cms-id="life.apps.01.cta">Open ↗</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="life-all-block">
+          <div class="life-all-block-head">
+            <span class="life-all-block-label">Arts</span>
+            <button class="life-all-link" type="button" data-life-filter="arts">See all →</button>
+          </div>
+          <div class="life-arts-grid life-all-arts" data-cms-render="arts">
+            <div class="life-art-tile image-slot life-media" data-label="ART 01">
+              <img alt="" loading="lazy" data-admin-image="life/arts/01.jpg">
+            </div>
+            <div class="life-art-tile image-slot life-media" data-label="ART 02">
+              <img alt="" loading="lazy" data-admin-image="life/arts/02.jpg">
+            </div>
+          </div>
+        </div>
+
+        <div class="life-all-block">
+          <div class="life-all-block-head">
+            <span class="life-all-block-label">Family</span>
+            <button class="life-all-link" type="button" data-life-filter="family">See all →</button>
+          </div>
+          <div class="family-grid family-grid--preview">
+            <article class="family-card">
+              <div class="family-card-image image-slot life-media" data-label="CHARACTER 01">
+                <img alt="" loading="lazy" data-admin-image="life/family/01.jpg">
+              </div>
+              <h3 class="family-card-name" data-cms-id="life.family.01.name">Character name</h3>
+              <p class="family-card-about" data-cms-id="life.family.01.about">A feeling turned into a face — admin fills this in.</p>
+            </article>
+            <article class="family-card">
+              <div class="family-card-image image-slot life-media" data-label="CHARACTER 02">
+                <img alt="" loading="lazy" data-admin-image="life/family/02.jpg">
+              </div>
+              <h3 class="family-card-name" data-cms-id="life.family.02.name">Character name</h3>
+              <p class="family-card-about" data-cms-id="life.family.02.about">Another alter ego from the family of ten.</p>
+            </article>
+          </div>
+        </div>
+
+        <div class="life-all-block">
+          <div class="life-all-block-head">
+            <span class="life-all-block-label">Products</span>
+            <button class="life-all-link" type="button" data-life-filter="products">See all →</button>
+          </div>
+          <div class="products-bundle-grid products-bundle-grid--all" data-cms-render="wallpapers">
+            <a href="#" class="products-bundle" target="_blank" rel="noopener" data-admin-link="products/wallpapers/bundle-01-url">
+              <div class="products-bundle-cover image-slot life-media" data-label="BUNDLE 01">
+                <img alt="" loading="lazy" data-admin-image="products/wallpapers/bundle-01.jpg">
+              </div>
+              <div class="products-bundle-meta">
+                <span class="products-bundle-tag">Bundle</span>
+                <h3 class="products-bundle-name">Wallpaper bundle 01</h3>
+                <span class="products-bundle-action">Shop bundle ↗</span>
+              </div>
+            </a>
+            <a href="#" class="products-bundle" target="_blank" rel="noopener" data-admin-link="products/wallpapers/bundle-02-url">
+              <div class="products-bundle-cover image-slot life-media" data-label="BUNDLE 02">
+                <img alt="" loading="lazy" data-admin-image="products/wallpapers/bundle-02.jpg">
+              </div>
+              <div class="products-bundle-meta">
+                <span class="products-bundle-tag">Bundle</span>
+                <h3 class="products-bundle-name">Wallpaper bundle 02</h3>
+                <span class="products-bundle-action">Shop bundle ↗</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====== FOOD ====== -->
+    <section class="life-section" data-category="food" data-life-locked="true">
+      <header class="life-section-head">
+        <span class="life-section-eyebrow">Food</span>
+        <h2 class="life-section-title">Things I've cooked</h2>
+        <p class="life-section-sub">Kitchen log. New plate goes up whenever something turns out worth photographing.</p>
+      </header>
+
+      <div class="life-food-grid" data-cms-render="food">
+        <article class="life-food-card">
+          <div class="life-food-image image-slot life-media" data-label="DISH 01">
+            <img alt="" loading="lazy" data-admin-image="life/food/01.jpg">
+          </div>
+          <h3 class="life-food-name" data-cms-id="life.food.01.name">Plantain frittata</h3>
+        </article>
+        <article class="life-food-card">
+          <div class="life-food-image image-slot life-media" data-label="DISH 02">
+            <img alt="" loading="lazy" data-admin-image="life/food/02.jpg">
+          </div>
+          <h3 class="life-food-name" data-cms-id="life.food.02.name">Jollof rice, Lagos style</h3>
+        </article>
+        <article class="life-food-card">
+          <div class="life-food-image image-slot life-media" data-label="DISH 03">
+            <img alt="" loading="lazy" data-admin-image="life/food/03.jpg">
+          </div>
+          <h3 class="life-food-name" data-cms-id="life.food.03.name">Egusi soup</h3>
+        </article>
+        <article class="life-food-card">
+          <div class="life-food-image image-slot life-media" data-label="DISH 04">
+            <img alt="" loading="lazy" data-admin-image="life/food/04.jpg">
+          </div>
+          <h3 class="life-food-name" data-cms-id="life.food.04.name">Suya skewers</h3>
+        </article>
+        <article class="life-food-card">
+          <div class="life-food-image image-slot life-media" data-label="DISH 05">
+            <img alt="" loading="lazy" data-admin-image="life/food/05.jpg">
+          </div>
+          <h3 class="life-food-name" data-cms-id="life.food.05.name">Sunday pancakes</h3>
+        </article>
+        <article class="life-food-card">
+          <div class="life-food-image image-slot life-media" data-label="DISH 06">
+            <img alt="" loading="lazy" data-admin-image="life/food/06.jpg">
+          </div>
+          <h3 class="life-food-name" data-cms-id="life.food.06.name">Tomato &amp; basil pasta</h3>
+        </article>
+      </div>
+    </section>
+
+    <!-- ====== GYM ====== (Instagram-style 6-image grid) -->
+    <section class="life-section" data-category="gym" data-life-locked="true">
+      <header class="life-section-head">
+        <span class="life-section-eyebrow">Gym</span>
+        <h2 class="life-section-title">From training</h2>
+        <p class="life-section-sub">A handful of snapshots from the gym floor.</p>
+      </header>
+
+      <div class="life-gym-grid" data-cms-render="gym">
+        <div class="life-gym-tile image-slot life-media" data-label="GYM 01">
+          <img alt="" loading="lazy" data-admin-image="life/gym/01.jpg">
+        </div>
+        <div class="life-gym-tile image-slot life-media" data-label="GYM 02">
+          <img alt="" loading="lazy" data-admin-image="life/gym/02.jpg">
+        </div>
+        <div class="life-gym-tile image-slot life-media" data-label="GYM 03">
+          <img alt="" loading="lazy" data-admin-image="life/gym/03.jpg">
+        </div>
+        <div class="life-gym-tile image-slot life-media" data-label="GYM 04">
+          <img alt="" loading="lazy" data-admin-image="life/gym/04.jpg">
+        </div>
+        <div class="life-gym-tile image-slot life-media" data-label="GYM 05">
+          <img alt="" loading="lazy" data-admin-image="life/gym/05.jpg">
+        </div>
+        <div class="life-gym-tile image-slot life-media" data-label="GYM 06">
+          <img alt="" loading="lazy" data-admin-image="life/gym/06.jpg">
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== WRITING ====== (Substack cards) -->
+    <section class="life-section" data-category="writing" data-life-locked="true">
+      <header class="life-section-head">
+        <span class="life-section-eyebrow">Writing</span>
+        <h2 class="life-section-title">On Substack</h2>
+        <p class="life-section-sub">Longer pieces, published every once in a while.</p>
+      </header>
+
+      <div class="life-substack-grid" id="life-writing-grid">
+        <article class="life-substack-card">
+          <div class="life-substack-banner image-slot life-media" data-label="SUBSTACK BANNER 01">
+            <img alt="" loading="lazy" data-admin-image="life/writing/01.jpg">
+          </div>
+          <div class="life-substack-body">
+            <h3 class="life-substack-title" data-cms-id="life.writing.01.title">The bookmark trap</h3>
+            <p class="life-substack-about" data-cms-id="life.writing.01.about">On why we keep saving articles we'll never read — and the cheap trick that finally fixed it for me.</p>
+            <a href="#" class="life-substack-link" data-cms-id="life.writing.01.url" target="_blank" rel="noopener">
+              <span>Read on Substack</span>
+              <span class="arrow">↗</span>
+            </a>
+          </div>
+        </article>
+
+        <article class="life-substack-card">
+          <div class="life-substack-banner image-slot life-media" data-label="SUBSTACK BANNER 02">
+            <img alt="" loading="lazy" data-admin-image="life/writing/02.jpg">
+          </div>
+          <div class="life-substack-body">
+            <h3 class="life-substack-title" data-cms-id="life.writing.02.title">Quiet hands</h3>
+            <p class="life-substack-about" data-cms-id="life.writing.02.about">A short essay on why discreet design — the kind that doesn't announce itself — wins the long game.</p>
+            <a href="#" class="life-substack-link" data-cms-id="life.writing.02.url" target="_blank" rel="noopener">
+              <span>Read on Substack</span>
+              <span class="arrow">↗</span>
+            </a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ====== BLOG ====== (single personal blog + voice note) -->
+    <section class="life-section" data-category="blog" data-life-locked="true">
+      <header class="life-section-head">
+        <span class="life-section-eyebrow">Blog</span>
+        <h2 class="life-section-title">Personal journal</h2>
+        <p class="life-section-sub">Longer pieces, written here first. Read or listen — your call.</p>
+      </header>
+
+      <article class="life-blog-article">
+        <header class="life-blog-header">
+          <time class="life-blog-date" datetime="2026-01-14" data-cms-id="life.blog.date">January 14, 2026</time>
+          <h3 class="life-blog-title" data-cms-id="life.blog.title">How I began designing</h3>
+          <p class="life-blog-dek" data-cms-id="life.blog.dek">The long version of how a kid who drew on everything ended up building interfaces for a living.</p>
+        </header>
+
+        <div class="life-blog-hero image-slot life-media" data-label="BLOG HERO — UPLOAD VIA ADMIN">
+          <img alt="" loading="lazy" data-admin-image="life/blog/01.jpg">
+        </div>
+
+        <!-- Voice note — admin uploads audio; play instead of reading -->
+        <div class="life-voice-note">
+          <div class="life-voice-note-head">
+            <span class="life-voice-label">Listen instead</span>
+            <span class="life-voice-hint">Voice note · uploaded via admin</span>
+          </div>
+          <div class="life-voice-player">
+            <button class="life-voice-play" type="button" aria-label="Play voice note">
+              <span class="life-voice-play-label">Play</span>
+            </button>
+            <div class="life-voice-track-wrap">
+              <div class="life-voice-track" role="slider" aria-label="Seek" tabindex="0">
+                <span class="life-voice-progress"></span>
+              </div>
+              <div class="life-voice-times">
+                <span class="life-voice-time-current">0:00</span>
+                <span class="life-voice-time-total">0:00</span>
+              </div>
+            </div>
+          </div>
+          <audio class="life-voice-audio" preload="metadata" data-admin-audio="life/blog/how-i-began-designing.mp3"></audio>
+        </div>
+
+        <div class="life-blog-body" data-cms-id="life.blog.body">
+          <p>
+            I didn't start with Figma. I started with a biro and the back of my maths notebook — little boxes, arrows, labels for things that didn't exist yet. My mum called it wasting paper. I called it work.
+          </p>
+          <p>
+            The first thing that felt like real design was a poster for a church youth event in 2017. Someone needed it by Friday. I had WordArt, Canva, and no sleep. It wasn't good, but people showed up, and that was enough to keep going.
+          </p>
+          <p>
+            Product design came later — after freelancing, after a few bad clients, after learning that the pretty part is maybe twenty percent of the job. The rest is asking why, watching someone struggle with a button, and fixing it without making a speech about it.
+          </p>
+          <p>
+            This blog is where I put the parts that don't fit a case study or a Substack essay. Raw notes. Admin can swap every word and every image here whenever the story changes.
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <!-- ====== APPS ====== (compact row list) -->
+    <section class="life-section" data-category="apps" data-life-locked="true">
+      <header class="life-section-head">
+        <span class="life-section-eyebrow">Apps</span>
+        <h2 class="life-section-title">Apps I've shipped</h2>
+        <p class="life-section-sub">Side projects and small tools — tap to open live.</p>
+      </header>
+
+      <div class="life-apps-list" data-cms-render="apps">
+        <a href="#" class="life-app-row" data-cms-id="life.apps.03.url" target="_blank" rel="noopener">
+          <div class="life-app-row-icon image-slot life-media" data-label="APP 01">
+            <img alt="" loading="lazy" data-admin-image="life/apps/01.jpg">
+          </div>
+          <div class="life-app-row-meta">
+            <span class="life-app-row-name" data-cms-id="life.apps.01.name">Bookmark Vault</span>
+            <span class="life-app-row-desc" data-cms-id="life.apps.01.desc">PWA for saving links you'll actually come back to</span>
+          </div>
+          <span class="life-app-row-action" data-cms-id="life.apps.01.cta">Open ↗</span>
+        </a>
+
+        <a href="#" class="life-app-row" data-cms-id="life.apps.04.url" target="_blank" rel="noopener">
+          <div class="life-app-row-icon image-slot life-media" data-label="APP 02">
+            <img alt="" loading="lazy" data-admin-image="life/apps/02.jpg">
+          </div>
+          <div class="life-app-row-meta">
+            <span class="life-app-row-name" data-cms-id="life.apps.02.name">Mono Clock</span>
+            <span class="life-app-row-desc" data-cms-id="life.apps.02.desc">Monospace clock for second monitors</span>
+          </div>
+          <span class="life-app-row-action" data-cms-id="life.apps.01.cta">Open ↗</span>
+        </a>
+
+        <a href="#" class="life-app-row" data-cms-id="life.apps.05.url" target="_blank" rel="noopener">
+          <div class="life-app-row-icon image-slot life-media" data-label="APP 03">
+            <img alt="" loading="lazy" data-admin-image="life/apps/03.jpg">
+          </div>
+          <div class="life-app-row-meta">
+            <span class="life-app-row-name" data-cms-id="life.apps.03.name">Type Bee</span>
+            <span class="life-app-row-desc" data-cms-id="life.apps.03.desc">Compare typefaces side-by-side without Figma</span>
+          </div>
+          <span class="life-app-row-action" data-cms-id="life.apps.03.cta">Try ↗</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ====== ARTS ====== (personal artwork gallery) -->
+    <section class="life-section" data-category="arts" data-life-locked="true">
+      <header class="life-section-head">
+        <span class="life-section-eyebrow">Arts</span>
+        <h2 class="life-section-title">From the sketchbook</h2>
+        <p class="life-section-sub">Personal art. Posted whenever a piece is worth keeping.</p>
+      </header>
+
+      <div class="life-arts-grid" data-cms-render="arts">
+        <div class="life-art-tile image-slot life-media" data-label="ART 01">
+          <img alt="" loading="lazy" data-admin-image="life/arts/01.jpg">
+        </div>
+        <div class="life-art-tile image-slot life-media" data-label="ART 02">
+          <img alt="" loading="lazy" data-admin-image="life/arts/02.jpg">
+        </div>
+        <div class="life-art-tile image-slot life-media" data-label="ART 03">
+          <img alt="" loading="lazy" data-admin-image="life/arts/03.jpg">
+        </div>
+        <div class="life-art-tile image-slot life-media" data-label="ART 04">
+          <img alt="" loading="lazy" data-admin-image="life/arts/04.jpg">
+        </div>
+        <div class="life-art-tile image-slot life-media" data-label="ART 05">
+          <img alt="" loading="lazy" data-admin-image="life/arts/05.jpg">
+        </div>
+        <div class="life-art-tile image-slot life-media" data-label="ART 06">
+          <img alt="" loading="lazy" data-admin-image="life/arts/06.jpg">
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== MASCOTS — mini character site (banner + memo + 10 cards) ====== -->
+    <section class="life-section" data-category="family" data-life-locked="true">
+      <div class="family-mini">
+
+        <div class="family-banner image-slot life-media" data-label="FAMILY BANNER — UPLOAD VIA ADMIN">
+          <img alt="" loading="lazy" data-admin-image="life/family/family-banner.jpg">
+        </div>
+
+        <div class="family-memo">
+          <span class="family-memo-label">The family</span>
+          <p class="family-memo-text" data-cms-id="life.family.memo">
+            This is the family — ten characters born from ten feelings I couldn't leave in my head. Each one started as an alter ego: a mood, a version of me on a different day. I converted those feelings into characters until they became their own people.
+          </p>
+        </div>
+
+        <div class="family-grid" data-cms-render="family">
+          <article class="family-card">
+            <div class="family-card-image image-slot life-media" data-label="CHARACTER 01">
+              <img alt="" loading="lazy" data-admin-image="life/family/01.jpg">
+            </div>
+            <h3 class="family-card-name" data-cms-id="life.family.01.name">Character 01</h3>
+            <p class="family-card-about" data-cms-id="life.family.01.about">The feeling this one came from — and who they became. Admin uploads name and story.</p>
+          </article>
+          <article class="family-card">
+            <div class="family-card-image image-slot life-media" data-label="CHARACTER 02">
+              <img alt="" loading="lazy" data-admin-image="life/family/02.jpg">
+            </div>
+            <h3 class="family-card-name" data-cms-id="life.family.02.name">Character 02</h3>
+            <p class="family-card-about" data-cms-id="life.family.02.about">Another alter ego, another face. Short about goes here.</p>
+          </article>
+          <article class="family-card">
+            <div class="family-card-image image-slot life-media" data-label="CHARACTER 03">
+              <img alt="" loading="lazy" data-admin-image="life/family/03.jpg">
+            </div>
+            <h3 class="family-card-name" data-cms-id="life.family.03.name">Character 03</h3>
+            <p class="family-card-about" data-cms-id="life.family.03.about">Another alter ego, another face. Short about goes here.</p>
+          </article>
+          <article class="family-card">
+            <div class="family-card-image image-slot life-media" data-label="CHARACTER 04">
+              <img alt="" loading="lazy" data-admin-image="life/family/04.jpg">
+            </div>
+            <h3 class="family-card-name" data-cms-id="life.family.04.name">Character 04</h3>
+            <p class="family-card-about" data-cms-id="life.family.04.about">Another alter ego, another face. Short about goes here.</p>
+          </article>
+          <article class="family-card">
+            <div class="family-card-image image-slot life-media" data-label="CHARACTER 05">
+              <img alt="" loading="lazy" data-admin-image="life/family/05.jpg">
+            </div>
+            <h3 class="family-card-name" data-cms-id="life.family.05.name">Character 05</h3>
+            <p class="family-card-about" data-cms-id="life.family.05.about">Another alter ego, another face. Short about goes here.</p>
+          </article>
+          <article class="family-card">
+            <div class="family-card-image image-slot life-media" data-label="CHARACTER 06">
+              <img alt="" loading="lazy" data-admin-image="life/family/06.jpg">
+            </div>
+            <h3 class="family-card-name" data-cms-id="life.family.06.name">Character 06</h3>
+            <p class="family-card-about" data-cms-id="life.family.06.about">Another alter ego, another face. Short about goes here.</p>
+          </article>
+          <article class="family-card">
+            <div class="family-card-image image-slot life-media" data-label="CHARACTER 07">
+              <img alt="" loading="lazy" data-admin-image="life/family/07.jpg">
+            </div>
+            <h3 class="family-card-name" data-cms-id="life.family.07.name">Character 07</h3>
+            <p class="family-card-about" data-cms-id="life.family.07.about">Another alter ego, another face. Short about goes here.</p>
+          </article>
+          <article class="family-card">
+            <div class="family-card-image image-slot life-media" data-label="CHARACTER 08">
+              <img alt="" loading="lazy" data-admin-image="life/family/08.jpg">
+            </div>
+            <h3 class="family-card-name" data-cms-id="life.family.08.name">Character 08</h3>
+            <p class="family-card-about" data-cms-id="life.family.08.about">Another alter ego, another face. Short about goes here.</p>
+          </article>
+          <article class="family-card">
+            <div class="family-card-image image-slot life-media" data-label="CHARACTER 09">
+              <img alt="" loading="lazy" data-admin-image="life/family/09.jpg">
+            </div>
+            <h3 class="family-card-name" data-cms-id="life.family.09.name">Character 09</h3>
+            <p class="family-card-about" data-cms-id="life.family.09.about">Another alter ego, another face. Short about goes here.</p>
+          </article>
+          <article class="family-card">
+            <div class="family-card-image image-slot life-media" data-label="CHARACTER 10">
+              <img alt="" loading="lazy" data-admin-image="life/family/10.jpg">
+            </div>
+            <h3 class="family-card-name" data-cms-id="life.family.10.name">Character 10</h3>
+            <p class="family-card-about" data-cms-id="life.family.10.about">Another alter ego, another face. Short about goes here.</p>
+          </article>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====== PRODUCTS — everything in one scroll (no sub-tabs) ====== -->
+    <section class="life-section" data-category="products" data-life-locked="true">
+      <header class="life-section-head">
+        <span class="life-section-eyebrow">Products</span>
+        <h2 class="life-section-title">Things I make &amp; sell</h2>
+        <p class="life-section-sub">Wallpaper bundles, comics, clothing, art and e-books — all in one place.</p>
+      </header>
+
+      <div class="life-products-stack">
+
+        <div class="life-products-block">
+          <h3 class="life-products-block-title">Wallpaper bundles</h3>
+          <p class="life-products-block-sub">Each drop is a bundle — desktop and mobile sizes included. Tap to shop where they're sold.</p>
+          <div class="products-bundle-grid" data-cms-render="wallpapers">
+            <a href="#" class="products-bundle" target="_blank" rel="noopener" data-admin-link="products/wallpapers/bundle-01-url">
+              <div class="products-bundle-cover image-slot life-media" data-label="BUNDLE 01">
+                <img alt="" loading="lazy" data-admin-image="products/wallpapers/bundle-01.jpg">
+              </div>
+              <div class="products-bundle-meta">
+                <span class="products-bundle-tag">Bundle</span>
+                <h4 class="products-bundle-name">Wallpaper bundle 01</h4>
+                <p class="products-bundle-detail" data-cms-id="products.wallpapers.bundle-01.detail">12 wallpapers · desktop &amp; mobile</p>
+                <span class="products-bundle-action">Shop bundle ↗</span>
+              </div>
+            </a>
+            <a href="#" class="products-bundle" target="_blank" rel="noopener" data-admin-link="products/wallpapers/bundle-02-url">
+              <div class="products-bundle-cover image-slot life-media" data-label="BUNDLE 02">
+                <img alt="" loading="lazy" data-admin-image="products/wallpapers/bundle-02.jpg">
+              </div>
+              <div class="products-bundle-meta">
+                <span class="products-bundle-tag">Bundle</span>
+                <h4 class="products-bundle-name">Wallpaper bundle 02</h4>
+                <p class="products-bundle-detail" data-cms-id="products.wallpapers.bundle-02.detail">10 wallpapers · desktop &amp; mobile</p>
+                <span class="products-bundle-action">Shop bundle ↗</span>
+              </div>
+            </a>
+            <a href="#" class="products-bundle" target="_blank" rel="noopener" data-admin-link="products/wallpapers/bundle-03-url">
+              <div class="products-bundle-cover image-slot life-media" data-label="BUNDLE 03">
+                <img alt="" loading="lazy" data-admin-image="products/wallpapers/bundle-03.jpg">
+              </div>
+              <div class="products-bundle-meta">
+                <span class="products-bundle-tag">Bundle</span>
+                <h4 class="products-bundle-name">Wallpaper bundle 03</h4>
+                <p class="products-bundle-detail" data-cms-id="products.wallpapers.bundle-03.detail">8 wallpapers · desktop &amp; mobile</p>
+                <span class="products-bundle-action">Shop bundle ↗</span>
+              </div>
+            </a>
+            <a href="#" class="products-bundle" target="_blank" rel="noopener" data-admin-link="products/wallpapers/bundle-04-url">
+              <div class="products-bundle-cover image-slot life-media" data-label="BUNDLE 04">
+                <img alt="" loading="lazy" data-admin-image="products/wallpapers/bundle-04.jpg">
+              </div>
+              <div class="products-bundle-meta">
+                <span class="products-bundle-tag">Bundle</span>
+                <h4 class="products-bundle-name">Wallpaper bundle 04</h4>
+                <p class="products-bundle-detail" data-cms-id="products.wallpapers.bundle-04.detail">14 wallpapers · desktop &amp; mobile</p>
+                <span class="products-bundle-action">Shop bundle ↗</span>
+              </div>
+            </a>
+            <a href="#" class="products-bundle" target="_blank" rel="noopener" data-admin-link="products/wallpapers/bundle-05-url">
+              <div class="products-bundle-cover image-slot life-media" data-label="BUNDLE 05">
+                <img alt="" loading="lazy" data-admin-image="products/wallpapers/bundle-05.jpg">
+              </div>
+              <div class="products-bundle-meta">
+                <span class="products-bundle-tag">Bundle</span>
+                <h4 class="products-bundle-name">Wallpaper bundle 05</h4>
+                <p class="products-bundle-detail" data-cms-id="products.wallpapers.bundle-05.detail">11 wallpapers · desktop &amp; mobile</p>
+                <span class="products-bundle-action">Shop bundle ↗</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <div class="life-products-block">
+          <h3 class="life-products-block-title">Comics</h3>
+          <p class="life-products-block-sub">Preview here — full issues and purchases live on the comic site.</p>
+          <div class="products-comics-grid" data-cms-render="comics">
+            <article class="products-comic">
+              <div class="products-comic-cover image-slot life-media" data-label="COMIC 01">
+                <img alt="" loading="lazy" data-admin-image="products/comics/01.jpg">
+              </div>
+              <div class="products-comic-info">
+                <h4 class="products-comic-title" data-cms-id="products.comics.01.title">Series title</h4>
+                <p class="products-comic-about" data-cms-id="products.comics.01.about">A short line about the series — who it's for, what it's about, why it exists.</p>
+                <a href="#" class="products-comic-link" target="_blank" rel="noopener" data-admin-link="products/comics/01-url">
+                  <span>Read or buy</span>
+                  <span class="arrow">↗</span>
+                </a>
+              </div>
+            </article>
+            <article class="products-comic">
+              <div class="products-comic-cover image-slot life-media" data-label="COMIC 02">
+                <img alt="" loading="lazy" data-admin-image="products/comics/02.jpg">
+              </div>
+              <div class="products-comic-info">
+                <h4 class="products-comic-title" data-cms-id="products.comics.02.title">Second series</h4>
+                <p class="products-comic-about" data-cms-id="products.comics.02.about">Another preview — admin can add, remove or reorder these anytime.</p>
+                <a href="#" class="products-comic-link" target="_blank" rel="noopener" data-admin-link="products/comics/02-url">
+                  <span>Read or buy</span>
+                  <span class="arrow">↗</span>
+                </a>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="life-products-block">
+          <h3 class="life-products-block-title">Clothing</h3>
+          <p class="life-products-block-sub">Preview the drops here — checkout lives on the live store.</p>
+          <div data-cms-render="clothing">
+          <article class="products-brand products-brand--full">
+            <div class="products-brand-preview products-brand-preview--wide">
+              <div class="products-brand-image image-slot life-media" data-label="TEE 01">
+                <img alt="" loading="lazy" data-admin-image="products/clothing/01.jpg">
+              </div>
+              <div class="products-brand-image image-slot life-media" data-label="HOODIE 01">
+                <img alt="" loading="lazy" data-admin-image="products/clothing/02.jpg">
+              </div>
+              <div class="products-brand-image image-slot life-media" data-label="CAP 01">
+                <img alt="" loading="lazy" data-admin-image="products/clothing/03.jpg">
+              </div>
+            </div>
+            <div class="products-brand-info">
+              <h4 class="products-brand-name" data-cms-id="products.clothing.brandName">xbigbrainnx Studio</h4>
+              <p class="products-brand-about" data-cms-id="products.clothing.about">Tees, hoodies and caps in small runs. All live on the store now.</p>
+              <a href="#" class="products-brand-store" target="_blank" rel="noopener" data-admin-link="products/clothing/store-url">
+                <span>Visit store</span>
+                <span class="arrow">↗</span>
+              </a>
+            </div>
+          </article>
+          </div>
+        </div>
+
+        <div class="life-products-block">
+          <h3 class="life-products-block-title">Art</h3>
+          <p class="life-products-block-sub">Originals and signed prints — limited quantities.</p>
+          <div class="products-grid" data-cms-render="art-sale">
+            <article class="products-card">
+              <div class="products-card-image image-slot life-media" data-label="ART 01">
+                <img alt="" loading="lazy" data-admin-image="products/art/01.jpg">
+              </div>
+              <div class="products-card-meta">
+                <h4 class="products-card-name" data-cms-id="products.art.01.name">After Lagos, no. 3</h4>
+                <span class="products-card-price" data-cms-id="products.art.01.price">$220</span>
+              </div>
+              <a href="#" class="products-card-cta" data-admin-link="products/art/01-url" target="_blank" rel="noopener">
+                <span>Enquire</span>
+                <span class="arrow">↗</span>
+              </a>
+            </article>
+            <article class="products-card">
+              <div class="products-card-image image-slot life-media" data-label="ART 02">
+                <img alt="" loading="lazy" data-admin-image="products/art/02.jpg">
+              </div>
+              <div class="products-card-meta">
+                <h4 class="products-card-name" data-cms-id="products.art.02.name">Quiet bodies</h4>
+                <span class="products-card-price" data-cms-id="products.art.02.price">$180</span>
+              </div>
+              <a href="#" class="products-card-cta" data-admin-link="products/art/02-url" target="_blank" rel="noopener">
+                <span>Enquire</span>
+                <span class="arrow">↗</span>
+              </a>
+            </article>
+            <article class="products-card">
+              <div class="products-card-image image-slot life-media" data-label="ART 03">
+                <img alt="" loading="lazy" data-admin-image="products/art/03.jpg">
+              </div>
+              <div class="products-card-meta">
+                <h4 class="products-card-name" data-cms-id="products.art.03.name">Untitled, study II</h4>
+                <span class="products-card-price" data-cms-id="products.art.03.price">$95</span>
+              </div>
+              <a href="#" class="products-card-cta" data-admin-link="products/art/03-url" target="_blank" rel="noopener">
+                <span>Enquire</span>
+                <span class="arrow">↗</span>
+              </a>
+            </article>
+          </div>
+        </div>
+
+        <div class="life-products-block">
+          <h3 class="life-products-block-title">E-books</h3>
+          <p class="life-products-block-sub">Short PDFs on design, building in public, and the bookmark trap.</p>
+          <div class="products-grid products-grid--ebooks" data-cms-render="ebooks">
+            <article class="products-card products-card--ebook">
+              <div class="products-card-image image-slot life-media products-card-image--ebook" data-label="EBOOK 01">
+                <img alt="" loading="lazy" data-admin-image="products/ebooks/01.jpg">
+              </div>
+              <div class="products-card-meta">
+                <h4 class="products-card-name" data-cms-id="products.ebooks.01.name">The bookmark trap</h4>
+                <span class="products-card-price" data-cms-id="products.ebooks.01.price">$12</span>
+              </div>
+              <p class="products-card-tagline" data-cms-id="products.ebooks.01.tagline">A 40-page essay on the cost of saving links you'll never read.</p>
+              <a href="#" class="products-card-cta" data-admin-link="products/ebooks/01-url" target="_blank" rel="noopener">
+                <span>Buy PDF</span>
+                <span class="arrow">↗</span>
+              </a>
+            </article>
+            <article class="products-card products-card--ebook">
+              <div class="products-card-image image-slot life-media products-card-image--ebook" data-label="EBOOK 02">
+                <img alt="" loading="lazy" data-admin-image="products/ebooks/02.jpg">
+              </div>
+              <div class="products-card-meta">
+                <h4 class="products-card-name" data-cms-id="products.ebooks.02.name">Quiet design</h4>
+                <span class="products-card-price" data-cms-id="products.ebooks.02.price">$16</span>
+              </div>
+              <p class="products-card-tagline" data-cms-id="products.ebooks.02.tagline">Notes from five years of trying to make interfaces that don't yell.</p>
+              <a href="#" class="products-card-cta" data-admin-link="products/ebooks/02-url" target="_blank" rel="noopener">
+                <span>Buy PDF</span>
+                <span class="arrow">↗</span>
+              </a>
+            </article>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h4>xbigbrainnx</h4>
+        <p>2022 — <span id="footer-year">2026</span></p>
+      </div>
+      <div class="footer-col">
+        <h5>NAV</h5>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="index.html#about">About</a></li>
+          <li><a href="index.html#services">Services</a></li>
+          <li><a href="index.html#writings">Writing</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>ELSEWHERE</h5>
+        <ul>
+          <li><a href="#">X</a></li>
+          <li><a href="#">LinkedIn</a></li>
+          <li><a href="#">Behance</a></li>
+          <li><a href="#">Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+    <a href="admin.html" class="footer-portal" aria-label="Admin portal" title="Admin">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+    </a>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-sync.js"></script>
+  <script src="content-schema.js" defer></script>
+  <script src="cms.js" defer></script>
+  <script src="script.js" defer></script>
+</body>
+</html>

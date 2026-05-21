@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>xbigbrainnx — Designer, developer, brand strategist</title>
+<meta name="description" content="Oladele Ibraheem (xbigbrainnx) — Lagos-based designer, developer and brand strategist. Brand systems, fintech, web3, gaming and AI tools.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="index.html" class="nav-left" aria-label="Home">
+      <div class="nav-avatar">OI</div>
+      <span class="nav-name">Oladele Ibraheem</span>
+    </a>
+
+    <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-controls="nav-links" aria-expanded="false">
+      <span class="nav-toggle-label">MENU</span>
+      <span class="nav-toggle-icon" aria-hidden="true"></span>
+    </button>
+
+    <div class="nav-links" id="nav-links">
+      <a href="#projects" data-icon="briefcase">Projects</a>
+      <a href="#about" data-icon="info">About</a>
+      <a href="#services" data-icon="layers">Services</a>
+      <a href="#writings" data-icon="pen">Writings</a>
+      <a href="contact.html" data-icon="mail">Contact</a>
+      <a href="life.html" data-icon="leaf">Life</a>
+    </div>
+
+    <div class="nav-right">
+      <span>NEW WEEK</span>
+      <span class="divider">|</span>
+      <span id="clock">4:11 AM</span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="pill">
+        <span class="pill-dot"></span>
+        Open to work
+      </div>
+
+      <h1 class="hero-headline">
+        Hi, I'm <br>
+        <span class="accent">xbigbrainnx</span>
+      </h1>
+
+      <p class="hero-tagline">
+        A <span class="red">designer</span>, <span class="red">developer</span> and <span class="red">brand strategist</span> with a knack for building brand systems and digital products that ship fast and feel intentional.
+      </p>
+
+      <div class="hero-cta">
+        <a href="#contact" class="btn btn-primary"><span>Get In Touch</span><span>→</span></a>
+        <a href="#projects" class="btn btn-secondary"><span>View Work</span><span>↗</span></a>
+      </div>
+
+      <div class="meet-card">
+        <div class="meet-avatar"></div>
+        <h3>Nice to meet cha'</h3>
+        <p>I am your resident <span class="red">jack-of-all-trades</span>: product designer, front-end engineer, illustrator and design systems fanatic. I like building cool things and solving hard problems.</p>
+      </div>
+    </div>
+
+    <div class="hero-divider"></div>
+
+    <div class="hero-right" id="hero-cards">
+      <div class="tabs">
+        <div class="tab active" data-target="design">Design Projects</div>
+        <div class="tab" data-target="case">Case Studies</div>
+      </div>
+
+      <div class="card-stage">
+        <!-- DESIGN PROJECTS deck (admin-managed) -->
+        <div class="card-view active" data-view="design">
+          <div class="card-deck" id="hero-design-deck"></div>
+        </div>
+
+        <!-- CASE STUDIES deck — 5 cards (admin-managed) -->
+        <div class="card-view" data-view="case">
+          <div class="card-deck" id="hero-case-deck"></div>
+        </div>
+      </div>
+
+      <div class="carousel-controls">
+        <button class="carousel-btn" data-dir="prev" aria-label="Previous">←</button>
+        <div class="carousel-dots"></div>
+        <button class="carousel-btn" data-dir="next" aria-label="Next">→</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee">
+    <div class="marquee-inner">
+      <span>WEB3</span><span>FINTECH</span><span>GAMING</span><span>SAAS</span><span>AI</span><span>DESIGN SYSTEM</span><span>RETAIL</span><span>CREATOR TOOLS</span>
+      <span>WEB3</span><span>FINTECH</span><span>GAMING</span><span>SAAS</span><span>AI</span><span>DESIGN SYSTEM</span><span>RETAIL</span><span>CREATOR TOOLS</span>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <section class="section" id="projects">
+    <span class="section-pill">PROJECTS</span>
+    <h2 class="section-tagline">Real work, real clients, things you can click through today.</h2>
+
+    <!--
+      MOBILE: card view (mirrors the hero-right on desktop)
+      Intentionally empty in markup. Its contents are cloned from
+      `#hero-cards` at runtime by script.js, so the design / case
+      study cards stay in sync without duplicating data.
+    -->
+    <div class="projects-mobile" id="projects-mobile"></div>
+
+    <!-- DESKTOP: wide 5-card stacked carousel -->
+    <div class="projects-carousel">
+      <div class="project-stack" id="project-stack"></div>
+    </div>
+  </section>
+
+  <!-- ABOUT (with sticky photo) -->
+  <section class="section about-wrap" id="about">
+    <span class="section-pill">ABOUT</span>
+    <h2 class="section-tagline">Practical, focused on results, careful with the small stuff.</h2>
+
+    <div class="about-grid">
+      <div class="about-photo-wrap">
+        <div class="about-photo">
+          <div class="about-photo-inner image-slot" data-label="HEADSHOT">
+            <img alt="Oladele Ibraheem" loading="lazy" data-admin-image="about/headshot.jpg">
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="about-text">
+          <p>I'm <span class="accent">Oladele Ibraheem</span> — Lagos-based, better known online as <span class="accent">Big Brain.</span> I help founders and teams turn rough ideas into real products people can actually use. The part I love most is the messy beginning: when the idea is still a half-sentence, the deadline is already real, and someone has to figure out how the whole thing should look, feel, and work.</p>
+          <p>Across three years I've shipped across <span class="accent">brand, fintech, gaming, retail, and AI tools</span> — building everything from full-stack web apps to brand systems for businesses that want to look like what they charge for.</p>
+          <p>I design with the happy path, every unhappy edge case, and the instrumentation to tell them apart.</p>
+          <p>The work I'm proudest of is the work where the user never noticed how much thought went into it. Quiet design. Honest products. Brands that earn the room they take up.</p>
+          <p>When I'm not building, I'm writing about it on Substack and Medium, running the @xbigbrainnx personal brand, and slowly shaping Wintech Studio into the kind of agency Lagos deserves.</p>
+        </div>
+
+        <div class="about-meta">
+          <span class="about-meta-label">MODE</span><span>Remote · Lagos</span>
+          <span class="about-meta-label">INDUSTRIES</span><span>Brand · Fintech · Web3 · Gaming · AI</span>
+          <span class="about-meta-label">YEAR</span><span>2022 – Now</span>
+          <span class="about-meta-label">AVAILABLE</span><span>May 2026</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="section" id="services">
+    <span class="section-pill">SERVICES</span>
+    <h2 class="section-tagline">Clear pricing, clear scope, work I actually enjoy doing.</h2>
+
+    <div class="services-grid">
+      <div class="service-card primary">
+        <div class="service-icon">◆</div>
+        <h4>Brand Strategist | Project Manager</h4>
+        <p>Brand systems, positioning, identity, design direction. From naming to launch — including the rollout plan.</p>
+        <div class="terms">FULL-TIME · CONTRACT</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">◇</div>
+        <h4>UI/UX &amp; Graphics Designer</h4>
+        <p>End-to-end product design — flows, interfaces, prototypes, handoff. Plus the marketing graphics that come after.</p>
+        <div class="terms">2 – 8 WK + RETAINER</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">▢</div>
+        <h4>Web Design &amp; Development</h4>
+        <p>Designed and built — React, Next.js, Supabase, Vercel. From Figma file to live URL, all in one hand.</p>
+        <div class="terms">2 – 4 WK SPRINT</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WRITINGS -->
+  <section class="section" id="writings">
+    <span class="section-pill">WRITINGS</span>
+    <h2 class="section-tagline">Quick thoughts, honest takes, lessons from the work.</h2>
+
+    <div class="medium-list" id="medium-list">
+      <a href="#" class="medium-row primary" data-admin-link="home.medium.01.url">
+        <div class="medium-row-text">
+          <h4 data-cms-id="home.medium.01.title">Designs speak to the brain: a raw concept of design psychology</h4>
+          <p data-cms-id="home.medium.01.about">On power, perception, and the people who learn to shape both</p>
+        </div>
+        <span class="medium-row-cta"><span>READ ARTICLE</span><span>→</span></span>
+      </a>
+
+      <a href="#" class="medium-row" data-admin-link="home.medium.02.url">
+        <div class="medium-row-text">
+          <h4 data-cms-id="home.medium.02.title">Social pills — the illusions we swallow</h4>
+          <p data-cms-id="home.medium.02.about">On the patterns the feed teaches us, and how to spit them out</p>
+        </div>
+        <span class="medium-row-cta"><span>READ ARTICLE</span><span>→</span></span>
+      </a>
+
+      <a href="#" class="medium-row" data-admin-link="home.medium.03.url">
+        <div class="medium-row-text">
+          <h4 data-cms-id="home.medium.03.title">Day-one energy — and why most builders quit right before the breakthrough</h4>
+          <p data-cms-id="home.medium.03.about">On starting again, on the messy middle, and on staying in the room</p>
+        </div>
+        <span class="medium-row-cta"><span>READ ARTICLE</span><span>→</span></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- CTA — "Let's Work Together" teaser. Clicking "See availability"
+       takes the visitor to the dedicated /contact.html page. -->
+  <section class="cta" id="cta">
+    <h2 class="cta-headline"><span class="red">Let's Work</span><br>Together</h2>
+    <a href="mailto:xbigbrainnx@gmail.com" class="cta-email">xbigbrainnx@gmail.com</a>
+    <div class="cta-buttons">
+      <a href="mailto:xbigbrainnx@gmail.com?subject=Project%20inquiry" class="btn btn-primary">Start a project</a>
+      <a href="contact.html" class="btn btn-secondary">See availability</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h4>xbigbrainnx</h4>
+        <p>2022 — <span id="footer-year">2026</span></p>
+      </div>
+      <div class="footer-col">
+        <h5>NAV</h5>
+        <ul>
+          <li><a href="index.html" class="active">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#writings">Writing</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>ELSEWHERE</h5>
+        <ul>
+          <li><a href="#">X</a></li>
+          <li><a href="#">LinkedIn</a></li>
+          <li><a href="#">Behance</a></li>
+          <li><a href="#">Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+    <a href="admin.html" class="footer-portal" aria-label="Admin portal" title="Admin">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+    </a>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-sync.js"></script>
+  <script src="content-schema.js" defer></script>
+  <script src="cms.js" defer></script>
+  <script src="script.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — xbigbrainnx</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+
+  <div class="admin-login" id="admin-login">
+    <div class="admin-login-card">
+      <span class="admin-login-eyebrow">Private</span>
+      <h1 class="admin-login-title">Admin portal</h1>
+      <form class="admin-login-form" id="admin-login-form" novalidate>
+        <input class="admin-input" id="admin-login-input" type="password" placeholder="Password" autocomplete="current-password">
+        <button class="admin-btn admin-btn-primary" type="submit">Continue</button>
+        <p class="admin-login-error" id="admin-login-error" hidden role="alert">Wrong password. Try again.</p>
+      </form>
+      <a href="index.html" class="admin-login-back">← Back to site</a>
+    </div>
+  </div>
+
+  <div class="admin-app" id="admin-app" hidden>
+    <header class="admin-header">
+      <div class="admin-header-left">
+        <span class="admin-header-brand">Edit site</span>
+        <nav class="admin-header-nav" id="admin-nav" aria-label="Edit sections"></nav>
+      </div>
+      <div class="admin-header-right">
+        <span class="admin-status" id="admin-status">Ready</span>
+        <button class="admin-btn admin-btn-ghost admin-logout" type="button" id="admin-logout">Log out</button>
+      </div>
+    </header>
+
+    <div class="admin-shell" id="admin-shell">
+      <button class="admin-sidebar-toggle" id="admin-sidebar-toggle" type="button" aria-expanded="false" aria-controls="admin-sidebar">
+        <span class="admin-sidebar-toggle-label" id="admin-sidebar-toggle-label">Sections</span>
+        <span class="admin-sidebar-toggle-icon" aria-hidden="true">▾</span>
+      </button>
+      <div class="admin-layout">
+        <aside class="admin-sidebar" id="admin-sidebar">
+          <p class="admin-sidebar-heading" id="admin-sidebar-heading">Sections</p>
+          <nav class="admin-sidebar-nav" id="admin-sidebar-nav" aria-label="Subsections"></nav>
+        </aside>
+        <main class="admin-main" id="admin-main">
+          <div class="admin-workspace" id="admin-workspace"></div>
+        </main>
+      </div>
+      <button class="admin-sidebar-backdrop" id="admin-sidebar-backdrop" type="button" hidden aria-label="Close sections menu"></button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-sync.js"></script>
+  <script src="content-schema.js"></script>
+  <script src="cms.js"></script>
+  <script src="admin.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    var PASS = 'xbigx244340';
+    function el(id) { return document.getElementById(id); }
+    function showDashboard() {
+      el('admin-login').setAttribute('hidden', '');
+      el('admin-login').classList.add('is-hidden');
+      el('admin-app').removeAttribute('hidden');
+      el('admin-app').classList.remove('is-hidden');
+      try { sessionStorage.setItem('xbb-admin-session', 'true'); } catch (e) {}
+      if (window.CMS && CMS.setAdminSession) CMS.setAdminSession(true);
+      if (typeof window.initAdminDashboard === 'function') window.initAdminDashboard();
+    }
+    function showLoginScreen() {
+      el('admin-login').removeAttribute('hidden');
+      el('admin-login').classList.remove('is-hidden');
+      el('admin-app').setAttribute('hidden', '');
+      el('admin-app').classList.add('is-hidden');
+    }
+    function passwordOk(v) {
+      v = String(v || '').trim();
+      if (!v) return false;
+      if (v === PASS) return true;
+      try { if (window.CMS && CMS.verifyAdminPassword(v)) return true; } catch (e) {}
+      return false;
+    }
+    function tryLogin() {
+      var input = el('admin-login-input');
+      var err = el('admin-login-error');
+      var value = input ? input.value : '';
+      if (!String(value).trim()) {
+        if (err) { err.textContent = 'Enter your password.'; err.removeAttribute('hidden'); }
+        if (input) input.focus();
+        return;
+      }
+      if (passwordOk(value)) {
+        if (err) err.setAttribute('hidden', '');
+        showDashboard();
+        return;
+      }
+      if (err) { err.textContent = 'Wrong password. Try again.'; err.removeAttribute('hidden'); }
+      if (input) { input.focus(); input.select(); }
+    }
+    function bindLogin() {
+      var form = el('admin-login-form');
+      var btn = form ? form.querySelector('button[type="submit"]') : null;
+      if (form) form.addEventListener('submit', function (e) { e.preventDefault(); tryLogin(); });
+      if (btn) btn.addEventListener('click', function (e) { e.preventDefault(); tryLogin(); });
+      try {
+        if (sessionStorage.getItem('xbb-admin-session') === 'true') showDashboard();
+        else showLoginScreen();
+      } catch (e) { showLoginScreen(); }
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bindLogin);
+    else bindLogin();
+  })();
+  </script>
+</body>
+</html>

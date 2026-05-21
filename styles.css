@@ -1,0 +1,3642 @@
+:root {
+  --cream: #F0EFE9;
+  --cream-soft: #F6F5EF;
+  --cream-dark: #E8E7E0;
+  --black: #111111;
+  --black-soft: #1A1A1A;
+  --red: #C8381E;
+  --red-dark: #A52E18;
+  --maroon: #6B2330;
+  --maroon-pink: #F5C7D1;
+  --navy: #1B2A4A;
+  --muted: #6E6E68;
+  --line: #D9D7CE;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--black);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  /* Prevent any horizontal scrollbar from elements that intentionally
+   * break out to viewport width (e.g. the case-study design-system
+   * image). */
+  overflow-x: hidden;
+}
+
+/* ===== IMAGE SLOT =====
+ * Wraps any <img> that the admin will upload later.
+ * Shows a subtle placeholder label until the image loads.
+ *   <div class="image-slot" data-label="HEADSHOT">
+ *     <img alt="..." data-admin-image="about/headshot.jpg">
+ *   </div>
+ */
+.image-slot {
+  position: relative;
+  overflow: hidden;
+  background: var(--cream-dark);
+}
+
+.image-slot > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.image-slot::after {
+  content: attr(data-label);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--muted);
+  text-align: center;
+  padding: 16px;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 12px,
+      rgba(0,0,0,0.025) 12px 13px
+    ),
+    var(--cream-dark);
+}
+
+.image-slot.filled::after { display: none; }
+.image-slot.filled { background: transparent; }
+
+/* ===== NAV ===== */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--cream);
+  border-bottom: 1px solid var(--black);
+  padding: 16px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.2s ease;
+}
+.nav-left:hover { opacity: 0.7; }
+
+.nav-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #333, #666);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.nav-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.nav-links { display: flex; gap: 32px; align-items: center; }
+
+.nav-links a {
+  color: var(--black);
+  text-decoration: none;
+  transition: color 0.2s;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-links a:hover, .nav-links a.active { color: var(--red); }
+
+/* Icon chip — hidden on desktop, surfaced inside the mobile drawer. */
+.nav-icon {
+  display: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #ebe6dd;
+  color: var(--black);
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s, color 0.2s;
+}
+.nav-icon svg { width: 13px; height: 13px; display: block; }
+
+/* MENU button — hidden on desktop; visible on mobile as the drawer trigger. */
+.nav-toggle {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  background: var(--red);
+  color: var(--cream);
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+.nav-toggle:hover { background: #a8281c; }
+.nav-toggle:active { transform: scale(0.97); }
+.nav-toggle-icon {
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 2px;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 500;
+}
+.nav-toggle-icon::before { content: '\2630'; font-size: 9px; }
+.nav.open .nav-toggle-icon::before { content: '\00D7'; font-size: 11px; }
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.nav-right .divider { color: var(--line); }
+
+/* ===== HERO ===== */
+.hero {
+  padding: 64px 48px 32px;
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.hero-left {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--red);
+  color: white;
+  padding: 9px 16px;
+  border-radius: 100px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  width: fit-content;
+}
+
+.pill-dot {
+  width: 7px;
+  height: 7px;
+  background: white;
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.hero-headline {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 64px;
+  line-height: 0.98;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.hero-headline .accent { color: var(--red); }
+
+.hero-tagline {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--black);
+  max-width: 520px;
+}
+
+.hero-tagline .red { color: var(--red); }
+
+.hero-cta { display: flex; gap: 12px; margin-top: 4px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 22px;
+  border-radius: 100px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.btn-primary { background: var(--red); color: white; }
+.btn-primary:hover { background: var(--red-dark); transform: translateY(-2px); }
+.btn-secondary { background: white; color: var(--black); border: 1px solid var(--line); }
+.btn-secondary:hover { border-color: var(--black); transform: translateY(-2px); }
+
+.hero-divider { width: 1px; background: var(--black); align-self: stretch; }
+
+.meet-card {
+  margin-top: 32px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.meet-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #1a1a1a, #333);
+}
+
+.meet-card h3 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.meet-card p {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--black);
+  max-width: 460px;
+}
+
+.meet-card p .red { color: var(--red); }
+
+/* ===== HERO RIGHT (carousel) ===== */
+.hero-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  width: 100%;
+}
+
+/* Tabs */
+.tabs {
+  display: inline-flex;
+  background: white;
+  padding: 5px;
+  border-radius: 100px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.tab {
+  padding: 9px 20px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--muted);
+}
+
+.tab.active { background: var(--red); color: white; }
+
+/* Card stage — holds the Design / Case Study card views.
+ * Height adapts to whichever card is currently visible, so cards
+ * of different lengths don't leave empty space. */
+.card-stage {
+  width: 100%;
+  max-width: 540px;
+  position: relative;
+}
+
+/* Compact hero variant — the hero-right column is a teaser next to
+ * the intro on the left, so cards stay smaller here than in the
+ * mobile Projects section (where the same DOM is the main focus). */
+.hero-right .card-stage { max-width: 440px; }
+.hero-right .case-preview,
+.hero-right .design-card-hero { aspect-ratio: 16 / 9; }
+.hero-right .case-text,
+.hero-right .design-card-body { padding: 20px 22px; }
+.hero-right .case-count { font-size: 11px; margin-bottom: 12px; }
+.hero-right .case-title,
+.hero-right .design-card-title { font-size: 22px; }
+.hero-right .case-title em { font-size: 17px; }
+.hero-right .case-tags { font-size: 9px; margin-bottom: 14px; }
+.hero-right .case-desc,
+.hero-right .design-card-desc { font-size: 13px; margin-bottom: 18px; }
+.hero-right .case-meta {
+  padding-top: 12px;
+  margin-bottom: 18px;
+  gap: 12px;
+}
+.hero-right .case-meta-value { font-size: 10px; letter-spacing: 0.14em; }
+.hero-right .case-cta {
+  padding: 11px 18px;
+  font-size: 13px;
+}
+.hero-right .design-card-label { font-size: 10px; margin-bottom: 8px; }
+.hero-right .design-card-tags { margin-bottom: 16px; gap: 6px; }
+.hero-right .tag-outline { padding: 5px 12px; font-size: 12px; }
+.hero-right .author-avatar { width: 30px; height: 30px; }
+.hero-right .author-name { font-size: 12px; }
+.hero-right .view-pill { padding: 9px 14px; font-size: 10px; }
+
+.card-view {
+  width: 100%;
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+.card-view.active { display: block; }
+
+/* A deck holds N cards (1 design, 5 case studies, etc.).
+ * Only the active card is rendered; the others are removed
+ * from layout so the stage height tracks the visible card. */
+.card-deck > [data-i] { display: none; }
+.card-deck > [data-i][data-active="true"] {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== LUMEA-STYLE CARD (Design Projects) ===== */
+.design-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+.design-card-hero {
+  background: var(--maroon);
+  aspect-ratio: 16 / 9;
+  position: relative;
+}
+
+.design-card-hero::after {
+  color: var(--maroon-pink);
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 14px,
+      rgba(255,255,255,0.06) 14px 15px
+    ),
+    var(--maroon);
+}
+
+.design-card-body { padding: 28px; }
+
+.design-card-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--black);
+  margin-bottom: 10px;
+}
+
+.design-card-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.design-card-desc {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--black);
+  margin-bottom: 20px;
+}
+
+.design-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.tag-outline {
+  border: 1px solid var(--red);
+  color: var(--red);
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-size: 13px;
+}
+
+.design-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.author {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.author-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #1a1a1a, #444);
+  flex-shrink: 0;
+}
+
+.author-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.author-name {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.author-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+
+.author-meta .strike { color: var(--red); }
+
+.view-pill {
+  background: var(--red);
+  color: white;
+  padding: 11px 18px;
+  border-radius: 100px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.view-pill:hover { background: var(--red-dark); }
+
+/* ===== CREDIGO-STYLE CARD (Case Studies) ===== */
+/* Case studies use a vertical card on every viewport:
+ * preview image on top, content below. The wide horizontal layout
+ * is reserved for the desktop Projects-section stacked carousel
+ * (`.project-card`). */
+.case-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.case-corner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--red);
+  color: white;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-bottom-left-radius: 12px;
+  z-index: 2;
+}
+
+.case-text {
+  order: 2;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+}
+
+.case-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.case-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 600;
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+
+.case-title em {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-weight: 400;
+  display: block;
+  margin-top: 4px;
+}
+
+.case-title .accent { color: var(--red); }
+
+.case-tags {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--black);
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--red);
+  width: fit-content;
+  margin-bottom: 22px;
+}
+
+.case-desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--black);
+  margin-bottom: 28px;
+}
+
+.case-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.case-meta-row {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.case-meta-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+}
+
+.case-meta-value {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+}
+
+.case-cta {
+  background: var(--black);
+  color: white;
+  padding: 14px 22px;
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin-top: auto;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.case-cta:hover { background: var(--red); transform: translateY(-2px); }
+
+.case-preview {
+  order: 1;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+}
+
+/* Role + Year sit on one flush row across all viewports, dropping
+ * the labels and switching to mono caps. */
+.case-card .case-meta {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  margin-bottom: 28px;
+}
+.case-card .case-meta-row {
+  display: block;
+  grid-template-columns: none;
+}
+.case-card .case-meta-row:last-child { text-align: right; }
+.case-card .case-meta-label { display: none; }
+.case-card .case-meta-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--black);
+}
+
+/* Carousel controls (centered) */
+.carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+}
+
+.carousel-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  color: var(--black);
+}
+
+.carousel-btn:hover { border-color: var(--black); }
+.carousel-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.carousel-dots { display: flex; gap: 7px; align-items: center; }
+
+.carousel-dots .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--line);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.carousel-dots .dot.active {
+  background: var(--red);
+  width: 22px;
+  border-radius: 100px;
+}
+
+/* ===== MARQUEE ===== */
+.marquee {
+  background: var(--red);
+  color: white;
+  padding: 14px 0;
+  overflow: hidden;
+  margin-top: 48px;
+}
+
+.marquee-inner {
+  display: flex;
+  gap: 64px;
+  animation: scroll 30s linear infinite;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  white-space: nowrap;
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ===== SECTION HEADER ===== */
+.section {
+  padding: 88px 48px;
+  border-bottom: 1px solid var(--line);
+}
+
+.section-pill {
+  display: inline-block;
+  background: var(--red);
+  color: white;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  padding: 6px 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.section-tagline {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 34px;
+  line-height: 1.15;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  max-width: 820px;
+  margin-bottom: 56px;
+}
+
+/* ===== PROJECTS CAROUSEL =====
+ * Desktop: 5 case-study cards stacked into the right edge of the active
+ * card. The active card shows full content (text on the left, preview
+ * on the right). Cards 1–4 positions behind peek out, each shifted
+ * further right and slightly down, with a subtle scale-down for depth.
+ * JS rotates a `data-pos` attribute on each card to cycle the stack.
+ *
+ * Mobile: this carousel is hidden. The `.projects-mobile` block above
+ * (a clone of the hero card view) is shown instead, so the user sees
+ * Design / Case Study tabs without the wide stacked deck.
+ */
+.projects-mobile {
+  display: none;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+.projects-carousel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+.project-stack {
+  position: relative;
+  width: 100%;
+  /* Reserve runway height for the active card. JS doesn't measure;
+   * keep this aligned with .project-card content. */
+  min-height: 520px;
+}
+
+.project-card {
+  --peek-x: 0px;
+  --peek-y: 0px;
+  --peek-scale: 1;
+  position: absolute;
+  inset: 0 100px 0 0;            /* leave 100px on the right for peek cards */
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.07);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  transform-origin: top right;
+  transform: translate(var(--peek-x), var(--peek-y)) scale(var(--peek-scale));
+  transition:
+    transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 0.4s ease,
+    opacity 0.4s ease;
+  will-change: transform;
+}
+
+.project-card[data-pos="0"] { z-index: 5; --peek-x: 0px;  --peek-y: 0px;  --peek-scale: 1;    }
+.project-card[data-pos="1"] { z-index: 4; --peek-x: 28px; --peek-y: 16px; --peek-scale: 0.97; box-shadow: 0 10px 28px rgba(0,0,0,0.06); }
+.project-card[data-pos="2"] { z-index: 3; --peek-x: 52px; --peek-y: 32px; --peek-scale: 0.94; box-shadow: 0 8px 22px rgba(0,0,0,0.05);  }
+.project-card[data-pos="3"] { z-index: 2; --peek-x: 74px; --peek-y: 48px; --peek-scale: 0.91; box-shadow: 0 6px 18px rgba(0,0,0,0.045); }
+.project-card[data-pos="4"] { z-index: 1; --peek-x: 94px; --peek-y: 64px; --peek-scale: 0.88; box-shadow: 0 4px 14px rgba(0,0,0,0.04);  }
+
+/* Hide content of non-active cards so only the active card is readable;
+ * the peek cards still show their corner badge for context. */
+.project-card:not([data-pos="0"]) .project-text,
+.project-card:not([data-pos="0"]) .project-preview {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.project-corner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--red);
+  color: white;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-bottom-left-radius: 12px;
+  z-index: 2;
+}
+
+.project-text {
+  padding: 36px 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+.project-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.project-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 38px;
+  line-height: 1.05;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.project-title em {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-weight: 400;
+  display: block;
+  margin-top: 4px;
+}
+
+.project-tags {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--black);
+  margin-bottom: 22px;
+}
+
+.project-desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--black);
+  margin-bottom: 28px;
+  max-width: 380px;
+}
+
+.project-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 36px;
+}
+
+.project-meta-row {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 16px;
+  align-items: baseline;
+}
+
+.project-meta-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+}
+
+.project-meta-value {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--black);
+}
+
+.project-cta {
+  margin-top: auto;
+  background: var(--black);
+  color: white;
+  padding: 14px 22px;
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.project-cta:hover { background: var(--red); transform: translateY(-2px); }
+
+.project-preview {
+  position: relative;
+  min-height: 100%;
+}
+
+/* ===== ABOUT (parallax) =====
+ * The headshot pins at top: 100px and stays static while the text/meta
+ * scroll past. It releases exactly when the right column ends
+ * (i.e. just after "Available May 2026"), then the page continues
+ * normally into the Services section.
+ *
+ * Mechanism: the photo's wrapper is stretched to match the grid row
+ * height (set by the taller text column). `.about-photo` is sticky
+ * inside that tall wrapper, so it remains pinned until the wrapper's
+ * bottom edge passes under it.
+ */
+.about-wrap {
+  position: relative;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: minmax(420px, 1fr) minmax(0, 1fr);
+  gap: 80px;
+  align-items: start;
+}
+
+.about-photo-wrap {
+  position: relative;
+  align-self: stretch;
+  height: 100%;
+}
+
+.about-photo {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: linear-gradient(135deg, #1a1a1a, #333);
+  border-radius: 12px;
+  border: 2px solid var(--red);
+  padding: 4px;
+  position: sticky;
+  top: 100px;
+}
+
+.about-photo-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.about-photo-inner::after {
+  color: rgba(255,255,255,0.4);
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 14px,
+      rgba(255,255,255,0.04) 14px 15px
+    ),
+    linear-gradient(135deg, #2a2a2a, #1a1a1a);
+}
+
+.about-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--black);
+  max-width: 540px;
+}
+
+.about-text p { margin-bottom: 18px; }
+.about-text .accent { color: var(--red); font-weight: 600; }
+
+.about-meta {
+  margin-top: 32px;
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 14px 24px;
+  font-size: 14px;
+}
+
+.about-meta-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--red);
+}
+
+/* ===== SERVICES ===== */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.service-card {
+  padding: 28px;
+  border-radius: 14px;
+  background: white;
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 220px;
+  transition: all 0.2s;
+}
+
+.service-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.06);
+}
+
+.service-card.primary {
+  background: var(--red);
+  color: white;
+  border: none;
+}
+
+.service-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: var(--cream-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.service-card.primary .service-icon { background: rgba(255,255,255,0.15); }
+
+.service-card h4 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.service-card p {
+  font-size: 14px;
+  line-height: 1.55;
+  flex-grow: 1;
+  color: inherit;
+  opacity: 0.9;
+}
+
+.service-card .terms {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.service-card.primary .terms {
+  color: rgba(255,255,255,0.7);
+  border-color: rgba(255,255,255,0.2);
+}
+
+/* ===== WRITINGS =====
+ * Two views: Medium (primary, default active) and Substack (secondary).
+ * - Medium = a stacked list of horizontal rows; first row is filled red.
+ * - Substack = a flip-deck of essay cards. Tapping the top card flips
+ *   it away and brings the next card up, cycling through forever.
+ */
+.writings-tabs-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.writings-view {
+  display: none;
+  animation: fadeIn 0.35s ease;
+}
+
+.writings-view.active { display: block; }
+
+/* --- MEDIUM (primary): stacked horizontal rows --- */
+.medium-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+.medium-row {
+  background: white;
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  padding: 26px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  text-decoration: none;
+  color: var(--black);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.medium-row:hover {
+  border-color: var(--black);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.05);
+}
+
+.medium-row.primary {
+  background: var(--red);
+  border-color: var(--red);
+  color: white;
+}
+
+.medium-row.primary:hover {
+  border-color: var(--red-dark);
+  background: var(--red-dark);
+  box-shadow: 0 12px 28px rgba(200,56,30,0.25);
+}
+
+.medium-row-text { min-width: 0; }
+
+.medium-row-text h4 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 20px;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  margin-bottom: 6px;
+}
+
+.medium-row-text p {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.35;
+  opacity: 0.85;
+}
+
+.medium-row-cta {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: 1px solid currentColor;
+  padding: 12px 20px;
+  border-radius: 100px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  font-weight: 500;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.medium-row.primary .medium-row-cta {
+  background: white;
+  color: var(--black);
+  border-color: white;
+}
+
+/* --- SUBSTACK (secondary): flip-deck --- */
+.essay-deck {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  /* Sized to fit cover (16:10 of 600 ≈ 375px) + body (~370px)
+   * comfortably so the READ ESSAY button is always visible. */
+  min-height: 760px;
+  perspective: 1400px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.essay-deck-hint {
+  margin-top: 32px;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.essay-card {
+  position: absolute;
+  inset: 0;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 14px 38px rgba(0,0,0,0.08);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transform-origin: center top;
+  transition:
+    transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 0.4s ease,
+    opacity 0.4s ease;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.essay-card[data-stack-pos="0"] {
+  z-index: 5;
+  transform: translateY(0) scale(1);
+}
+.essay-card[data-stack-pos="1"] {
+  z-index: 4;
+  transform: translateY(16px) scale(0.96);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.06);
+}
+.essay-card[data-stack-pos="2"] {
+  z-index: 3;
+  transform: translateY(32px) scale(0.92);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.05);
+}
+.essay-card[data-stack-pos="3"] {
+  z-index: 2;
+  transform: translateY(48px) scale(0.88);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+}
+
+/* Flip-and-toss: the top card rotates around the Y axis while
+ * translating off to the right, then drops to the back of the deck. */
+.essay-card.flipping {
+  z-index: 6;
+  transform: translate3d(60%, -12px, 0) rotateY(-180deg) rotate(8deg);
+  opacity: 0;
+  transition:
+    transform 0.55s cubic-bezier(0.55, 0, 0.45, 1),
+    opacity 0.4s ease 0.15s;
+}
+
+.essay-cover {
+  aspect-ratio: 16 / 10;
+  flex-shrink: 0;
+}
+
+.essay-body {
+  padding: 32px 34px 30px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.essay-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  color: var(--black);
+  margin-bottom: 18px;
+}
+
+.essay-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 40px;
+  line-height: 1.04;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+}
+
+.essay-subtitle {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-size: 19px;
+  line-height: 1.35;
+  color: var(--black);
+  margin-bottom: 28px;
+  max-width: 460px;
+}
+
+.essay-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  margin-top: auto;
+}
+
+.essay-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.essay-author-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a1a1a, #444);
+  flex-shrink: 0;
+}
+
+.essay-author-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.essay-author-name {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.essay-author-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.essay-cta {
+  background: var(--red);
+  color: white;
+  padding: 14px 22px;
+  border-radius: 100px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.essay-cta:hover {
+  background: var(--red-dark);
+  transform: translateY(-2px);
+}
+
+/* ===== CTA (homepage) =====
+ * The "Let's Work Together" closing section on the homepage. Big,
+ * centered headline + email link + two pill buttons. Sits on the
+ * same subtle dotted-grid background as the contact page so the
+ * two pages feel like one system.
+ */
+.cta {
+  padding: 140px 48px 120px;
+  text-align: center;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(0,0,0,0.05) 1px, transparent 0) 0 0 / 36px 36px,
+    var(--cream);
+}
+
+.cta-headline {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: clamp(56px, 9vw, 128px);
+  line-height: 0.95;
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  margin: 0 auto 40px;
+  max-width: 1200px;
+}
+
+.cta-headline .red {
+  color: var(--red);
+  display: inline-block;
+}
+
+.cta-email {
+  display: inline-block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 19px;
+  margin-bottom: 36px;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  color: var(--black);
+  transition: color 0.2s ease;
+}
+
+.cta-email:hover { color: var(--red); }
+
+.cta-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.cta .btn {
+  padding: 16px 28px;
+  font-size: 14px;
+}
+
+/* ===== CONTACT (contact.html) =====
+ * Two-column layout:
+ * - Left:  breadcrumb, "Got a project .? / Let's talk." headline,
+ *          short description, two CTA buttons.
+ * - Right: a red Availability & Details card with dashed dividers.
+ */
+.contact {
+  padding: 64px 48px 120px;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(0,0,0,0.05) 1px, transparent 0) 0 0 / 36px 36px,
+    var(--cream);
+}
+
+.contact-breadcrumb {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 56px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contact-breadcrumb a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.contact-breadcrumb a:hover { color: var(--black); }
+.contact-breadcrumb .sep { color: var(--line); }
+.contact-breadcrumb .current { color: var(--red); font-weight: 600; }
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 460px);
+  gap: 80px;
+  align-items: start;
+}
+
+.contact-heading {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 76px;
+  line-height: 0.98;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  margin-bottom: 36px;
+  color: var(--black);
+}
+
+.contact-heading .contact-period { color: var(--red); }
+.contact-heading .red { color: var(--red); }
+
+.contact-body {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--black);
+  max-width: 520px;
+  margin-bottom: 40px;
+}
+
+.contact-body p { margin-bottom: 14px; }
+.contact-body p:last-child { margin-bottom: 0; }
+
+.contact-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.availability-card {
+  background: var(--red);
+  color: white;
+  border-radius: 20px;
+  padding: 32px 28px;
+  box-shadow: 0 16px 40px rgba(200,56,30,0.18);
+}
+
+.availability-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  margin-bottom: 22px;
+  font-weight: 600;
+}
+
+.availability-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.availability-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 24px;
+  padding: 14px 0;
+  position: relative;
+}
+
+.availability-row + .availability-row {
+  border-top: 1px dashed rgba(255,255,255,0.4);
+}
+
+.availability-row dt {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  font-weight: 500;
+  opacity: 0.95;
+  flex-shrink: 0;
+}
+
+.availability-row dd {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  text-align: right;
+  font-weight: 500;
+}
+
+.availability-row dd a {
+  color: white;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255,255,255,0.5);
+  transition: border-color 0.2s ease;
+}
+.availability-row dd a:hover { border-color: white; }
+
+/* ===== FOOTER ===== */
+.footer {
+  background: var(--black);
+  color: var(--cream);
+  padding: 70px 48px 36px;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 60px;
+  margin-bottom: 0;
+}
+
+.footer-brand h4 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.footer-brand p {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.footer-brand {
+  position: relative;
+}
+
+.footer-portal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 48px;
+  width: 28px;
+  height: 28px;
+  color: var(--cream);
+  opacity: 0.1;
+  transition: opacity 0.2s ease, color 0.2s ease;
+  text-decoration: none;
+  align-self: flex-start;
+}
+
+.footer-portal:hover,
+.footer-portal:focus-visible {
+  opacity: 0.45;
+  color: var(--cream);
+  outline: none;
+}
+
+.footer-portal svg {
+  width: 14px;
+  height: 14px;
+}
+
+.footer-col h5 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+.footer-col ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-col a {
+  color: var(--cream);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.footer-col a:hover { color: var(--red); }
+.footer-col a.active { color: var(--red); }
+
+/* =========================================================
+ * CASE STUDY PAGE
+ * Per-project theming uses two custom properties set inline
+ * on `.case-study`:
+ *   --case-accent       : the project's brand colour
+ *   --case-accent-soft  : a tinted background variant
+ * Every accented surface on this page reads from those vars
+ * so the entire page reskins by editing a single attribute.
+ * ========================================================= */
+
+.case-study {
+  /* Fallback defaults — every page should override inline. */
+  --case-accent: #3859E6;
+  --case-accent-soft: #E6ECFB;
+  padding: 48px 48px 96px;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+/* ---- header ---- */
+.case-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.case-breadcrumb {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.case-breadcrumb a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.case-breadcrumb a:hover { color: var(--black); }
+.case-breadcrumb .sep { color: var(--line); }
+.case-breadcrumb .current { color: var(--black); }
+
+.case-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.case-eyebrow-pill {
+  padding: 6px 12px;
+  border: 1px solid var(--case-accent);
+  border-radius: 999px;
+  color: var(--case-accent);
+  font-weight: 500;
+}
+.case-eyebrow-year { color: var(--muted); }
+
+/* ---- hero banner ---- */
+.case-hero {
+  margin-bottom: 40px;
+}
+.case-hero-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 8;
+  border-radius: 14px;
+  background: var(--case-accent);
+  overflow: hidden;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.08);
+}
+/* The image-slot's striped placeholder is fine on cream, but the
+ * hero sits on the accent colour — swap to a more neutral overlay
+ * so the placeholder reads while still hinting at the brand. */
+.case-hero-frame.image-slot::after {
+  color: rgba(255, 255, 255, 0.78);
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 14px,
+      rgba(255, 255, 255, 0.08) 14px 15px
+    ),
+    var(--case-accent);
+}
+
+/* ---- intro: title, tagline, body, problem/outcome + meta sidebar ---- */
+.case-intro {
+  margin-bottom: 80px;
+}
+.case-page-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: clamp(48px, 6vw, 72px);
+  letter-spacing: -0.025em;
+  line-height: 1.02;
+  color: var(--case-accent);
+  margin-bottom: 24px;
+}
+.case-tagline {
+  font-size: clamp(20px, 2vw, 28px);
+  line-height: 1.3;
+  font-weight: 500;
+  color: var(--black);
+  /* Span the full intro width so the line breaks land at two lines on
+   * desktop, matching the reference layout. The aside (Role / Team /
+   * Industry) sits below the tagline in the next grid, so there's no
+   * collision with this width. */
+  max-width: none;
+  margin-bottom: 48px;
+}
+.case-intro-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2.4fr) minmax(200px, 1fr);
+  gap: 64px;
+  align-items: start;
+}
+.case-intro-main {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.case-body {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--black);
+  max-width: 64ch;
+}
+.case-po-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+}
+.case-po-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.case-po-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--black);
+}
+.case-po-body {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--black);
+}
+
+.case-meta-side {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+.case-meta-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.case-meta-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--black);
+}
+.case-meta-value {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--black);
+}
+
+/* ---- generic case section ---- */
+.case-section {
+  margin-bottom: 88px;
+}
+.case-section-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: clamp(34px, 4vw, 48px);
+  letter-spacing: -0.02em;
+  color: var(--case-accent);
+  margin-bottom: 24px;
+}
+
+/* ---- callout card (research / reflection)
+ * Soft accent background with a vertical accent bar on the left,
+ * matching the reference design. The card has its own bolder title
+ * followed by a body paragraph. */
+.case-callout {
+  position: relative;
+  background: var(--case-accent-soft);
+  border-radius: 8px;
+  padding: 26px 30px 26px 36px;
+  overflow: hidden;
+}
+.case-callout::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: var(--case-accent);
+}
+.case-callout-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 8px;
+}
+.case-callout p {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--black);
+  max-width: 80ch;
+}
+
+/* ---- design system: single uploaded image, full-bleed.
+ *
+ * The image breaks OUT of the `.case-study` 1180px container so it
+ * runs edge-to-edge across the viewport, matching the reference
+ * where the navy backdrop is baked into the upload and stretches
+ * across the whole window. We use the standard left/margin-left
+ * 50% / 50vw trick so the element doesn't need a different parent.
+ * Border and rounded corners are dropped — the upload itself owns
+ * its visual boundary. */
+.case-system-image {
+  position: relative;
+  left: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+  max-width: 100vw;
+  aspect-ratio: 16 / 11;
+  border-radius: 0;
+  border: 0;
+  background: var(--cream-soft);
+}
+/* The image-slot placeholder text uses 100% width by default,
+ * but we want it to read against the full-bleed background. */
+.case-system-image.image-slot::after { padding: 32px; }
+
+/* ---- key screens (sticky stacking parallax)
+ *
+ * The container holds N sibling `.case-screen-card`s. Every card has
+ * `position: sticky; top: <nav-offset>` and a solid background, so as
+ * the page scrolls each successive card slides into the same top
+ * position and visually covers the previous one (later DOM siblings
+ * paint on top). Cards are natural content height — the spacing
+ * between them comes from `gap` on the stack (Figma-style auto
+ * layout), not from any per-card min-height. The effect runs in
+ * both scroll directions naturally. */
+.case-screens-section { margin-bottom: 64px; }
+
+/* Figma-style auto-layout — each card sizes to its content, the
+ * `gap` on the stack puts a consistent space between siblings (no
+ * empty space inside any card). Sticky behaviour is unchanged: as
+ * the user scrolls, the next card's natural top reaches top:88,
+ * sticks, and visually covers the previous card. */
+.case-screens-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+
+.case-screen-card {
+  position: sticky;
+  top: 88px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  box-shadow: 0 -1px 0 var(--cream);
+}
+
+/* Preview frame — defaults to a wide desktop aspect; admin can flip
+ * to `.is-mobile` for a portrait phone mockup. */
+.case-screen-preview {
+  width: 100%;
+  border-radius: 10px;
+  background: var(--cream-soft);
+  border: 1px solid var(--line);
+}
+.case-screen-preview.is-desktop {
+  aspect-ratio: 16 / 9;
+}
+.case-screen-preview.is-mobile {
+  aspect-ratio: 9 / 19;
+  max-width: 240px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.case-screen-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 70ch;
+}
+.case-screen-step {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--case-accent);
+  font-weight: 500;
+}
+.case-screen-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: clamp(22px, 2.4vw, 28px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--black);
+}
+.case-screen-desc {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+/* ---- outlink ---- */
+.case-outlink {
+  text-align: center;
+  padding: 24px 0 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.case-outlink a {
+  color: var(--case-accent);
+  font-weight: 500;
+  text-decoration: none;
+  margin-left: 6px;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+.case-outlink a:hover { border-bottom-color: var(--case-accent); }
+
+/* =========================================================
+ * LIFE PAGE
+ *
+ * A personal log of music, words, garden, and art. Each entry
+ * is a self-contained card-less block (category label → title →
+ * image → body → optional callout). Filter tabs at the top
+ * toggle visibility by `data-category`, with the filter state
+ * mirrored on the `.life` element so CSS can scope visibility
+ * declaratively.
+ *
+ * Image slots default to the brand red so the page reads as
+ * the "warmer" half of the portfolio while artwork is still
+ * being uploaded — the placeholder text inverts to a light
+ * tint over the red diagonal stripe.
+ * ========================================================= */
+
+.life {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 48px 96px;
+}
+
+/* Breadcrumb */
+.life-breadcrumb {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.life-breadcrumb a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.life-breadcrumb a:hover { color: var(--black); }
+.life-breadcrumb .sep { color: var(--line); }
+.life-breadcrumb .current { color: var(--black); }
+
+/* Hero */
+.life-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: 40px;
+  align-items: center;
+  padding: 28px 0 44px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 36px;
+}
+.life-hero-text {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.life-hero-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: clamp(42px, 6vw, 76px);
+  letter-spacing: -0.025em;
+  line-height: 1;
+  color: var(--black);
+}
+.life-hero-title em {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--red);
+  letter-spacing: -0.01em;
+}
+.life-hero-sub {
+  font-size: clamp(14px, 1.4vw, 16px);
+  line-height: 1.6;
+  color: var(--black);
+  max-width: 46ch;
+}
+.life-hero-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.life-hero-meta .sep { color: var(--line); }
+.life-hero-image {
+  aspect-ratio: 5 / 4;
+  border-radius: 12px;
+}
+
+/* Filter tabs — mono caps, pill-shaped, active is solid black */
+.life-tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 48px;
+}
+.life-tab {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+.life-tab:hover { color: var(--black); }
+.life-tab.active {
+  background: var(--black);
+  color: var(--cream);
+}
+
+/* Red variant for image-slot — used by the hero image and every
+ * section's image frames. The placeholder stripe is inverted to a
+ * light-cream tint on red so the page reads as red-on-cream even
+ * before uploads land. */
+.life-media {
+  background: var(--red);
+}
+.life-media.image-slot::after {
+  color: rgba(255, 255, 255, 0.78);
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 14px,
+      rgba(255, 255, 255, 0.1) 14px 15px
+    ),
+    var(--red);
+}
+
+/* Section base — only the active section is visible at a time;
+ * tabs at the top of the page switch the active section by writing
+ * to `data-active-filter` on the `.life` root. */
+.life-section { display: none; }
+.life[data-active-filter="all"] .life-section[data-category="all"],
+.life[data-active-filter="food"] .life-section[data-category="food"],
+.life[data-active-filter="gym"] .life-section[data-category="gym"],
+.life[data-active-filter="writing"] .life-section[data-category="writing"],
+.life[data-active-filter="blog"] .life-section[data-category="blog"],
+.life[data-active-filter="apps"] .life-section[data-category="apps"],
+.life[data-active-filter="arts"] .life-section[data-category="arts"],
+.life[data-active-filter="family"] .life-section[data-category="family"],
+.life[data-active-filter="products"] .life-section[data-category="products"] {
+  display: block;
+}
+
+.life-section-head {
+  margin-bottom: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.life-section-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--red);
+  font-weight: 600;
+}
+.life-section-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: clamp(28px, 3.4vw, 40px);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--black);
+}
+.life-section-sub {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 64ch;
+}
+
+/* ===== ALL — category preview strips ===== */
+.life-all {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+.life-all-block {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-bottom: 56px;
+  border-bottom: 1px solid var(--line);
+}
+.life-all-block:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+.life-all-block-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.life-all-block-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--black);
+  font-weight: 600;
+}
+.life-all-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--red);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-weight: 600;
+}
+.life-all-link:hover { text-decoration: underline; }
+.life-all-grid { grid-template-columns: repeat(2, 1fr); max-width: 560px; }
+.life-all-gym { max-width: 420px; }
+.life-all-substack { grid-template-columns: 1fr; max-width: 420px; }
+.life-all-arts { grid-template-columns: repeat(2, 1fr); max-width: 360px; }
+.life-all-blog-teaser {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 520px;
+}
+.life-all-teaser-text {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+/* ===== FOOD — card grid, image + name ===== */
+.life-food-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+.life-food-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.life-food-image {
+  aspect-ratio: 4 / 5;
+  border-radius: 12px;
+}
+.life-food-name {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: -0.005em;
+  color: var(--black);
+}
+
+/* ===== GYM — Instagram-style 6-image grid ===== */
+.life-gym-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.life-gym-tile {
+  aspect-ratio: 1 / 1;
+  border-radius: 4px;
+}
+
+/* ===== WRITING — Substack cards ===== */
+.life-substack-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
+}
+.life-substack-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--cream-soft);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.life-substack-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.08);
+}
+.life-substack-banner {
+  aspect-ratio: 16 / 9;
+  border-radius: 0;
+}
+.life-substack-body {
+  padding: 22px 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.life-substack-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: var(--black);
+}
+.life-substack-about {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--black);
+  max-width: 50ch;
+  margin-bottom: 6px;
+}
+.life-substack-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--red);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  width: fit-content;
+  font-weight: 600;
+}
+.life-substack-link .arrow { font-size: 14px; }
+.life-substack-link:hover .arrow { transform: translate(2px, -2px); }
+.life-substack-link .arrow { transition: transform 0.2s ease; }
+
+/* ===== BLOG — standard article layout + voice note ===== */
+.life-blog-article {
+  max-width: 820px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.life-blog-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.life-blog-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+}
+.life-blog-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: clamp(32px, 4vw, 44px);
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  color: var(--black);
+}
+.life-blog-dek {
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 58ch;
+}
+.life-blog-hero {
+  width: 100%;
+  aspect-ratio: 21 / 9;
+  border-radius: 14px;
+  margin-top: 4px;
+}
+.life-voice-note {
+  background: var(--cream-soft);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.life-voice-note-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.life-voice-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--black);
+  font-weight: 600;
+}
+.life-voice-hint {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.life-voice-player {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.life-voice-play {
+  min-width: 52px;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--black);
+  background: var(--cream);
+  color: var(--black);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.life-voice-play:hover {
+  background: var(--black);
+  color: var(--cream);
+}
+.life-voice-play-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.life-voice-track-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.life-voice-track {
+  height: 4px;
+  background: var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+  cursor: pointer;
+}
+.life-voice-progress {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--red);
+  border-radius: 999px;
+  transition: width 0.1s linear;
+}
+.life-voice-times {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.life-blog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.life-blog-body p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--black);
+  max-width: 68ch;
+}
+
+/* ===== APPS — compact row list (no mushy cards) ===== */
+.life-apps-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  max-width: 640px;
+}
+.life-app-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  text-decoration: none;
+  color: inherit;
+  border-bottom: 1px solid var(--line);
+  transition: background 0.15s ease;
+}
+.life-app-row:last-child { border-bottom: none; }
+.life-app-row:hover { background: var(--cream-soft); }
+.life-app-row-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.life-app-row-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.life-app-row-name {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  color: var(--black);
+}
+.life-app-row-desc {
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.life-app-row-action {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--red);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* ===== ARTS — gallery grid ===== */
+.life-arts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.life-art-tile {
+  aspect-ratio: 4 / 5;
+  border-radius: 10px;
+}
+
+/* ===== FAMILY — mini character site inside Life ===== */
+.family-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+.family-banner {
+  width: 100%;
+  aspect-ratio: 21 / 9;
+  border-radius: 16px;
+}
+.family-memo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 640px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.family-memo-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--red);
+  font-weight: 600;
+}
+.family-memo-text {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--black);
+}
+.family-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px 28px;
+}
+.family-grid--preview {
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 560px;
+}
+.family-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.family-card-image {
+  aspect-ratio: 1 / 1;
+  border-radius: 14px;
+}
+.family-card-name {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: -0.01em;
+  color: var(--black);
+}
+.family-card-about {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 42ch;
+}
+
+/* ===== LIFE SECTION LOCK ===== */
+.life-lock-gate {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-height: 360px;
+  padding: 48px 24px;
+}
+.life.life-show-lock .life-lock-gate {
+  display: flex;
+}
+.life.life-show-lock .life-section {
+  display: none !important;
+}
+
+.life-lock-panel {
+  width: min(100%, 420px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 32px 28px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--cream-soft);
+  text-align: center;
+}
+.life-lock-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--red);
+  font-weight: 600;
+}
+.life-lock-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: clamp(24px, 4vw, 32px);
+  letter-spacing: -0.02em;
+  color: var(--black);
+}
+.life-lock-sub {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.life-lock-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+.life-lock-input {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--cream);
+  color: var(--black);
+  outline: none;
+}
+.life-lock-input:focus {
+  border-color: var(--black);
+}
+.life-lock-submit {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 999px;
+  background: var(--black);
+  color: var(--cream);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.life-lock-submit:hover { background: var(--red); }
+.life-lock-error {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--red);
+}
+.life-lock-back {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 4px;
+}
+.life-lock-back:hover { color: var(--black); }
+
+/* ===== PRODUCTS (inside Life) — all categories in one scroll ===== */
+.life-products-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 72px;
+}
+.life-products-block {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-bottom: 72px;
+  border-bottom: 1px solid var(--line);
+}
+.life-products-block:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+.life-products-block-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: clamp(22px, 2.8vw, 28px);
+  letter-spacing: -0.015em;
+  color: var(--black);
+}
+.life-products-block-sub {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 58ch;
+  margin-top: -6px;
+}
+.life-section[data-category="products"] .products-bundle-grid--all {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+/* =====================================================
+ * PRODUCTS PAGE
+ *
+ * Re-uses Life's hero / tabs / breadcrumb scaffolding but
+ * with `.products-*` class names so the two pages can be
+ * styled independently. Sections inside switch via the
+ * same `data-active-filter` pattern wired in script.js.
+ * ===================================================== */
+.products {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 56px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+
+.products-breadcrumb {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+.products-breadcrumb a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+.products-breadcrumb a:hover { color: var(--black); }
+.products-breadcrumb .sep { margin: 0 8px; }
+.products-breadcrumb .current { color: var(--black); }
+
+/* Hero — same shape as Life's hero */
+.products-hero {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 56px;
+  align-items: center;
+}
+.products-hero-text { display: flex; flex-direction: column; gap: 18px; }
+.products-hero-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: clamp(40px, 6vw, 80px);
+  letter-spacing: -0.03em;
+  line-height: 0.98;
+  color: var(--black);
+}
+.products-hero-title em {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--red);
+}
+.products-hero-sub {
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--black);
+  max-width: 46ch;
+}
+.products-hero-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.products-hero-meta .dot { font-size: 14px; line-height: 1; }
+.products-hero-image {
+  aspect-ratio: 5 / 4;
+  border-radius: 18px;
+}
+
+/* Products media — cream slot with red placeholder stripes,
+ * so the page reads cream-on-red (opposite of Life). */
+.products-media { background: var(--cream-soft); }
+.products-media.image-slot::after {
+  color: var(--red);
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 14px,
+      rgba(213, 60, 56, 0.06) 14px 15px
+    ),
+    var(--cream-soft);
+}
+
+/* Tabs */
+.products-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.products-tab {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  font-weight: 600;
+}
+.products-tab:hover { color: var(--black); border-color: var(--black); }
+.products-tab.active {
+  color: var(--cream);
+  background: var(--black);
+  border-color: var(--black);
+}
+
+/* Section base — only the active one is visible */
+.products-section { display: none; }
+.products[data-active-filter="all"] .products-section[data-category="all"],
+.products[data-active-filter="wallpapers"] .products-section[data-category="wallpapers"],
+.products[data-active-filter="comics"] .products-section[data-category="comics"],
+.products[data-active-filter="clothing"] .products-section[data-category="clothing"],
+.products[data-active-filter="art"] .products-section[data-category="art"],
+.products[data-active-filter="ebooks"] .products-section[data-category="ebooks"] {
+  display: block;
+}
+
+.products-section-head {
+  margin-bottom: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.products-section-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--red);
+  font-weight: 600;
+}
+.products-section-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: clamp(28px, 3.4vw, 40px);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--black);
+}
+.products-section-sub {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 64ch;
+}
+
+/* ===== ALL — product preview strips ===== */
+.products-all {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+.products-all-block {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-bottom: 56px;
+  border-bottom: 1px solid var(--line);
+}
+.products-all-block:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+.products-all-block-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.products-all-block-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--black);
+  font-weight: 600;
+}
+.products-all-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--red);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-weight: 600;
+}
+.products-all-link:hover { text-decoration: underline; }
+.products-all-grid { grid-template-columns: repeat(2, 1fr); max-width: 480px; }
+.products-all-ebook { max-width: 220px; }
+
+/* ===== WALLPAPER BUNDLES — sold as sets, link out to store ===== */
+.products-bundle-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+.products-bundle-grid--all {
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+}
+.products-bundle {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.18s ease;
+}
+.products-bundle:hover { transform: translateY(-3px); }
+.products-bundle-cover {
+  aspect-ratio: 16 / 10;
+  border-radius: 12px;
+}
+.products-bundle-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.products-bundle-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--red);
+  font-weight: 600;
+}
+.products-bundle-name {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  color: var(--black);
+}
+.products-bundle-detail {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.products-bundle-action {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--red);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* ===== COMICS — preview cards, link to comic site ===== */
+.products-comics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
+}
+.products-comic {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 24px;
+  align-items: start;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--cream-soft);
+}
+.products-comic--preview {
+  max-width: 560px;
+}
+.products-comic-cover {
+  aspect-ratio: 2 / 3;
+  border-radius: 10px;
+}
+.products-comic-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.products-comic-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: var(--black);
+}
+.products-comic-about {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 44ch;
+}
+.products-comic-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cream);
+  background: var(--black);
+  padding: 10px 16px;
+  border-radius: 999px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  font-weight: 600;
+  margin-top: 4px;
+  transition: background 0.2s ease;
+}
+.products-comic-link:hover { background: var(--red); }
+.products-comic-link .arrow { font-size: 13px; }
+
+/* ===== CLOTHING — brand preview + live store link ===== */
+.products-brands {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+.products-brand {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 36px;
+  align-items: center;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--cream-soft);
+}
+.products-brand-preview {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.products-brand-preview--wide {
+  grid-template-columns: repeat(3, 1fr);
+}
+.products-brand-image {
+  aspect-ratio: 4 / 5;
+  border-radius: 10px;
+}
+.products-brand-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.products-brand-name {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: -0.015em;
+  color: var(--black);
+}
+.products-brand-about {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 40ch;
+}
+.products-brand-store {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cream);
+  background: var(--black);
+  padding: 11px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  font-weight: 600;
+  margin-top: 4px;
+  transition: background 0.2s ease;
+}
+.products-brand-store:hover { background: var(--red); }
+.products-brand-store .arrow { font-size: 13px; }
+
+/* Product cards — image + meta + CTA, same shell shared across
+ * wallpapers / clothing / art / ebooks but with category tweaks. */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+.products-grid--ebooks { grid-template-columns: repeat(2, 1fr); gap: 28px; }
+
+.products-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.products-card-image {
+  aspect-ratio: 4 / 5;
+  border-radius: 12px;
+}
+.products-card-image--clothing { aspect-ratio: 4 / 5; }
+.products-card-image--ebook { aspect-ratio: 3 / 4; }
+
+.products-card-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.products-card-name {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: -0.005em;
+  color: var(--black);
+}
+.products-card-price {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--red);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.products-card-tagline {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 44ch;
+  margin-top: -4px;
+}
+.products-card-cta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cream);
+  background: var(--black);
+  padding: 9px 16px;
+  border-radius: 999px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  font-weight: 600;
+  margin-top: 2px;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.products-card-cta:hover { background: var(--red); }
+.products-card-cta:active { transform: scale(0.98); }
+.products-card-cta .arrow { font-size: 13px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    padding: 48px 24px 24px;
+  }
+  .hero-divider { display: none; }
+
+  /* On mobile, the hero is just the left intro panel. The right
+   * card view moves into the Projects section as `.projects-mobile`. */
+  .hero-right { display: none; }
+
+  .hero-headline { font-size: 48px; }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .about-photo-wrap {
+    align-self: auto;
+    height: auto;
+  }
+  .about-photo {
+    max-width: 560px;
+    aspect-ratio: 16 / 10;
+    position: static;
+  }
+
+  .services-grid { grid-template-columns: 1fr; }
+  /* Hide the wide 5-card stacked carousel on mobile;
+   * show the simpler mobile card view in its place. */
+  .projects-carousel { display: none; }
+  .projects-mobile { display: flex; }
+
+  /* Tighten the case-card on smaller screens. The vertical layout
+   * (preview on top, content below) is already the base style. */
+  .case-text { padding: 26px 22px; }
+  .case-title { font-size: 26px; }
+  .card-stage { max-width: 100%; }
+
+  /* Writings: medium rows stack vertically (CTA below text) */
+  .medium-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 24px 22px;
+  }
+  .medium-row-cta { align-self: stretch; justify-content: space-between; }
+
+  .essay-deck { max-width: 100%; min-height: 640px; }
+  .essay-body { padding: 26px 24px 24px; }
+  .essay-title { font-size: 32px; }
+  .essay-subtitle { font-size: 17px; }
+
+  /* Projects section's wide carousel is hidden on mobile, but keep
+   * the project-card rules consistent in case it renders elsewhere. */
+  .project-card {
+    inset: 0;
+    grid-template-columns: 1fr;
+  }
+  .project-text { order: 2; }
+  .project-preview { order: 1; aspect-ratio: 16 / 10; min-height: 0; }
+  .project-meta {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .project-meta-row { display: block; grid-template-columns: none; }
+  .project-meta-row:last-child { text-align: right; }
+  .project-meta-label { display: none; }
+  .project-meta-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  /* Contact collapses to a single column with the availability card
+   * below the description and buttons. */
+  .contact { padding: 56px 24px 88px; }
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .contact-heading { font-size: 52px; }
+
+  /* Life — tablet: hero collapses gap, image becomes more square. */
+  .life { padding: 28px 24px 80px; }
+  .life-hero {
+    grid-template-columns: minmax(0, 1.2fr) minmax(120px, 0.5fr);
+    gap: 28px;
+  }
+  .life-hero-image { aspect-ratio: 1 / 1; }
+  .life-food-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .life-gym-grid { grid-template-columns: repeat(3, 1fr); gap: 5px; }
+  .life-substack-grid { grid-template-columns: 1fr; gap: 22px; }
+  .life-arts-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .life-blog-hero { aspect-ratio: 16 / 9; }
+  .life-all { gap: 44px; }
+  .products-brand { grid-template-columns: 1fr; gap: 24px; }
+
+  /* Products — tablet */
+  .products { padding: 48px 24px 64px; gap: 48px; }
+  .products-hero { grid-template-columns: 1fr; gap: 32px; }
+  .products-hero-title { font-size: clamp(36px, 7vw, 56px); }
+  .products-bundle-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .products-bundle-grid--all { grid-template-columns: repeat(3, 1fr); }
+  .products-comics-grid { grid-template-columns: 1fr; gap: 20px; }
+  .products-comic { grid-template-columns: 140px 1fr; gap: 18px; padding: 18px; }
+  .products-grid--ebooks { grid-template-columns: 1fr; gap: 24px; }
+  .products-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+
+  /* Case study — tablet: intro collapses to a single column with the
+   * meta sidebar moving below, problem/outcome stack vertically. */
+  .case-study { padding: 40px 24px 80px; }
+  .case-intro-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .case-po-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .case-meta-side {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 24px 40px;
+  }
+  .case-meta-block { min-width: 200px; }
+  .case-screen-card {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Drawer layout — logo on the left, MENU button on the right, links
+   * collapse into an absolutely-positioned panel that pops out under the
+   * MENU button when toggled. */
+  .nav {
+    padding: 14px 18px;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: nowrap;
+  }
+  .nav-name { font-size: 14px; }
+  .nav-toggle { display: inline-flex; }
+  .nav-right { display: none; }
+
+  .nav-links {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 12px;
+    z-index: 200;
+    width: 200px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    padding: 6px;
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+    /* Hidden by default; shown when .nav has .open. */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s;
+  }
+  .nav.open .nav-links {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .nav-links a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--black);
+    transition: background 0.15s, color 0.15s;
+  }
+  .nav-links a:hover { color: var(--black); background: #f1ece2; }
+
+  .nav-icon { display: inline-flex; }
+
+  .nav-links a.active {
+    background: #f1ece2;
+    color: var(--black);
+  }
+  .nav-links a.active .nav-icon {
+    background: var(--cream);
+    color: var(--red);
+  }
+
+  .hero-headline { font-size: 40px; }
+  .section { padding: 56px 20px; }
+  .section-tagline { font-size: 24px; }
+  .footer { padding: 48px 20px 24px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+  .footer-portal {
+    margin-top: 36px;
+    margin-bottom: 4px;
+  }
+  .design-card-title, .case-title { font-size: 22px; }
+  .medium-row-text h4 { font-size: 18px; }
+  .essay-deck { min-height: 580px; }
+  .essay-title { font-size: 28px; }
+  .essay-body { padding: 22px 20px 20px; }
+  .essay-cta {
+    padding: 10px 16px;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+  }
+  .contact-heading { font-size: 40px; }
+  .availability-card { padding: 26px 22px; }
+  .cta { padding: 80px 20px; }
+
+  /* Life — mobile: hero stays as a tight 2-col row (title + small
+   * image, like the reference screenshot), tabs scroll horizontally
+   * if they overflow, entries gap shrinks. */
+  .life { padding: 22px 18px 64px; }
+  .life-breadcrumb { font-size: 10px; margin-bottom: 16px; }
+  .life-hero {
+    grid-template-columns: minmax(0, 1.5fr) minmax(72px, 0.6fr);
+    gap: 14px;
+    padding: 18px 0 26px;
+    margin-bottom: 24px;
+    align-items: start;
+  }
+  .life-hero-title { font-size: 34px; }
+  .life-hero-sub { font-size: 13px; max-width: none; }
+  .life-hero-meta { font-size: 9.5px; gap: 8px; }
+  .life-hero-image { aspect-ratio: 1 / 1.05; border-radius: 8px; }
+
+  .life-tabs {
+    gap: 4px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 16px;
+    margin-bottom: 32px;
+    scrollbar-width: none;
+  }
+  .life-tabs::-webkit-scrollbar { display: none; }
+  .life-tab {
+    flex-shrink: 0;
+    padding: 7px 12px;
+    font-size: 10px;
+  }
+
+  /* Life sections — mobile layouts */
+  .life-section-head { margin-bottom: 24px; }
+  .life-section-title { font-size: 26px; }
+  .life-section-sub { font-size: 13.5px; }
+
+  .life-food-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .life-food-name { font-size: 15px; }
+
+  .life-gym-grid { grid-template-columns: repeat(3, 1fr); gap: 4px; }
+
+  .life-substack-grid { grid-template-columns: 1fr; gap: 18px; }
+  .life-substack-body { padding: 18px 18px 20px; }
+  .life-substack-title { font-size: 18px; }
+  .life-substack-about { font-size: 13.5px; }
+
+  .life-blog-article { gap: 22px; }
+  .life-blog-hero { aspect-ratio: 4 / 3; border-radius: 10px; }
+  .life-blog-title { font-size: clamp(26px, 7vw, 32px); }
+  .life-blog-dek { font-size: 15px; }
+  .life-blog-body p { font-size: 14.5px; }
+  .life-voice-note { padding: 14px 16px; }
+
+  .life-apps-list { max-width: 100%; }
+  .life-app-row { padding: 12px 14px; }
+  .life-app-row-icon { width: 40px; height: 40px; border-radius: 9px; }
+
+  .life-arts-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .life-all-block { padding-bottom: 40px; }
+  .life-all-grid { max-width: 100%; }
+  .family-banner { aspect-ratio: 16 / 10; border-radius: 12px; }
+  .family-memo-text { font-size: 14.5px; }
+  .family-grid { grid-template-columns: 1fr; gap: 28px; }
+  .family-grid--preview { max-width: 100%; }
+  .family-card-name { font-size: 18px; }
+  .family-card-about { font-size: 13.5px; }
+  .life-products-stack { gap: 48px; }
+  .life-products-block { padding-bottom: 48px; gap: 14px; }
+  .life-section[data-category="products"] .products-bundle-grid--all { grid-template-columns: repeat(2, 1fr); }
+
+  /* Products — mobile */
+  .products { padding: 32px 20px 56px; gap: 36px; }
+  .products-hero-title { font-size: clamp(34px, 9vw, 48px); }
+  .products-hero-sub { font-size: 14.5px; }
+  .products-hero-image { aspect-ratio: 5 / 4; border-radius: 14px; }
+  .products-tab { font-size: 10px; padding: 9px 14px; letter-spacing: 0.14em; }
+  .products-section-head { margin-bottom: 24px; }
+  .products-section-title { font-size: 26px; }
+  .products-section-sub { font-size: 13.5px; }
+  .products-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .products-grid--ebooks { grid-template-columns: 1fr; gap: 22px; }
+  .products-bundle-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .products-bundle-grid--all { grid-template-columns: repeat(2, 1fr); }
+  .products-bundle-name { font-size: 15px; }
+  .products-bundle-cover { aspect-ratio: 4 / 3; border-radius: 10px; }
+  .products-comics-grid { grid-template-columns: 1fr; gap: 16px; }
+  .products-comic { grid-template-columns: 1fr; gap: 16px; padding: 16px; }
+  .products-comic-cover { max-width: 160px; }
+  .products-comic-title { font-size: 18px; }
+  .products-card-name { font-size: 15px; }
+  .products-card-price { font-size: 12px; }
+  .products-card-tagline { font-size: 13px; }
+  .products-brand { padding: 20px; }
+  .products-brand-preview--wide { grid-template-columns: repeat(2, 1fr); }
+  .products-all { gap: 40px; }
+  .products-all-block { padding-bottom: 40px; }
+
+  /* Case study — mobile: tight padding, shorter hero, single-column
+   * everywhere. Key Screens keep sticky stacking but the cards are
+   * smaller so the small preview rectangle stays visible alongside
+   * the title + description. */
+  .case-study { padding: 28px 16px 64px; }
+  .case-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .case-hero-frame { aspect-ratio: 4 / 3; border-radius: 10px; }
+
+  .case-page-title { font-size: 44px; margin-bottom: 16px; }
+  .case-tagline { font-size: 19px; line-height: 1.32; margin-bottom: 32px; }
+  .case-intro { margin-bottom: 56px; }
+  .case-intro-main { gap: 24px; }
+  .case-body { font-size: 14.5px; }
+  .case-po-grid { gap: 20px; }
+  .case-meta-side { gap: 20px; }
+
+  .case-section { margin-bottom: 56px; }
+  .case-section-title { font-size: 30px; margin-bottom: 14px; }
+  .case-callout {
+    padding: 22px 22px 22px 28px;
+    border-radius: 6px;
+  }
+  .case-callout::before { width: 4px; }
+  .case-callout p { font-size: 13.5px; }
+
+  /* Design System image stays full-bleed on mobile too (no border /
+   * radius), and shifts to a taller aspect since the composition
+   * is denser at narrow widths. */
+  .case-system-image { aspect-ratio: 4 / 3; }
+  .case-system-image.image-slot::after { padding: 18px; font-size: 9px; }
+
+  /* Key Screens cards on mobile — natural content height (no
+   * min-height), the `gap` on the stack creates the visible
+   * spacing between cards. Sticky covering behaviour is identical
+   * to desktop. */
+  .case-screens-stack { gap: 48px; }
+  .case-screen-card {
+    padding: 20px;
+    border-radius: 14px;
+    gap: 18px;
+    top: 72px;
+  }
+
+  .case-screen-preview.is-desktop { aspect-ratio: 16 / 10; }
+  .case-screen-preview.is-mobile {
+    max-width: 180px;
+    aspect-ratio: 9 / 18;
+  }
+  .case-screen-title { font-size: 20px; }
+  .case-screen-desc { font-size: 13.5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
