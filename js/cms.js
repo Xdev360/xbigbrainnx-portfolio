@@ -98,6 +98,25 @@
       mergeRemote(remote, true);
 
       const localOnly = readStore();
+      const listSyncTasks = [];
+
+      Object.entries(localOnly).forEach(([key, value]) => {
+        if (!key.startsWith('__list.')) return;
+        const normalized = normalizeList(value);
+        if (!normalized || !normalized.length) return;
+        const remoteList = normalizeList(remote[key]);
+        if (!remoteList || JSON.stringify(remoteList) !== JSON.stringify(normalized)) {
+          listSyncTasks.push(
+            sb.upsertList(key, normalized).then(() => sb.upsertField(key, normalized))
+          );
+        }
+      });
+
+      if (listSyncTasks.length) {
+        await Promise.all(listSyncTasks);
+        mergeRemote(await sb.loadAll(), true);
+      }
+
       const hasLocal = Object.keys(localOnly).length > 0;
       const hasRemote = Object.keys(remote).length > 0;
       if (hasLocal && !hasRemote && sb.migrateLocalStore) {
@@ -125,11 +144,9 @@
 
     try {
       if (id.startsWith('__list.')) {
-        if (value === '' || value === null || value === undefined) {
-          await sb.upsertList(id, []);
-        } else {
-          await sb.upsertList(id, value);
-        }
+        const listIds = value === '' || value === null || value === undefined ? [] : value;
+        await sb.upsertList(id, listIds);
+        await sb.upsertField(id, listIds);
         return data[id];
       }
 
@@ -220,9 +237,23 @@
     setField('__cms.categories', cleaned);
   }
 
+  function normalizeList(val) {
+    if (Array.isArray(val)) return val.slice();
+    if (typeof val === 'string') {
+      try {
+        const parsed = JSON.parse(val);
+        if (Array.isArray(parsed)) return parsed;
+      } catch {
+        /* ignore */
+      }
+    }
+    return null;
+  }
+
   function getItemList(listKey, defaultIds) {
     const val = getField(listKey);
-    if (Array.isArray(val) && val.length) return val.slice();
+    const normalized = normalizeList(val);
+    if (normalized && normalized.length) return normalized;
     return (defaultIds || []).slice();
   }
 
@@ -245,6 +276,21 @@
 
   function deleteFieldsByPrefix(prefix) {
     return persistDeleteByPrefix(prefix);
+  }
+
+  function syncDesignRegistry(content) {
+    content = content || getContent();
+    const ids = getItemList('__list.projects.design', ['01', '02', '03']);
+    const base = { ...(window.CMS_DESIGN || {}) };
+    ids.forEach(id => {
+      const known = base[id];
+      base[id] = {
+        name: fieldValue(content, `projects.design.${id}.name`, known ? known.name : `Design project ${id}`),
+        image: known && known.image ? known.image : `design/project-${id}.jpg`
+      };
+    });
+    window.CMS_DESIGN = base;
+    return base;
   }
 
   function syncCaseRegistry(content) {
@@ -537,12 +583,13 @@
     const meta = registry[id] || d;
     const name = fieldValue(content, `projects.design.${id}.name`, meta.name || d.name);
     const about = fieldValue(content, `projects.design.${id}.about`, d.about);
-    const image = meta.image || d.image;
+    const imageKey = meta.image || d.image;
+    const image = fieldValue(content, imageKey, imageKey);
 
     return `
       <article class="design-card" data-i="${index}">
         <div class="design-card-hero image-slot" data-label="PROJECT COVER">
-          <img alt="" loading="lazy" data-admin-image="${image}">
+          <img alt="" loading="lazy" data-admin-image="${escapeHtml(imageKey)}">
         </div>
         <div class="design-card-body">
           <div class="design-card-label">${escapeHtml(d.label)}</div>
@@ -573,6 +620,7 @@
 
   function renderProjectDecks(root, content) {
     syncCaseRegistry(content);
+    syncDesignRegistry(content);
     const caseIds = getItemList('__list.projects.case', ['01', '02', '03', '04', '05']);
     const designIds = getItemList('__list.projects.design', ['01', '02', '03']);
 

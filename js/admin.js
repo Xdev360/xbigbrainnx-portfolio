@@ -91,7 +91,7 @@
     const newId = CMS.nextItemId(ids);
     Promise.resolve(CMS.setItemList(dynamicDef.listKey, [...ids, newId]))
       .then(() => {
-        setStatus('Added', true);
+        setStatus(CMS.isUsingRemote() ? 'Added to cloud' : 'Added', true);
         if (onDone) onDone(newId);
       })
       .catch(() => setStatus('Add failed'));

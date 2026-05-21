@@ -17,16 +17,29 @@
 
     target.replaceChildren();
     Array.from(source.children).forEach(child => {
-      target.appendChild(child.cloneNode(true));
+      const clone = child.cloneNode(true);
+      stripInitFlags(clone);
+      target.appendChild(clone);
     });
   }
 
   const carouselRenderers = [];
+  const initializedStages = new WeakSet();
 
-  function initCardCarousels() {
-    document.querySelectorAll('.card-stage').forEach(stage => {
-      if (stage.dataset.carouselReady === 'true') return;
-      stage.dataset.carouselReady = 'true';
+  function stripInitFlags(root) {
+    if (!root) return;
+    root.querySelectorAll('[data-carousel-ready]').forEach(el => {
+      delete el.dataset.carouselReady;
+    });
+    root.querySelectorAll('[data-slot-ready]').forEach(el => {
+      delete el.dataset.slotReady;
+    });
+  }
+
+  function initCardCarousels(root) {
+    (root || document).querySelectorAll('.card-stage').forEach(stage => {
+      if (initializedStages.has(stage)) return;
+      initializedStages.add(stage);
 
       const parent = stage.parentElement;
       if (!parent) return;
@@ -200,10 +213,12 @@
 
   function initHeroProjects() {
     mirrorHeroIntoMobile();
-    initCardCarousels();
+    initCardCarousels(document.getElementById('hero-cards'));
+    initCardCarousels(document.getElementById('projects-mobile'));
     refreshCardCarousels();
     initProjectStack();
     initImageSlots();
+    initImageSlots(document.getElementById('projects-mobile'));
   }
 
   document.addEventListener('cms:applied', initHeroProjects);
