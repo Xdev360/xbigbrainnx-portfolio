@@ -11,29 +11,31 @@ Your site now supports **Supabase** as the cloud database. Until you configure i
 
 1. In Supabase: **SQL Editor** → **New query**
 2. Open `supabase/schema.sql` from this repo
-3. **Important:** replace every `REPLACE_WITH_YOUR_ADMIN_WRITE_KEY` with a long random secret (e.g. `xbb_cms_k9f2m7p4q1w8z3n6`)
+3. **Important:** replace every `xbigx244340` (admin key placeholder) with your own long random secret
 4. Click **Run**
 
-## 3. Copy your API keys
+If admin shows **Cloud connected** but saves fail, run the **entire** `supabase/fix-writes.sql` in the SQL Editor again (includes table RPCs + storage upload policies).
 
-**Project Settings → API**
+## 3. Environment variables (.env / Vercel)
 
-| Field | Goes in `supabase-config.js` |
-|-------|------------------------------|
-| Project URL | `url` |
-| anon public | `anonKey` |
-| (your random secret from step 2) | `adminWriteKey` |
+Copy `.env.example` to `.env` in the project root and fill in:
 
-Edit `supabase-config.js`:
-
-```javascript
-window.SUPABASE_CONFIG = {
-  url: 'https://abcdefgh.supabase.co',
-  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-  adminWriteKey: 'xbb_cms_k9f2m7p4q1w8z3n6',
-  storageBucket: 'portfolio-media'
-};
+```bash
+cp .env.example .env
+npm install
+npm run build
 ```
+
+| Variable | Value |
+|----------|--------|
+| `PUBLIC_SUPABASE_URL` | Supabase → Settings → API → **Project URL** |
+| `PUBLIC_SUPABASE_ANON_KEY` | Supabase → Settings → API → **anon public** |
+| `SUPABASE_ADMIN_WRITE_KEY` | Same string as in `schema.sql` / `fix-writes.sql` |
+| `PUBLIC_SUPABASE_STORAGE_BUCKET` | `portfolio-media` |
+
+**Vercel:** paste the same four names in **Project Settings → Environment Variables** (Production + Preview). Vercel runs `npm run build` which writes `js/config/supabase-config.js` at deploy time.
+
+Do **not** commit `.env` or `js/config/supabase-config.js` — both are gitignored.
 
 ## 4. Test locally
 
@@ -66,5 +68,5 @@ If you already edited content in the admin before Supabase:
 ## Security note
 
 - **anon key** is public (safe in frontend) — read-only via RLS
-- **adminWriteKey** must match the SQL policy — only used when saving from admin
+- **adminWriteKey** must match the key in `schema.sql` / `fix-writes.sql` — passed to secure RPC functions when saving
 - Never put the **service_role** key in this static site

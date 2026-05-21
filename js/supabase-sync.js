@@ -1,6 +1,6 @@
 /**
  * Supabase sync layer for portfolio CMS.
- * Loads before cms.js. Requires @supabase/supabase-js CDN + supabase-config.js
+ * Loads before cms.js. Requires @supabase/supabase-js CDN + js/config/supabase-config.js
  */
 (function () {
   'use strict';
@@ -9,6 +9,13 @@
   let readClient = null;
   let writeClient = null;
   let enabled = false;
+
+  function normalizeUrl(url) {
+    return String(url || '')
+      .trim()
+      .replace(/\/rest\/v1\/?$/i, '')
+      .replace(/\/+$/, '');
+  }
 
   function isConfigured() {
     return !!(
@@ -22,9 +29,10 @@
 
   function initClients() {
     if (!isConfigured() || !window.supabase) return false;
-    readClient = window.supabase.createClient(cfg.url, cfg.anonKey);
+    const url = normalizeUrl(cfg.url);
+    readClient = window.supabase.createClient(url, cfg.anonKey);
     if (cfg.adminWriteKey && !String(cfg.adminWriteKey).includes('YOUR_RANDOM')) {
-      writeClient = window.supabase.createClient(cfg.url, cfg.anonKey, {
+      writeClient = window.supabase.createClient(url, cfg.anonKey, {
         global: { headers: { 'x-admin-key': cfg.adminWriteKey } }
       });
     } else {
@@ -32,6 +40,10 @@
     }
     enabled = true;
     return true;
+  }
+
+  function adminKey() {
+    return (cfg && cfg.adminWriteKey) ? cfg.adminWriteKey : '';
   }
 
   function bucket() {
@@ -66,19 +78,21 @@
     const bytes = Uint8Array.from(atob(match[2]), c => c.charCodeAt(0));
     const path = storagePath(fieldId, mime);
 
-    const { error } = await writeClient.storage.from(bucket()).upload(path, bytes, {
-      upsert: true,
-      contentType: mime,
-      cacheControl: '3600'
-    });
+    try {
+      const { error } = await writeClient.storage.from(bucket()).upload(path, bytes, {
+        upsert: true,
+        contentType: mime,
+        cacheControl: '3600'
+      });
 
-    if (error) {
-      console.error('Supabase upload failed', fieldId, error.message);
-      throw error;
+      if (error) throw error;
+
+      const { data } = writeClient.storage.from(bucket()).getPublicUrl(path);
+      return data.publicUrl;
+    } catch (err) {
+      console.warn('Supabase storage upload failed, saving inline', fieldId, err.message || err);
+      return dataUrl;
     }
-
-    const { data } = writeClient.storage.from(bucket()).getPublicUrl(path);
-    return data.publicUrl;
   }
 
   async function loadAll() {
@@ -91,8 +105,14 @@
       readClient.from('cms_lists').select('list_key, item_ids')
     ]);
 
-    if (cErr) console.error('cms_content load failed', cErr.message);
-    if (lErr) console.error('cms_lists load failed', lErr.message);
+    if (cErr) {
+      console.error('cms_content load failed', cErr.message);
+      throw cErr;
+    }
+    if (lErr) {
+      console.error('cms_lists load failed', lErr.message);
+      throw lErr;
+    }
 
     (rows || []).forEach(row => {
       out[row.id] = row.value;
@@ -109,7 +129,11 @@
     if (!enabled || !writeClient) return;
 
     if (value === '' || value === null || value === undefined) {
-      await writeClient.from('cms_content').delete().eq('id', id);
+      const { error } = await writeClient.rpc('cms_delete_content', {
+        p_admin_key: adminKey(),
+        p_id: id
+      });
+      if (error) throw error;
       return;
     }
 
@@ -117,10 +141,10 @@
       ? await uploadDataUrl(id, value)
       : value;
 
-    const { error } = await writeClient.from('cms_content').upsert({
-      id,
-      value: finalValue,
-      updated_at: new Date().toISOString()
+    const { error } = await writeClient.rpc('cms_upsert_content', {
+      p_admin_key: adminKey(),
+      p_id: id,
+      p_value: finalValue
     });
 
     if (error) throw error;
@@ -130,10 +154,10 @@
   async function upsertList(listKey, ids) {
     if (!enabled || !writeClient) return;
 
-    const { error } = await writeClient.from('cms_lists').upsert({
-      list_key: listKey,
-      item_ids: ids,
-      updated_at: new Date().toISOString()
+    const { error } = await writeClient.rpc('cms_upsert_list', {
+      p_admin_key: adminKey(),
+      p_list_key: listKey,
+      p_item_ids: ids || []
     });
 
     if (error) throw error;
@@ -141,55 +165,52 @@
 
   async function deleteFields(ids) {
     if (!enabled || !writeClient || !ids.length) return;
-    const { error } = await writeClient.from('cms_content').delete().in('id', ids);
+    const { error } = await writeClient.rpc('cms_delete_content_ids', {
+      p_admin_key: adminKey(),
+      p_ids: ids
+    });
     if (error) throw error;
   }
 
   async function deleteByPrefix(prefix) {
-    if (!enabled || !readClient || !writeClient || !prefix) return;
-
-    const { data, error } = await readClient
-      .from('cms_content')
-      .select('id')
-      .like('id', `${prefix}%`);
-
+    if (!enabled || !writeClient || !prefix) return;
+    const { error } = await writeClient.rpc('cms_delete_content_prefix', {
+      p_admin_key: adminKey(),
+      p_prefix: prefix
+    });
     if (error) throw error;
-    const ids = (data || []).map(r => r.id);
-    if (ids.length) await deleteFields(ids);
   }
 
   async function migrateLocalStore(localData) {
     if (!enabled || !writeClient) return { ok: false, reason: 'not configured' };
 
     const entries = Object.entries(localData || {});
-    const contentRows = [];
-    const listRows = [];
+    let content = 0;
+    let lists = 0;
 
-    entries.forEach(([id, value]) => {
+    for (const [id, value] of entries) {
       if (id.startsWith('__list.')) {
-        listRows.push({ list_key: id, item_ids: value, updated_at: new Date().toISOString() });
+        await upsertList(id, value);
+        lists += 1;
       } else {
-        contentRows.push({ id, value, updated_at: new Date().toISOString() });
+        await upsertField(id, value);
+        content += 1;
       }
-    });
-
-    if (contentRows.length) {
-      const { error } = await writeClient.from('cms_content').upsert(contentRows);
-      if (error) throw error;
     }
 
-    if (listRows.length) {
-      const { error } = await writeClient.from('cms_lists').upsert(listRows);
-      if (error) throw error;
-    }
+    return { ok: true, content, lists };
+  }
 
-    return { ok: true, content: contentRows.length, lists: listRows.length };
+  function ensureInit() {
+    if (enabled) return true;
+    return initClients();
   }
 
   initClients();
 
   window.SupabaseCMS = {
     enabled,
+    ensureInit,
     isConfigured,
     loadAll,
     upsertField,

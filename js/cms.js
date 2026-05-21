@@ -74,20 +74,28 @@
     }
   }
 
-  function mergeRemote(data) {
-    if (!data || !Object.keys(data).length) return;
-    memoryStore = { ...memoryStore, ...data };
-    writeStore(memoryStore);
-    remoteReady = true;
-    usingRemote = true;
+  function mergeRemote(data, markConnected) {
+    if (data && Object.keys(data).length) {
+      memoryStore = { ...memoryStore, ...data };
+      writeStore(memoryStore);
+    }
+    if (markConnected || (data && Object.keys(data).length)) {
+      remoteReady = true;
+      usingRemote = true;
+    }
   }
 
   async function initRemote() {
     const sb = window.SupabaseCMS;
-    if (!sb || !sb.enabled) return;
+    if (!sb || !sb.isConfigured || !sb.isConfigured()) return;
+    if (sb.ensureInit) sb.ensureInit();
+    if (!sb.enabled) {
+      console.warn('Supabase config found but client did not initialize (is @supabase/supabase-js loaded?)');
+      return;
+    }
     try {
       const remote = await sb.loadAll();
-      mergeRemote(remote);
+      mergeRemote(remote, true);
 
       const localOnly = readStore();
       const hasLocal = Object.keys(localOnly).length > 0;
@@ -111,7 +119,9 @@
     writeStore(data);
 
     const sb = window.SupabaseCMS;
-    if (!sb || !sb.enabled) return value;
+    if (!sb || !sb.isConfigured || !sb.isConfigured()) return value;
+    if (sb.ensureInit) sb.ensureInit();
+    if (!sb.enabled) return value;
 
     try {
       if (id.startsWith('__list.')) {
@@ -554,6 +564,13 @@
     `;
   }
 
+  function markDeckActiveCards(deck) {
+    if (!deck || !deck.children.length) return;
+    Array.from(deck.children).forEach((card, i) => {
+      card.dataset.active = i === 0 ? 'true' : 'false';
+    });
+  }
+
   function renderProjectDecks(root, content) {
     syncCaseRegistry(content);
     const caseIds = getItemList('__list.projects.case', ['01', '02', '03', '04', '05']);
@@ -562,11 +579,13 @@
     const heroCaseDeck = root.querySelector('#hero-case-deck');
     if (heroCaseDeck) {
       heroCaseDeck.innerHTML = caseIds.map((id, i) => renderHeroCaseCard(id, i, caseIds.length, content)).join('');
+      markDeckActiveCards(heroCaseDeck);
     }
 
     const heroDesignDeck = root.querySelector('#hero-design-deck');
     if (heroDesignDeck) {
       heroDesignDeck.innerHTML = designIds.map((id, i) => renderHeroDesignCard(id, i, content)).join('');
+      markDeckActiveCards(heroDesignDeck);
     }
 
     const projectStack = root.querySelector('#project-stack');
@@ -812,6 +831,8 @@
       if (val) {
         el.src = val;
         el.removeAttribute('srcset');
+      } else if (key && !el.getAttribute('src')) {
+        el.src = key;
       }
     });
 
@@ -875,6 +896,8 @@
       const enabled = getField('settings.lifeLockEnabled');
       lifeRoot.dataset.lifeLockEnabled = enabled ? 'true' : 'false';
     }
+
+    document.dispatchEvent(new CustomEvent('cms:applied', { detail: { root } }));
   }
 
   function escapeHtml(str) {
@@ -990,12 +1013,9 @@
   };
 
   function boot() {
+    applyContent();
     CMS.ready.then(() => applyContent()).catch(() => applyContent());
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot);
-  } else {
-    boot();
-  }
+  boot();
 })();

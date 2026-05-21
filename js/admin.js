@@ -22,13 +22,22 @@
     return window.CMS ? CMS.getContent() : {};
   }
 
+  function saveErrorMessage(err) {
+    if (!err) return 'Save failed';
+    if (typeof err === 'string') return 'Save failed: ' + err;
+    return 'Save failed: ' + (err.message || String(err));
+  }
+
   function saveField(id, value) {
     if (!window.CMS) return;
     setStatus('Saving…');
     clearTimeout(saveTimer);
     Promise.resolve(CMS.setField(id, value))
       .then(() => setStatus(CMS.isUsingRemote() ? 'Saved to cloud' : 'Saved', true))
-      .catch(() => setStatus('Save failed'));
+      .catch((err) => {
+        console.error('Admin save failed', id, err);
+        setStatus(saveErrorMessage(err));
+      });
   }
 
   function setStatus(msg, saved) {
@@ -921,6 +930,8 @@
       if (CMS.isUsingRemote() && statusEl) {
         statusEl.textContent = 'Cloud connected';
         statusEl.classList.add('is-saved');
+      } else if (window.SupabaseCMS && SupabaseCMS.isConfigured && SupabaseCMS.isConfigured() && statusEl) {
+        statusEl.textContent = 'Cloud error — check .env / Vercel env vars';
       }
       renderPanel('projects');
     });

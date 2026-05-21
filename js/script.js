@@ -8,18 +8,206 @@
    * Study cards. On mobile we want the same content rendered inside
    * the Projects section (the hero-right is hidden there). Instead
    * of duplicating the HTML, we clone `#hero-cards`'s children into
-   * `#projects-mobile` once on load. The carousel wiring below then
-   * picks up both instances and runs them independently.
+   * `#projects-mobile` once CMS content is applied.
    * ------------------------------------------------------- */
-  (function mirrorHeroIntoMobile() {
+  function mirrorHeroIntoMobile() {
     const source = document.getElementById('hero-cards');
     const target = document.getElementById('projects-mobile');
-    if (!source || !target || target.children.length) return;
+    if (!source || !target) return;
 
+    target.replaceChildren();
     Array.from(source.children).forEach(child => {
       target.appendChild(child.cloneNode(true));
     });
-  })();
+  }
+
+  const carouselRenderers = [];
+
+  function initCardCarousels() {
+    document.querySelectorAll('.card-stage').forEach(stage => {
+      if (stage.dataset.carouselReady === 'true') return;
+      stage.dataset.carouselReady = 'true';
+
+      const parent = stage.parentElement;
+      if (!parent) return;
+
+      const tabsContainer = parent.querySelector('.tabs');
+      const controls = parent.querySelector('.carousel-controls');
+      const dotsContainer = controls ? controls.querySelector('.carousel-dots') : null;
+      const arrows = controls ? Array.from(controls.querySelectorAll('.carousel-btn')) : [];
+      const tabs = tabsContainer ? Array.from(tabsContainer.querySelectorAll('.tab')) : [];
+      const views = Array.from(stage.querySelectorAll('.card-view'));
+      if (!views.length) return;
+
+      const state = { active: views[0].dataset.view, indices: {} };
+      views.forEach(v => { state.indices[v.dataset.view] = 0; });
+
+      function deckCards(view) {
+        const deck = view.querySelector('.card-deck');
+        return deck ? Array.from(deck.children) : [];
+      }
+
+      function activeView() {
+        return views.find(v => v.dataset.view === state.active) || views[0];
+      }
+
+      function render() {
+        tabs.forEach(t => {
+          t.classList.toggle('active', t.dataset.target === state.active);
+        });
+        views.forEach(v => {
+          v.classList.toggle('active', v.dataset.view === state.active);
+        });
+
+        const view = activeView();
+        const cards = deckCards(view);
+        if (!cards.length) return;
+
+        const count = cards.length;
+        let idx = state.indices[state.active] || 0;
+        idx = ((idx % count) + count) % count;
+        state.indices[state.active] = idx;
+
+        cards.forEach((card, i) => {
+          card.dataset.active = i === idx ? 'true' : 'false';
+        });
+
+        if (dotsContainer) {
+          dotsContainer.innerHTML = '';
+          for (let i = 0; i < count; i++) {
+            const dot = document.createElement('span');
+            dot.className = 'dot' + (i === idx ? ' active' : '');
+            dot.setAttribute('role', 'button');
+            dot.setAttribute('aria-label', `Go to item ${i + 1}`);
+            dot.addEventListener('click', () => {
+              state.indices[state.active] = i;
+              render();
+            });
+            dotsContainer.appendChild(dot);
+          }
+        }
+
+        arrows.forEach(btn => {
+          btn.style.visibility = count > 1 ? '' : 'hidden';
+          btn.disabled = count <= 1;
+        });
+        if (dotsContainer) {
+          dotsContainer.style.visibility = count > 1 ? '' : 'hidden';
+        }
+      }
+
+      tabs.forEach(t => {
+        t.addEventListener('click', () => {
+          state.active = t.dataset.target;
+          render();
+        });
+      });
+
+      arrows.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const dir = btn.dataset.dir === 'prev' ? -1 : 1;
+          state.indices[state.active] = (state.indices[state.active] || 0) + dir;
+          render();
+        });
+      });
+
+      carouselRenderers.push(render);
+      render();
+    });
+  }
+
+  function refreshCardCarousels() {
+    carouselRenderers.forEach(render => render());
+  }
+
+  let projectStackRender = null;
+
+  function initProjectStack() {
+    const projectStack = document.getElementById('project-stack');
+    const projectControls = document.getElementById('projects-controls');
+    if (!projectStack || !projectControls) return;
+
+    const projectCards = Array.from(projectStack.querySelectorAll('.project-card'));
+    const projectDots = Array.from(projectControls.querySelectorAll('.dot'));
+    const projectArrows = Array.from(projectControls.querySelectorAll('.carousel-btn'));
+    const count = projectCards.length;
+    if (!count) return;
+
+    let projectActive = 0;
+
+    function renderProjects(active) {
+      projectActive = ((active % count) + count) % count;
+      projectCards.forEach((card, i) => {
+        const pos = (i - projectActive + count) % count;
+        card.dataset.pos = String(pos);
+        card.setAttribute('aria-hidden', pos === 0 ? 'false' : 'true');
+      });
+      projectDots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === projectActive);
+      });
+    }
+
+    if (!projectStack.dataset.stackReady) {
+      projectStack.dataset.stackReady = 'true';
+
+      projectArrows.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const dir = btn.dataset.dir === 'prev' ? -1 : 1;
+          renderProjects(projectActive + dir);
+        });
+      });
+
+      projectDots.forEach((dot, i) => {
+        dot.addEventListener('click', () => renderProjects(i));
+      });
+
+      projectCards.forEach((card, i) => {
+        card.addEventListener('click', e => {
+          if (Number(card.dataset.pos) === 0) return;
+          if (e.target.closest('a, button')) return;
+          renderProjects(i);
+        });
+      });
+    }
+
+    projectStackRender = renderProjects;
+    renderProjects(0);
+  }
+
+  function initImageSlots(root) {
+    (root || document).querySelectorAll('.image-slot > img').forEach(img => {
+      if (img.dataset.slotReady === 'true') return;
+      img.dataset.slotReady = 'true';
+
+      const slot = img.parentElement;
+      if (!slot) return;
+
+      const markFilled = () => {
+        if (img.complete && img.naturalWidth > 0) {
+          slot.classList.add('filled');
+        }
+      };
+
+      img.addEventListener('load', markFilled);
+      img.addEventListener('error', () => slot.classList.remove('filled'));
+
+      const observer = new MutationObserver(markFilled);
+      observer.observe(img, { attributes: true, attributeFilter: ['src', 'srcset'] });
+
+      markFilled();
+    });
+  }
+
+  function initHeroProjects() {
+    mirrorHeroIntoMobile();
+    initCardCarousels();
+    refreshCardCarousels();
+    initProjectStack();
+    initImageSlots();
+  }
+
+  document.addEventListener('cms:applied', initHeroProjects);
+  initHeroProjects();
 
   /* ---------------------------------------------------------
    * Mobile navigation drawer
@@ -92,189 +280,6 @@
     if (mql.addEventListener) mql.addEventListener('change', onDesktop);
     else mql.addListener(onDesktop);
   })();
-
-  /* ---------------------------------------------------------
-   * Card-view carousels (Design Projects / Case Studies)
-   *
-   * Each carousel is a self-contained cluster of:
-   *   - a `.tabs` group of tab buttons
-   *   - a `.card-stage` containing one or more `.card-view`s, each
-   *     of which contains a `.card-deck` of cards
-   *   - a `.carousel-controls` row (prev / next + dots, dots are
-   *     regenerated to match the count of cards in the active deck)
-   *
-   * State per carousel:
-   *   - which view is active (e.g. 'design' / 'case')
-   *   - the index of the active card inside *each* view's deck,
-   *     remembered when switching tabs
-   *
-   * Arrows and dots scope to the *current* tab — they never jump
-   * the user from Design Projects to Case Studies (or vice-versa).
-   * ------------------------------------------------------- */
-  document.querySelectorAll('.card-stage').forEach(stage => {
-    const parent = stage.parentElement;
-    if (!parent) return;
-
-    const tabsContainer = parent.querySelector('.tabs');
-    const controls = parent.querySelector('.carousel-controls');
-    const dotsContainer = controls ? controls.querySelector('.carousel-dots') : null;
-    const arrows = controls ? Array.from(controls.querySelectorAll('.carousel-btn')) : [];
-    const tabs = tabsContainer ? Array.from(tabsContainer.querySelectorAll('.tab')) : [];
-    const views = Array.from(stage.querySelectorAll('.card-view'));
-    if (!views.length) return;
-
-    const state = { active: views[0].dataset.view, indices: {} };
-    views.forEach(v => { state.indices[v.dataset.view] = 0; });
-
-    function deckCards(view) {
-      const deck = view.querySelector('.card-deck');
-      return deck ? Array.from(deck.children) : [];
-    }
-
-    function activeView() {
-      return views.find(v => v.dataset.view === state.active) || views[0];
-    }
-
-    function render() {
-      tabs.forEach(t => {
-        t.classList.toggle('active', t.dataset.target === state.active);
-      });
-      views.forEach(v => {
-        v.classList.toggle('active', v.dataset.view === state.active);
-      });
-
-      const view = activeView();
-      const cards = deckCards(view);
-      if (!cards.length) return;
-
-      const count = cards.length;
-      let idx = state.indices[state.active] || 0;
-      idx = ((idx % count) + count) % count;
-      state.indices[state.active] = idx;
-
-      cards.forEach((card, i) => {
-        card.dataset.active = i === idx ? 'true' : 'false';
-      });
-
-      // Rebuild the dots to match the active deck's card count.
-      if (dotsContainer) {
-        dotsContainer.innerHTML = '';
-        for (let i = 0; i < count; i++) {
-          const dot = document.createElement('span');
-          dot.className = 'dot' + (i === idx ? ' active' : '');
-          dot.setAttribute('role', 'button');
-          dot.setAttribute('aria-label', `Go to item ${i + 1}`);
-          dot.addEventListener('click', () => {
-            state.indices[state.active] = i;
-            render();
-          });
-          dotsContainer.appendChild(dot);
-        }
-      }
-
-      // Hide arrows/dots when there's only one card to navigate.
-      arrows.forEach(btn => {
-        btn.style.visibility = count > 1 ? '' : 'hidden';
-        btn.disabled = count <= 1;
-      });
-      if (dotsContainer) {
-        dotsContainer.style.visibility = count > 1 ? '' : 'hidden';
-      }
-    }
-
-    tabs.forEach(t => {
-      t.addEventListener('click', () => {
-        state.active = t.dataset.target;
-        render();
-      });
-    });
-
-    arrows.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const dir = btn.dataset.dir === 'prev' ? -1 : 1;
-        state.indices[state.active] = (state.indices[state.active] || 0) + dir;
-        render();
-      });
-    });
-
-    render();
-  });
-
-  /* ---------------------------------------------------------
-   * Projects carousel (desktop only)
-   * 5 stacked case-study cards. The active card sits in front;
-   * the rest peek out from the right edge. Clicking prev/next or
-   * a dot rotates the stack by updating each card's `data-pos`.
-   * ------------------------------------------------------- */
-  const projectStack = document.getElementById('project-stack');
-  const projectControls = document.getElementById('projects-controls');
-
-  if (projectStack && projectControls) {
-    const projectCards = Array.from(projectStack.querySelectorAll('.project-card'));
-    const projectDots = Array.from(projectControls.querySelectorAll('.dot'));
-    const projectArrows = Array.from(projectControls.querySelectorAll('.carousel-btn'));
-    const count = projectCards.length;
-    let projectActive = 0;
-
-    function renderProjects(active) {
-      projectActive = ((active % count) + count) % count;
-      projectCards.forEach((card, i) => {
-        const pos = (i - projectActive + count) % count;
-        card.dataset.pos = String(pos);
-        card.setAttribute('aria-hidden', pos === 0 ? 'false' : 'true');
-      });
-      projectDots.forEach((dot, i) => {
-        dot.classList.toggle('active', i === projectActive);
-      });
-    }
-
-    projectArrows.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const dir = btn.dataset.dir === 'prev' ? -1 : 1;
-        renderProjects(projectActive + dir);
-      });
-    });
-
-    projectDots.forEach((dot, i) => {
-      dot.addEventListener('click', () => renderProjects(i));
-    });
-
-    projectCards.forEach((card, i) => {
-      card.addEventListener('click', e => {
-        if (Number(card.dataset.pos) === 0) return;
-        if (e.target.closest('a, button')) return;
-        renderProjects(i);
-      });
-    });
-
-    renderProjects(0);
-  }
-
-  /* ---------------------------------------------------------
-   * Image slots
-   * Every <img> the admin will upload sits inside an .image-slot
-   * wrapper that shows a placeholder pattern until a real image
-   * loads. Once loaded, the slot gets `.filled` and the
-   * placeholder hides.
-   * ------------------------------------------------------- */
-  document.querySelectorAll('.image-slot > img').forEach(img => {
-    const slot = img.parentElement;
-    if (!slot) return;
-
-    const markFilled = () => {
-      if (img.complete && img.naturalWidth > 0) {
-        slot.classList.add('filled');
-      }
-    };
-
-    img.addEventListener('load', markFilled);
-    img.addEventListener('error', () => slot.classList.remove('filled'));
-
-    const observer = new MutationObserver(markFilled);
-    observer.observe(img, { attributes: true, attributeFilter: ['src', 'srcset'] });
-
-    markFilled();
-  });
 
   /* ---------------------------------------------------------
    * Life page — tab filters + section password lock

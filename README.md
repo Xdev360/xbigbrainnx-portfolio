@@ -2,48 +2,87 @@
 
 Personal portfolio for **Oladele Ibraheem (xbigbrainnx)** — designer, developer & brand strategist based in Lagos.
 
-A single-page static site, no build step, no framework. Drop it on any static host (GitHub Pages, Vercel, Netlify, Cloudflare Pages, S3, etc.) and it ships.
+Static site with a tiny build step for Supabase env vars. Deploy on Vercel, Netlify, etc.
+
+## Run locally
+
+```bash
+cp .env.example .env   # first time only — then edit .env
+npm install
+npm run build
+python3 -m http.server 8080
+```
+
+Or: `npm run dev` (build + server in one command).
 
 ## Structure
 
 ```
 .
-├── index.html    # markup
-├── styles.css    # all styling (CSS variables, responsive, motion-safe)
-├── script.js     # carousel, tabs, clock, scroll-spy
+├── index.html              # Home
+├── contact.html
+├── case-study.html
+├── life.html
+├── admin.html              # CMS admin portal
+├── css/
+│   ├── styles.css          # Site styling
+│   └── admin.css           # Admin portal styling
+├── js/
+│   ├── script.js
+│   ├── cms.js
+│   ├── admin.js
+│   ├── content-schema.js
+│   ├── supabase-sync.js
+│   └── config/
+│       └── supabase-config.js   # auto-generated — do not edit
+├── .env.example                 # template — copy to .env
+├── .env                         # your keys locally (gitignored)
+├── scripts/
+│   └── generate-config.js       # builds supabase-config.js from env
+├── package.json
+├── vercel.json
+├── supabase/
+│   ├── schema.sql          # Database setup
+│   ├── fix-writes.sql      # One-time save fix (if needed)
+│   └── SETUP.md
 └── README.md
 ```
 
-## Run locally
+## Supabase (optional cloud CMS)
 
-Open `index.html` directly in a browser, or serve the folder with any static server:
+See `supabase/SETUP.md`.
 
-```bash
-# Python
-python3 -m http.server 5173
+**Local:** copy `.env.example` → `.env`, fill in keys, then run `npm run build`.
 
-# Node (no install)
-npx --yes serve .
-```
+**Vercel:** add the same env var names in Project Settings → Environment Variables (see below).
 
-Then visit <http://localhost:5173>.
+## Vercel environment variables
 
-## What works
+In **Vercel → your project → Settings → Environment Variables**, add these for **Production**, **Preview**, and **Development**:
 
-- Hero carousel — tab buttons, arrow keys, prev/next arrows and dots all switch between the two card views (Design Projects / Case Studies).
-- Sticky nav with live local clock and section scroll-spy.
-- Marquee, sticky about photo, services grid, writings grid — all responsive down to mobile.
-- Footer year auto-updates.
-- Respects `prefers-reduced-motion`.
+| Name | Where to get it |
+|------|-----------------|
+| `PUBLIC_SUPABASE_URL` | Supabase → Project Settings → API → **Project URL** |
+| `PUBLIC_SUPABASE_ANON_KEY` | Supabase → Project Settings → API → **anon public** |
+| `SUPABASE_ADMIN_WRITE_KEY` | Same secret you put in `supabase/schema.sql` (e.g. `xbigx244340`) |
+| `PUBLIC_SUPABASE_STORAGE_BUCKET` | `portfolio-media` (unless you renamed the bucket) |
 
-## Things to fill in next
+Deploy settings (auto via `vercel.json`):
 
-- Replace `[ HEADSHOT ]`, `[ Dashboard preview ]`, and the projects-section placeholder with real assets.
-- Add real project entries — the carousel was designed for up to 5 slides per tab; just duplicate the `.card-view` blocks and update the dots count.
-- Wire the Substack / Medium tabs in the Writings section to real feeds.
-- Point the `Start a project` / `See availability` CTAs at the right URLs (mailto is set up by default).
+- **Build command:** `npm run build`
+- **Output directory:** `.` (root)
+
+After adding env vars, redeploy. The build generates `js/config/supabase-config.js` on Vercel — you never commit secrets.
+
+## GitHub Pages (github.io) instead of Vercel
+
+Yes — you can use **https://xdev360.github.io/xbigbrainnx-portfolio/**
+
+GitHub Pages does not read `.env`. Add the **same four variable names** as **Repository Secrets** (Settings → Secrets and variables → Actions), enable Pages source **GitHub Actions**, then push to `main`.
+
+See `docs/GITHUB-PAGES.md` for step-by-step setup.
 
 ## Notes
 
-- Fonts are loaded from Google Fonts: Bricolage Grotesque, DM Sans, Instrument Serif, JetBrains Mono.
-- Color tokens live in `:root` inside `styles.css` — change them in one place to retheme.
+- Fonts: Google Fonts (Bricolage Grotesque, DM Sans, Instrument Serif, JetBrains Mono).
+- Color tokens live in `:root` inside `css/styles.css`.

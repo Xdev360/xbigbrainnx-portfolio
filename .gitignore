@@ -1,2 +1,6 @@
-supabase-config.js
+.env
+.env.local
+.env.*.local
+js/config/supabase-config.js
+node_modules/
 .DS_Store
