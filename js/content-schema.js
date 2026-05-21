@@ -17,6 +17,7 @@
   const cats = (id, label) => ({ id, type: 'categories', label, max: 2 });
   const audio = (id, label) => ({ id, type: 'audio', label, size: 'MP3 · under 15 MB' });
   const toggle = (id, label) => ({ id, type: 'toggle', label });
+  const date = (id, label) => ({ id, type: 'date', label });
   const pass = (id, label) => ({ id, type: 'password', label });
   const color = (id, label) => ({ id, type: 'color', label });
 
@@ -277,7 +278,6 @@
         defaultIds: ['01'],
         makeCard(itemId) {
           const dateKey = itemId === '01' ? 'life.blog.date' : `life.blog.${itemId}.date`;
-          const skippedKey = itemId === '01' ? 'life.blog.dateSkipped' : `life.blog.${itemId}.dateSkipped`;
           const titleKey = itemId === '01' ? 'life.blog.title' : `life.blog.${itemId}.title`;
           const dekKey = itemId === '01' ? 'life.blog.dek' : `life.blog.${itemId}.dek`;
           const bodyKey = itemId === '01' ? 'life.blog.body' : `life.blog.${itemId}.body`;
@@ -289,8 +289,7 @@
             fieldPrefix: `life.blog.${itemId}.`,
             fields: [
               img(`life/blog/${itemId}.jpg`, 'Hero image', '1680 × 720 px (21:9)'),
-              toggle(skippedKey, 'Did not type date manually'),
-              text(dateKey, 'Date (only when not skipped above)', 'January 14, 2026'),
+              date(dateKey, 'Date'),
               text(titleKey, 'Title'),
               textarea(dekKey, 'Subtitle'),
               textarea(bodyKey, 'Body (one paragraph per line)'),

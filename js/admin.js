@@ -219,6 +219,8 @@
       block.appendChild(ta);
     } else if (field.type === 'toggle') {
       block.appendChild(renderToggleInput(field, value, onUpdate));
+    } else if (field.type === 'date') {
+      block.appendChild(renderDateInput(field, value, onUpdate));
     } else if (field.type === 'color') {
       block.appendChild(renderColorInput(field, value, onUpdate));
     } else if (field.type === 'password') {
@@ -310,6 +312,35 @@
     row.appendChild(file);
     wrap.appendChild(row);
     return wrap;
+  }
+
+  function toDateInputValue(val) {
+    if (!val) return '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(String(val))) return String(val);
+    const parsed = new Date(val);
+    if (!Number.isNaN(parsed.getTime())) {
+      const y = parsed.getFullYear();
+      const m = String(parsed.getMonth() + 1).padStart(2, '0');
+      const d = String(parsed.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+    return '';
+  }
+
+  function renderDateInput(field, value, onUpdate) {
+    const row = document.createElement('div');
+    row.className = 'admin-field-row';
+    const input = document.createElement('input');
+    input.type = 'date';
+    input.className = 'admin-input admin-input-date';
+    input.value = toDateInputValue(value);
+    input.addEventListener('change', () => onUpdate(input.value));
+    row.appendChild(input);
+    const hint = document.createElement('span');
+    hint.className = 'admin-field-hint';
+    hint.textContent = 'Click to open the calendar — no typing needed.';
+    row.appendChild(hint);
+    return row;
   }
 
   function renderColorInput(field, value, onUpdate) {
@@ -510,30 +541,11 @@
 
     function appendFields(fields, container) {
       fields.forEach(field => {
-        const block = renderField(field, content[field.id], newVal => {
+        container.appendChild(renderField(field, content[field.id], newVal => {
           saveField(field.id, newVal);
           content[field.id] = newVal;
           refreshCardHeader();
-          updateBlogDateFieldState(container, fields, content);
-        });
-        if ((field.id && field.id.endsWith('.date')) || field.id === 'life.blog.date') {
-          block.dataset.blogDateField = 'true';
-        }
-        container.appendChild(block);
-      });
-      updateBlogDateFieldState(container, fields, content);
-    }
-
-    function updateBlogDateFieldState(container, fields, contentData) {
-      const skippedField = fields.find(f =>
-        f.id === 'life.blog.dateSkipped' || (f.id && f.id.endsWith('.dateSkipped'))
-      );
-      if (!skippedField) return;
-      const skipped = contentData[skippedField.id] === true || contentData[skippedField.id] === 'true';
-      container.querySelectorAll('[data-blog-date-field="true"]').forEach(el => {
-        el.classList.toggle('is-disabled', skipped);
-        const input = el.querySelector('.admin-input');
-        if (input) input.disabled = skipped;
+        }));
       });
     }
 

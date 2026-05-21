@@ -862,21 +862,41 @@
     renderLifeLists(root, content);
   }
 
-  function isBlogDateSkipped(content, cmsId) {
-    if (!cmsId || (!cmsId.endsWith('.date') && cmsId !== 'life.blog.date')) return false;
-    const skippedKey = cmsId === 'life.blog.date'
-      ? 'life.blog.dateSkipped'
-      : cmsId.replace(/\.date$/, '.dateSkipped');
-    const val = content[skippedKey];
-    return val === true || val === 'true';
+  function isBlogDateKey(key) {
+    return key === 'life.blog.date' || /^life\.blog\.\d+\.date$/.test(key);
   }
 
-  function applyBlogDateVisibility(root, content) {
+  function formatBlogDateDisplay(val) {
+    if (!val) return '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(String(val))) {
+      const parts = String(val).split('-').map(Number);
+      const parsed = new Date(parts[0], parts[1] - 1, parts[2]);
+      if (!Number.isNaN(parsed.getTime())) {
+        return parsed.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      }
+    }
+    return String(val);
+  }
+
+  function applyBlogDates(root, content) {
     root.querySelectorAll('.life-blog-date[data-cms-id]').forEach(el => {
-      const skipped = isBlogDateSkipped(content, el.dataset.cmsId);
-      el.hidden = skipped;
-      el.style.display = skipped ? 'none' : '';
-      if (skipped) el.removeAttribute('datetime');
+      const key = el.dataset.cmsId;
+      if (!isBlogDateKey(key)) return;
+      const val = content[key];
+      if (!val) {
+        el.hidden = true;
+        el.style.display = 'none';
+        el.removeAttribute('datetime');
+        return;
+      }
+      el.hidden = false;
+      el.style.display = '';
+      el.textContent = formatBlogDateDisplay(val);
+      if (/^\d{4}-\d{2}-\d{2}$/.test(String(val))) {
+        el.setAttribute('datetime', String(val));
+      } else {
+        el.removeAttribute('datetime');
+      }
     });
   }
 
@@ -954,10 +974,14 @@
         return;
       }
 
+      if (isBlogDateKey(key) && el.classList.contains('life-blog-date')) {
+        return;
+      }
+
       el.textContent = val;
     });
 
-    applyBlogDateVisibility(root, content);
+    applyBlogDates(root, content);
 
     const lifeRoot = root.querySelector('.life');
     if (lifeRoot) {

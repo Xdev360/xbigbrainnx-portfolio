@@ -426,9 +426,8 @@
   margin-top: 16px;
 }
 
-.admin-field-block.is-disabled {
-  opacity: 0.45;
-  pointer-events: none;
+.admin-input-date {
+  max-width: 220px;
 }
 
 .admin-field-label {
