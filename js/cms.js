@@ -583,8 +583,8 @@
     const meta = registry[id] || d;
     const name = fieldValue(content, `projects.design.${id}.name`, meta.name || d.name);
     const about = fieldValue(content, `projects.design.${id}.about`, d.about);
+    const label = fieldValue(content, `projects.design.${id}.label`, d.label || 'DESIGN');
     const imageKey = meta.image || d.image;
-    const image = fieldValue(content, imageKey, imageKey);
 
     return `
       <article class="design-card" data-i="${index}">
@@ -592,7 +592,7 @@
           <img alt="" loading="lazy" data-admin-image="${escapeHtml(imageKey)}">
         </div>
         <div class="design-card-body">
-          <div class="design-card-label">${escapeHtml(d.label)}</div>
+          <div class="design-card-label" data-cms-id="projects.design.${id}.label">${escapeHtml(label)}</div>
           <h3 class="design-card-title"><span data-cms-id="projects.design.${id}.name">${escapeHtml(name)}</span></h3>
           <p class="design-card-desc" data-cms-id="projects.design.${id}.about">${escapeHtml(about)}</p>
           <div class="design-card-tags" data-cms-categories="projects.design.${id}.categories"></div>
@@ -862,6 +862,24 @@
     renderLifeLists(root, content);
   }
 
+  function isBlogDateSkipped(content, cmsId) {
+    if (!cmsId || (!cmsId.endsWith('.date') && cmsId !== 'life.blog.date')) return false;
+    const skippedKey = cmsId === 'life.blog.date'
+      ? 'life.blog.dateSkipped'
+      : cmsId.replace(/\.date$/, '.dateSkipped');
+    const val = content[skippedKey];
+    return val === true || val === 'true';
+  }
+
+  function applyBlogDateVisibility(root, content) {
+    root.querySelectorAll('.life-blog-date[data-cms-id]').forEach(el => {
+      const skipped = isBlogDateSkipped(content, el.dataset.cmsId);
+      el.hidden = skipped;
+      el.style.display = skipped ? 'none' : '';
+      if (skipped) el.removeAttribute('datetime');
+    });
+  }
+
   function applyContent(root) {
     root = root || document;
     const content = getContent();
@@ -938,6 +956,8 @@
 
       el.textContent = val;
     });
+
+    applyBlogDateVisibility(root, content);
 
     const lifeRoot = root.querySelector('.life');
     if (lifeRoot) {

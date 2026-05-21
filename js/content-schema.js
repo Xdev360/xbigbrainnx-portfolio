@@ -59,6 +59,15 @@
     };
   }
 
+  function designLabelDefault(itemId) {
+    const labels = {
+      '01': 'BRAND DESIGN',
+      '02': 'EDITORIAL DESIGN',
+      '03': 'AGENCY IDENTITY'
+    };
+    return labels[itemId] || 'DESIGN';
+  }
+
   function designMeta(itemId) {
     return DESIGN_REGISTRY[itemId] || {
       name: `Design project ${itemId}`,
@@ -75,6 +84,7 @@
       fieldPrefix: `projects.design.${itemId}.`,
       fields: [
         img(meta.image, 'Cover image', '1200 × 900 px (4:3)'),
+        text(`projects.design.${itemId}.label`, 'Card tag (top label)', designLabelDefault(itemId)),
         text(`projects.design.${itemId}.name`, 'Project name'),
         textarea(`projects.design.${itemId}.about`, 'About'),
         cats(`projects.design.${itemId}.categories`, 'Categories (pick up to 2)')
@@ -267,6 +277,7 @@
         defaultIds: ['01'],
         makeCard(itemId) {
           const dateKey = itemId === '01' ? 'life.blog.date' : `life.blog.${itemId}.date`;
+          const skippedKey = itemId === '01' ? 'life.blog.dateSkipped' : `life.blog.${itemId}.dateSkipped`;
           const titleKey = itemId === '01' ? 'life.blog.title' : `life.blog.${itemId}.title`;
           const dekKey = itemId === '01' ? 'life.blog.dek' : `life.blog.${itemId}.dek`;
           const bodyKey = itemId === '01' ? 'life.blog.body' : `life.blog.${itemId}.body`;
@@ -278,7 +289,8 @@
             fieldPrefix: `life.blog.${itemId}.`,
             fields: [
               img(`life/blog/${itemId}.jpg`, 'Hero image', '1680 × 720 px (21:9)'),
-              text(dateKey, 'Date'),
+              toggle(skippedKey, 'Did not type date manually'),
+              text(dateKey, 'Date (only when not skipped above)', 'January 14, 2026'),
               text(titleKey, 'Title'),
               textarea(dekKey, 'Subtitle'),
               textarea(bodyKey, 'Body (one paragraph per line)'),

@@ -510,11 +510,30 @@
 
     function appendFields(fields, container) {
       fields.forEach(field => {
-        container.appendChild(renderField(field, content[field.id], newVal => {
+        const block = renderField(field, content[field.id], newVal => {
           saveField(field.id, newVal);
           content[field.id] = newVal;
           refreshCardHeader();
-        }));
+          updateBlogDateFieldState(container, fields, content);
+        });
+        if ((field.id && field.id.endsWith('.date')) || field.id === 'life.blog.date') {
+          block.dataset.blogDateField = 'true';
+        }
+        container.appendChild(block);
+      });
+      updateBlogDateFieldState(container, fields, content);
+    }
+
+    function updateBlogDateFieldState(container, fields, contentData) {
+      const skippedField = fields.find(f =>
+        f.id === 'life.blog.dateSkipped' || (f.id && f.id.endsWith('.dateSkipped'))
+      );
+      if (!skippedField) return;
+      const skipped = contentData[skippedField.id] === true || contentData[skippedField.id] === 'true';
+      container.querySelectorAll('[data-blog-date-field="true"]').forEach(el => {
+        el.classList.toggle('is-disabled', skipped);
+        const input = el.querySelector('.admin-input');
+        if (input) input.disabled = skipped;
       });
     }
 
