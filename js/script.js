@@ -134,6 +134,7 @@
   }
 
   let projectStackRender = null;
+  let projectStackBound = false;
 
   function initProjectStack() {
     const projectStack = document.getElementById('project-stack');
@@ -141,50 +142,64 @@
     if (!projectStack || !projectControls) return;
 
     const projectCards = Array.from(projectStack.querySelectorAll('.project-card'));
-    const projectDots = Array.from(projectControls.querySelectorAll('.dot'));
-    const projectArrows = Array.from(projectControls.querySelectorAll('.carousel-btn'));
     const count = projectCards.length;
     if (!count) return;
 
-    let projectActive = 0;
-
     function renderProjects(active) {
-      projectActive = ((active % count) + count) % count;
-      projectCards.forEach((card, i) => {
-        const pos = (i - projectActive + count) % count;
+      const cards = Array.from(projectStack.querySelectorAll('.project-card'));
+      const total = cards.length;
+      if (!total) return;
+
+      const idx = ((active % total) + total) % total;
+      projectStack.dataset.active = String(idx);
+
+      cards.forEach((card, i) => {
+        const pos = (i - idx + total) % total;
         card.dataset.pos = String(pos);
         card.setAttribute('aria-hidden', pos === 0 ? 'false' : 'true');
       });
-      projectDots.forEach((dot, i) => {
-        dot.classList.toggle('active', i === projectActive);
-      });
+
+      const dotsContainer = projectControls.querySelector('.carousel-dots');
+      if (dotsContainer) {
+        dotsContainer.innerHTML = '';
+        for (let i = 0; i < total; i++) {
+          const dot = document.createElement('span');
+          dot.className = 'dot' + (i === idx ? ' active' : '');
+          dot.setAttribute('role', 'button');
+          dot.setAttribute('tabindex', '0');
+          dot.setAttribute('aria-label', `Go to project ${i + 1}`);
+          dot.dataset.index = String(i);
+          dotsContainer.appendChild(dot);
+        }
+      }
     }
 
-    if (!projectStack.dataset.stackReady) {
-      projectStack.dataset.stackReady = 'true';
+    if (!projectStackBound) {
+      projectStackBound = true;
 
-      projectArrows.forEach(btn => {
-        btn.addEventListener('click', () => {
+      projectControls.addEventListener('click', e => {
+        const btn = e.target.closest('.carousel-btn');
+        if (btn) {
           const dir = btn.dataset.dir === 'prev' ? -1 : 1;
-          renderProjects(projectActive + dir);
-        });
+          const current = Number(projectStack.dataset.active || 0);
+          renderProjects(current + dir);
+          return;
+        }
+        const dot = e.target.closest('.carousel-dots .dot');
+        if (dot) renderProjects(Number(dot.dataset.index));
       });
 
-      projectDots.forEach((dot, i) => {
-        dot.addEventListener('click', () => renderProjects(i));
-      });
-
-      projectCards.forEach((card, i) => {
-        card.addEventListener('click', e => {
-          if (Number(card.dataset.pos) === 0) return;
-          if (e.target.closest('a, button')) return;
-          renderProjects(i);
-        });
+      projectStack.addEventListener('click', e => {
+        const card = e.target.closest('.project-card');
+        if (!card || Number(card.dataset.pos) === 0) return;
+        if (e.target.closest('a, button')) return;
+        renderProjects(Number(card.dataset.index));
       });
     }
 
     projectStackRender = renderProjects;
-    renderProjects(0);
+    const preserved = Number(projectStack.dataset.active || 0);
+    renderProjects(preserved);
   }
 
   function initImageSlots(root) {

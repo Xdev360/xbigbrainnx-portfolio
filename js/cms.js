@@ -598,7 +598,9 @@
           <div class="design-card-tags" data-cms-categories="projects.design.${id}.categories"></div>
           <div class="design-card-footer">
             <div class="author">
-              <div class="author-avatar"></div>
+              <div class="author-avatar profile-avatar">
+                <img alt="" loading="lazy" data-admin-image="about/headshot.jpg">
+              </div>
               <div class="author-info">
                 <span class="author-name">Prof ✦</span>
                 <span class="author-meta">SOLO PROJECT</span>

@@ -107,13 +107,14 @@ body {
   border-radius: 4px;
   background: linear-gradient(135deg, #333, #666);
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'JetBrains Mono', monospace;
-  color: white;
-  font-size: 11px;
-  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .nav-name {
@@ -295,6 +296,7 @@ body {
   height: 56px;
   border-radius: 8px;
   background: linear-gradient(135deg, #1a1a1a, #333);
+  overflow: hidden;
 }
 
 .meet-card h3 {
@@ -495,6 +497,7 @@ body {
   border-radius: 6px;
   background: linear-gradient(135deg, #1a1a1a, #444);
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .author-info {
@@ -814,7 +817,14 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 40px;
+  gap: 32px;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.projects-controls {
+  margin-top: 4px;
 }
 
 .project-stack {
@@ -822,7 +832,7 @@ body {
   width: 100%;
   /* Reserve runway height for the active card. JS doesn't measure;
    * keep this aligned with .project-card content. */
-  min-height: 520px;
+  min-height: 400px;
 }
 
 .project-card {
@@ -830,10 +840,10 @@ body {
   --peek-y: 0px;
   --peek-scale: 1;
   position: absolute;
-  inset: 0 100px 0 0;            /* leave 100px on the right for peek cards */
+  inset: 0 72px 0 0;            /* leave room on the right for peek cards */
   background: white;
-  border-radius: 16px;
-  box-shadow: 0 12px 36px rgba(0,0,0,0.07);
+  border-radius: 14px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.07);
   overflow: hidden;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -847,10 +857,10 @@ body {
 }
 
 .project-card[data-pos="0"] { z-index: 5; --peek-x: 0px;  --peek-y: 0px;  --peek-scale: 1;    }
-.project-card[data-pos="1"] { z-index: 4; --peek-x: 28px; --peek-y: 16px; --peek-scale: 0.97; box-shadow: 0 10px 28px rgba(0,0,0,0.06); }
-.project-card[data-pos="2"] { z-index: 3; --peek-x: 52px; --peek-y: 32px; --peek-scale: 0.94; box-shadow: 0 8px 22px rgba(0,0,0,0.05);  }
-.project-card[data-pos="3"] { z-index: 2; --peek-x: 74px; --peek-y: 48px; --peek-scale: 0.91; box-shadow: 0 6px 18px rgba(0,0,0,0.045); }
-.project-card[data-pos="4"] { z-index: 1; --peek-x: 94px; --peek-y: 64px; --peek-scale: 0.88; box-shadow: 0 4px 14px rgba(0,0,0,0.04);  }
+.project-card[data-pos="1"] { z-index: 4; --peek-x: 22px; --peek-y: 12px; --peek-scale: 0.97; box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+.project-card[data-pos="2"] { z-index: 3; --peek-x: 42px; --peek-y: 24px; --peek-scale: 0.94; box-shadow: 0 6px 20px rgba(0,0,0,0.05);  }
+.project-card[data-pos="3"] { z-index: 2; --peek-x: 60px; --peek-y: 36px; --peek-scale: 0.91; box-shadow: 0 5px 16px rgba(0,0,0,0.045); }
+.project-card[data-pos="4"] { z-index: 1; --peek-x: 76px; --peek-y: 48px; --peek-scale: 0.88; box-shadow: 0 4px 12px rgba(0,0,0,0.04);  }
 
 /* Hide content of non-active cards so only the active card is readable;
  * the peek cards still show their corner badge for context. */
@@ -867,34 +877,34 @@ body {
   background: var(--red);
   color: white;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  padding: 10px 16px;
-  border-bottom-left-radius: 12px;
+  padding: 8px 14px;
+  border-bottom-left-radius: 10px;
   z-index: 2;
 }
 
 .project-text {
-  padding: 36px 32px;
+  padding: 28px 24px;
   display: flex;
   flex-direction: column;
 }
 
 .project-count {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   color: var(--muted);
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
 .project-title {
   font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: 38px;
+  font-size: 30px;
   line-height: 1.05;
   font-weight: 600;
   letter-spacing: -0.02em;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .project-title em {
@@ -910,23 +920,23 @@ body {
   font-size: 10px;
   letter-spacing: 0.16em;
   color: var(--black);
-  margin-bottom: 22px;
+  margin-bottom: 16px;
 }
 
 .project-desc {
   font-family: 'DM Sans', sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.55;
   color: var(--black);
-  margin-bottom: 28px;
-  max-width: 380px;
+  margin-bottom: 20px;
+  max-width: 340px;
 }
 
 .project-meta {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  margin-bottom: 36px;
+  gap: 14px;
+  margin-bottom: 24px;
 }
 
 .project-meta-row {
@@ -953,10 +963,10 @@ body {
   margin-top: auto;
   background: var(--black);
   color: white;
-  padding: 14px 22px;
+  padding: 12px 20px;
   border-radius: 100px;
   font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   text-decoration: none;
   display: inline-flex;
@@ -1365,6 +1375,7 @@ body {
   border-radius: 50%;
   background: linear-gradient(135deg, #1a1a1a, #444);
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .essay-author-info {

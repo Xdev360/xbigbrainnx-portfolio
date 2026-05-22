@@ -15,7 +15,9 @@
   <!-- NAV -->
   <nav class="nav">
     <a href="index.html" class="nav-left" aria-label="Home">
-      <div class="nav-avatar">OI</div>
+      <div class="nav-avatar profile-avatar">
+        <img alt="" loading="lazy" data-admin-image="about/headshot.jpg">
+      </div>
       <span class="nav-name">Oladele Ibraheem</span>
     </a>
 
@@ -63,7 +65,9 @@
       </div>
 
       <div class="meet-card">
-        <div class="meet-avatar"></div>
+        <div class="meet-avatar profile-avatar">
+          <img alt="Oladele Ibraheem" loading="lazy" data-admin-image="about/headshot.jpg">
+        </div>
         <h3>Nice to meet cha'</h3>
         <p>I am your resident <span class="red">jack-of-all-trades</span>: product designer, front-end engineer, illustrator and design systems fanatic. I like building cool things and solving hard problems.</p>
       </div>
@@ -121,6 +125,11 @@
     <!-- DESKTOP: wide 5-card stacked carousel -->
     <div class="projects-carousel">
       <div class="project-stack" id="project-stack"></div>
+      <div class="carousel-controls projects-controls" id="projects-controls">
+        <button class="carousel-btn" type="button" data-dir="prev" aria-label="Previous project">←</button>
+        <div class="carousel-dots"></div>
+        <button class="carousel-btn" type="button" data-dir="next" aria-label="Next project">→</button>
+      </div>
     </div>
   </section>
 
