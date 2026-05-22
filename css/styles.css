@@ -1917,12 +1917,8 @@ body {
 /* ---- design system: single uploaded image, full-bleed.
  *
  * The image breaks OUT of the `.case-study` 1180px container so it
- * runs edge-to-edge across the viewport, matching the reference
- * where the navy backdrop is baked into the upload and stretches
- * across the whole window. We use the standard left/margin-left
- * 50% / 50vw trick so the element doesn't need a different parent.
- * Border and rounded corners are dropped — the upload itself owns
- * its visual boundary. */
+ * runs edge-to-edge across the viewport. Height follows the upload
+ * so the full composition is visible — no fixed crop box. */
 .case-system-image {
   position: relative;
   left: 50%;
@@ -1930,10 +1926,20 @@ body {
   margin-right: -50vw;
   width: 100vw;
   max-width: 100vw;
-  aspect-ratio: 16 / 11;
+  min-height: 240px;
   border-radius: 0;
   border: 0;
   background: var(--cream-soft);
+}
+.case-system-image > img {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: center top;
+}
+.case-system-image.filled {
+  min-height: 0;
 }
 /* The image-slot placeholder text uses 100% width by default,
  * but we want it to read against the full-bleed background. */
@@ -3617,9 +3623,7 @@ body {
   .case-callout p { font-size: 13.5px; }
 
   /* Design System image stays full-bleed on mobile too (no border /
-   * radius), and shifts to a taller aspect since the composition
-   * is denser at narrow widths. */
-  .case-system-image { aspect-ratio: 4 / 3; }
+   * radius); height follows the upload. */
   .case-system-image.image-slot::after { padding: 18px; font-size: 9px; }
 
   /* Key Screens cards on mobile — natural content height (no
