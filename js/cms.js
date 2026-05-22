@@ -326,11 +326,27 @@
   }
 
   function projectCoverPath(id) {
-    const meta = (window.CMS_CASES || {})[id];
-    if (meta && meta.study) {
-      return `projects/${meta.study.replace('cases/', '')}.jpg`;
+    return caseCoverPath(id);
+  }
+
+  function resolveAdminImageValue(content, key, options) {
+    const opts = options || {};
+    if (!key) return '';
+
+    const direct = content[key];
+    if (direct !== undefined && direct !== null && direct !== '') {
+      return direct;
     }
-    return `projects/study-${id}.jpg`;
+
+    if (opts.slug && /\/hero\.(png|jpg|jpeg|webp)$/i.test(key)) {
+      const cover = caseCoverPath(opts.slug);
+      const coverVal = content[cover];
+      if (coverVal !== undefined && coverVal !== null && coverVal !== '') {
+        return coverVal;
+      }
+    }
+
+    return '';
   }
 
   const CASE_CARD_DEFAULTS = {
@@ -913,12 +929,18 @@
     renderDynamicLists(root, content);
     applyCaseStudyLinks(root, content);
 
+    const caseSlug = root.querySelector('.case-study') ? getCaseSlug() : null;
+
     root.querySelectorAll('[data-admin-image]').forEach(el => {
       const key = el.dataset.adminImage;
-      const val = content[key];
+      const val = resolveAdminImageValue(content, key, { slug: caseSlug });
       if (val) {
         el.src = val;
         el.removeAttribute('srcset');
+        const slot = el.parentElement;
+        if (slot && slot.classList.contains('image-slot')) {
+          slot.classList.add('filled');
+        }
       } else if (key && !el.getAttribute('src')) {
         el.src = key;
       }
