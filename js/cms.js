@@ -373,27 +373,21 @@
     const opts = options || {};
     if (!key) return '';
 
-    const direct = content[key];
-    if (direct !== undefined && direct !== null && direct !== '') {
-      return direct;
+    if (window.LocalImages) {
+      return window.LocalImages.resolve(key);
     }
 
     if (opts.fallbacks) {
       for (let i = 0; i < opts.fallbacks.length; i++) {
         const fb = opts.fallbacks[i];
-        const fbVal = content[fb];
-        if (fbVal !== undefined && fbVal !== null && fbVal !== '') {
-          return fbVal;
+        if (window.LocalImages) {
+          return window.LocalImages.resolve(fb);
         }
       }
     }
 
-    if (opts.slug && /\/hero\.(png|jpg|jpeg|webp)$/i.test(key)) {
-      const cover = caseCoverPath(opts.slug);
-      const coverVal = content[cover];
-      if (coverVal !== undefined && coverVal !== null && coverVal !== '') {
-        return coverVal;
-      }
+    if (opts.slug && /\/hero\.(png|jpg|jpeg|webp)$/i.test(key) && window.LocalImages) {
+      return window.LocalImages.resolve(caseCoverPath(opts.slug));
     }
 
     return '';
@@ -412,7 +406,13 @@
   }
 
   function isRealImageUrl(val) {
-    return typeof val === 'string' && (val.startsWith('http') || val.startsWith('data:'));
+    if (typeof val !== 'string' || !val) return false;
+    return (
+      val.startsWith('http') ||
+      val.startsWith('data:') ||
+      val.startsWith('images/') ||
+      (window.SITE_BASE && val.startsWith(window.SITE_BASE))
+    );
   }
 
   function imageSrcAttr(content, key, options) {
@@ -585,7 +585,7 @@
     const about = fieldValue(content, `life.writing.${id}.about`, fallback.about);
     const url = fieldValue(content, `life.writing.${id}.url`, fallback.url);
     const imageKey = `life/writing/${id}.jpg`;
-    const imageVal = fieldValue(content, imageKey, '');
+    const imageSrc = imageSrcAttr(content, imageKey);
     const linkBlock = opts.includeLink === false ? '' : `
       <a href="${escapeHtml(url)}" class="life-substack-link" data-cms-id="life.writing.${id}.url" target="_blank" rel="noopener">
         <span>Read on Substack</span>
@@ -596,7 +596,7 @@
     return `
       <article class="life-substack-card">
         <div class="life-substack-banner image-slot life-media" data-label="SUBSTACK BANNER ${id}">
-          <img alt="" loading="lazy" data-admin-image="${imageKey}"${imageVal ? ` src="${escapeHtml(imageVal)}"` : ''}>
+          <img alt="" loading="lazy" data-admin-image="${imageKey}"${imageSrc}>
         </div>
         <div class="life-substack-body">
           <h3 class="life-substack-title" data-cms-id="life.writing.${id}.title">${escapeHtml(title)}</h3>
@@ -776,27 +776,27 @@
     const meta = getCaseMeta(slug);
     if (!meta) return;
 
-    const screenIds = getItemList(caseScreenListKey(slug), ['01', '02', '03', '04', '05', '06']);
+    const screenIds = getItemList(caseScreenListKey(slug), ['01', '02', '03', '04', '05']);
     const renderKey = `${slug}:${screenIds.join(',')}`;
     if (stack.dataset.renderKey === renderKey) return;
 
     stack.dataset.renderKey = renderKey;
     const studyFolder = meta.study;
-    const total = screenIds.length;
-
-    stack.innerHTML = screenIds.map((screenId, index) => {
+    const rendered = screenIds.map((screenId, index) => {
       const num = String(index + 1).padStart(2, '0');
-      const totalStr = String(total).padStart(2, '0');
       const imageKey = `${studyFolder}/screen-${screenId}.png`;
       const titleKey = `projects.case.${slug}.study.screen.${screenId}.title`;
       const descKey = `projects.case.${slug}.study.screen.${screenId}.desc`;
-      const title = fieldValue(content, titleKey, `Screen ${num}`);
+      const title = fieldValue(content, titleKey, '');
       const desc = fieldValue(content, descKey, '');
+      if (!title) return '';
+
+      const totalStr = String(screenIds.length).padStart(2, '0');
       const screenSrc = imageSrcAttr(content, imageKey, { slug });
 
       return `
         <article class="case-screen-card">
-          <div class="case-screen-preview image-slot is-desktop" data-label="SCREEN ${num}">
+          <div class="case-screen-preview image-slot is-desktop" data-label="">
             <img alt="" loading="eager" decoding="async" data-admin-image="${escapeHtml(imageKey)}"${screenSrc}>
           </div>
           <div class="case-screen-meta">
@@ -806,7 +806,9 @@
           </div>
         </article>
       `;
-    }).join('');
+    }).filter(Boolean);
+
+    stack.innerHTML = rendered.join('');
   }
 
   function renderFoodItems(ids, content) {

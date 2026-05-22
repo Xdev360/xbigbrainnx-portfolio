@@ -78,16 +78,22 @@
   }
 
   function collectFieldIds(cardDef) {
-    const ids = (cardDef.fields || []).map(f => f.id);
+    const ids = (cardDef.fields || [])
+      .filter(f => f.type !== 'localImage')
+      .map(f => f.id);
     if (cardDef.nested) {
       if (cardDef.nested.fields) {
-        cardDef.nested.fields.forEach(f => ids.push(f.id));
+        cardDef.nested.fields
+          .filter(f => f.type !== 'localImage')
+          .forEach(f => ids.push(f.id));
       }
       if (cardDef.nested.screens && window.CMS) {
         const screenDef = cardDef.nested.screens;
         const screenIds = CMS.getItemList(screenDef.listKey, screenDef.defaultIds || []);
         screenIds.forEach(screenId => {
-          screenDef.makeFields(screenId).forEach(f => ids.push(f.id));
+          screenDef.makeFields(screenId)
+            .filter(f => f.type !== 'localImage')
+            .forEach(f => ids.push(f.id));
         });
       }
     }
@@ -237,8 +243,10 @@
       block.appendChild(hint);
     }
 
-    if (field.type === 'image') {
-      block.appendChild(renderImageInput(field, value, onUpdate));
+    if (field.type === 'localImage') {
+      block.appendChild(renderLocalImageHint(field));
+    } else if (field.type === 'image') {
+      block.appendChild(renderLocalImageHint(field));
     } else if (field.type === 'audio') {
       block.appendChild(renderAudioInput(field, value, onUpdate));
     } else if (field.type === 'categories') {
@@ -277,6 +285,45 @@
     }
 
     return block;
+  }
+
+  function renderLocalImageHint(field) {
+    const wrap = document.createElement('div');
+    wrap.className = 'admin-local-image';
+
+    const path = window.LocalImages
+      ? window.LocalImages.repoPath(field.id)
+      : 'images/' + field.id;
+
+    const pathEl = document.createElement('code');
+    pathEl.className = 'admin-local-image-path';
+    pathEl.textContent = path;
+    wrap.appendChild(pathEl);
+
+    const note = document.createElement('p');
+    note.className = 'admin-local-image-note';
+    note.textContent = 'Drop this file in your repo, commit, and push. Images are not uploaded via admin.';
+    wrap.appendChild(note);
+
+    if (window.LocalImages) {
+      const preview = document.createElement('div');
+      preview.className = 'admin-field-preview';
+      const img = document.createElement('img');
+      img.alt = field.label;
+      img.src = window.LocalImages.resolve(field.id);
+      img.addEventListener('error', () => {
+        preview.classList.add('is-missing');
+        img.remove();
+        const missing = document.createElement('span');
+        missing.className = 'admin-local-image-missing';
+        missing.textContent = 'File not found yet — add it locally';
+        preview.appendChild(missing);
+      });
+      preview.appendChild(img);
+      wrap.appendChild(preview);
+    }
+
+    return wrap;
   }
 
   function renderImageInput(field, value, onUpdate) {
@@ -640,7 +687,9 @@
     card.className = 'admin-edit-card';
     card.dataset.cardId = cardDef.id;
 
-    const previewVal = cardDef.previewImage ? content[cardDef.previewImage] : '';
+    const previewVal = cardDef.previewImage && window.LocalImages
+      ? window.LocalImages.resolve(cardDef.previewImage)
+      : '';
     const titleField = cardDef.fields.find(f => f.id.includes('.name') || f.id.includes('.title'));
     const nameVal = titleField ? (content[titleField.id] || cardDef.title) : cardDef.title;
 
@@ -684,9 +733,9 @@
     function refreshCardHeader() {
       const c = getContent();
       if (titleField) titleEl.textContent = c[titleField.id] || cardDef.title;
-      if (cardDef.previewImage) {
+      if (cardDef.previewImage && window.LocalImages) {
         const imgEl = thumb.querySelector('img');
-        if (imgEl && c[cardDef.previewImage]) imgEl.src = c[cardDef.previewImage];
+        if (imgEl) imgEl.src = window.LocalImages.resolve(cardDef.previewImage);
       }
     }
 
@@ -778,7 +827,7 @@
       cards: section.items.map(item => ({
         id: item.id,
         title: item.title,
-        previewImage: item.fields.find(f => f.type === 'image')?.id,
+        previewImage: item.fields.find(f => f.type === 'localImage' || f.type === 'image')?.id,
         fields: item.fields
       }))
     };

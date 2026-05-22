@@ -11,7 +11,7 @@
     'Retail', 'Brand', 'Agency', 'Editorial', 'Creator Tools'
   ];
 
-  const img = (id, label, size) => ({ id, type: 'image', label, size });
+  const img = (id, label, size) => ({ id, type: 'localImage', label, size });
   const text = (id, label, placeholder) => ({ id, type: 'text', label, placeholder });
   const textarea = (id, label) => ({ id, type: 'textarea', label });
   const cats = (id, label) => ({ id, type: 'categories', label, max: 2 });
@@ -130,7 +130,7 @@
         fields: studyBaseFields(itemId, meta.study),
         screens: {
           listKey: `__list.projects.case.${itemId}.screens`,
-          defaultIds: ['01', '02', '03', '04', '05', '06'],
+          defaultIds: ['01', '02', '03', '04', '05'],
           label: 'Key screens',
           makeFields: screenId => makeScreenFields(itemId, meta.study, screenId)
         }

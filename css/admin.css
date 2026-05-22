@@ -511,6 +511,41 @@
   margin-bottom: 10px;
 }
 
+.admin-local-image-path {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 10px 12px;
+  background: var(--cream-dark);
+  border: 1px solid var(--line);
+  margin-bottom: 8px;
+  word-break: break-all;
+}
+
+.admin-local-image-note {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+
+.admin-field-preview.is-missing {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cream-dark);
+  border: 1px dashed var(--line);
+}
+
+.admin-local-image-missing {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
 .admin-cat-grid {
   display: flex;
   flex-wrap: wrap;
