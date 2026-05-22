@@ -94,8 +94,9 @@
       return;
     }
     try {
-      const remote = await sb.loadAll();
+      const remote = sb.prefetch ? await sb.prefetch() : await sb.loadAll();
       mergeRemote(remote, true);
+      applyContent();
 
       const localOnly = readStore();
       const listSyncTasks = [];
@@ -113,18 +114,29 @@
       });
 
       if (listSyncTasks.length) {
-        await Promise.all(listSyncTasks);
-        mergeRemote(await sb.loadAll(), true);
+        Promise.all(listSyncTasks)
+          .then(() => sb.loadAll())
+          .then(fresh => {
+            mergeRemote(fresh, true);
+            applyContent();
+          })
+          .catch(err => console.warn('Background list sync failed', err));
       }
 
       const hasLocal = Object.keys(localOnly).length > 0;
       const hasRemote = Object.keys(remote).length > 0;
       if (hasLocal && !hasRemote && sb.migrateLocalStore) {
-        await sb.migrateLocalStore(localOnly);
-        mergeRemote(await sb.loadAll());
+        sb.migrateLocalStore(localOnly)
+          .then(() => sb.loadAll())
+          .then(fresh => {
+            mergeRemote(fresh);
+            applyContent();
+          })
+          .catch(err => console.warn('Local migrate failed', err));
       }
     } catch (err) {
       console.error('Supabase load failed — using local cache', err);
+      applyContent();
     }
   }
 
@@ -399,17 +411,38 @@
     return [];
   }
 
-  function preloadImageUrl(url) {
-    if (!url || typeof url !== 'string') return;
-    if (!/^https?:\/\//.test(url)) return;
-    const existing = document.querySelector(`link[data-cms-preload="${url}"]`);
-    if (existing) return;
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'image';
-    link.href = url;
-    link.dataset.cmsPreload = url;
-    document.head.appendChild(link);
+  function isRealImageUrl(val) {
+    return typeof val === 'string' && (val.startsWith('http') || val.startsWith('data:'));
+  }
+
+  function imageSrcAttr(content, key, options) {
+    const val = resolveAdminImageValue(content, key, options || {});
+    if (!isRealImageUrl(val)) return '';
+    return ` src="${escapeHtml(val)}"`;
+  }
+
+  function markImageSlotFilled(img) {
+    if (!img) return;
+    const slot = img.parentElement;
+    if (slot && slot.classList.contains('image-slot')) {
+      slot.classList.add('filled');
+    }
+  }
+
+  function applyImageToElement(el, content, caseSlug) {
+    const key = el.dataset.adminImage;
+    if (!key) return;
+    const fallbacks = imageFallbacksForKey(key);
+    const val = resolveAdminImageValue(content, key, { slug: caseSlug, fallbacks });
+    if (isRealImageUrl(val)) {
+      if (el.getAttribute('src') !== val) {
+        el.src = val;
+      }
+      el.removeAttribute('srcset');
+      if (el.complete && el.naturalWidth > 0) {
+        markImageSlotFilled(el);
+      }
+    }
   }
 
   const CASE_CARD_DEFAULTS = {
@@ -596,6 +629,7 @@
     const tags = formatCategoryText(content, `projects.case.${id}.categories`, d.tags);
     const link = getCaseStudyLink(id, content);
     const cover = heroCaseCardCoverPath(id);
+    const coverSrc = imageSrcAttr(content, cover, { fallbacks: imageFallbacksForKey(cover) });
     const num = String(index + 1).padStart(2, '0');
     const totalStr = String(total).padStart(2, '0');
 
@@ -603,7 +637,7 @@
       <article class="case-card" data-i="${index}">
         <div class="case-corner">${num}</div>
         <div class="case-preview image-slot" data-label="DASHBOARD PREVIEW">
-          <img alt="" loading="eager" decoding="async" fetchpriority="high" data-admin-image="${cover}">
+          <img alt="" loading="eager" decoding="async" fetchpriority="high" data-admin-image="${cover}"${coverSrc}>
         </div>
         <div class="case-text">
           <div class="case-count">${num} / ${totalStr}</div>
@@ -627,6 +661,7 @@
     const tags = formatCategoryText(content, `projects.case.${id}.categories`, d.tags);
     const link = getCaseStudyLink(id, content);
     const cover = projectCoverPath(id);
+    const coverSrc = imageSrcAttr(content, cover, { fallbacks: imageFallbacksForKey(cover) });
     const num = String(index + 1).padStart(2, '0');
     const totalStr = String(total).padStart(2, '0');
 
@@ -645,7 +680,7 @@
           <a href="${escapeHtml(link)}" class="project-cta" data-admin-link="projects.case.${id}.link"><span>Read case study</span><span>↗</span></a>
         </div>
         <div class="project-preview image-slot" data-label="PROJECT PREVIEW">
-          <img alt="" loading="eager" decoding="async" data-admin-image="${cover}">
+          <img alt="" loading="eager" decoding="async" data-admin-image="${cover}"${coverSrc}>
         </div>
       </article>
     `;
@@ -664,11 +699,12 @@
     const about = fieldValue(content, `projects.design.${id}.about`, d.about);
     const label = fieldValue(content, `projects.design.${id}.label`, d.label || 'DESIGN');
     const imageKey = heroDesignCardCoverPath(id);
+    const imageSrc = imageSrcAttr(content, imageKey, { fallbacks: imageFallbacksForKey(imageKey) });
 
     return `
       <article class="design-card" data-i="${index}">
         <div class="design-card-hero image-slot" data-label="PROJECT COVER">
-          <img alt="" loading="eager" decoding="async" fetchpriority="high" data-admin-image="${escapeHtml(imageKey)}">
+          <img alt="" loading="eager" decoding="async" fetchpriority="high" data-admin-image="${escapeHtml(imageKey)}"${imageSrc}>
         </div>
         <div class="design-card-body">
           <div class="design-card-label" data-cms-id="projects.design.${id}.label">${escapeHtml(label)}</div>
@@ -756,11 +792,12 @@
       const descKey = `projects.case.${slug}.study.screen.${screenId}.desc`;
       const title = fieldValue(content, titleKey, `Screen ${num}`);
       const desc = fieldValue(content, descKey, '');
+      const screenSrc = imageSrcAttr(content, imageKey, { slug });
 
       return `
         <article class="case-screen-card">
           <div class="case-screen-preview image-slot is-desktop" data-label="SCREEN ${num}">
-            <img alt="" loading="eager" decoding="async" data-admin-image="${escapeHtml(imageKey)}">
+            <img alt="" loading="eager" decoding="async" data-admin-image="${escapeHtml(imageKey)}"${screenSrc}>
           </div>
           <div class="case-screen-meta">
             <span class="case-screen-step">${num} / ${totalStr}</span>
@@ -1047,20 +1084,7 @@
     }
 
     root.querySelectorAll('[data-admin-image]').forEach(el => {
-      const key = el.dataset.adminImage;
-      const fallbacks = imageFallbacksForKey(key);
-      const val = resolveAdminImageValue(content, key, { slug: caseSlug, fallbacks });
-      if (val) {
-        el.src = val;
-        el.removeAttribute('srcset');
-        preloadImageUrl(val);
-        const slot = el.parentElement;
-        if (slot && slot.classList.contains('image-slot')) {
-          slot.classList.add('filled');
-        }
-      } else if (key && !el.getAttribute('src')) {
-        el.src = key;
-      }
+      applyImageToElement(el, content, caseSlug);
     });
 
     root.querySelectorAll('[data-admin-link]').forEach(el => {
@@ -1128,6 +1152,13 @@
     if (lifeRoot) {
       const enabled = getField('settings.lifeLockEnabled');
       lifeRoot.dataset.lifeLockEnabled = enabled ? 'true' : 'false';
+    }
+
+    if (document.body) {
+      document.body.classList.add('cms-ready');
+    }
+    if (window.__CMS_HYDRATE_IMAGES__) {
+      window.__CMS_HYDRATE_IMAGES__(content);
     }
 
     document.dispatchEvent(new CustomEvent('cms:applied', { detail: { root } }));
@@ -1249,7 +1280,9 @@
 
   function boot() {
     applyContent();
-    CMS.ready.then(() => applyContent()).catch(() => applyContent());
+    CMS.ready.catch(function () {
+      applyContent();
+    });
   }
 
   boot();

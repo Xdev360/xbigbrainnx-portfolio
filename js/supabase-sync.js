@@ -82,7 +82,7 @@
       const { error } = await writeClient.storage.from(bucket()).upload(path, bytes, {
         upsert: true,
         contentType: mime,
-        cacheControl: '3600'
+        cacheControl: '31536000'
       });
 
       if (error) throw error;
@@ -208,11 +208,27 @@
 
   initClients();
 
+  let loadPromise = null;
+
+  function prefetch() {
+    if (!ensureInit()) return Promise.resolve({});
+    if (!loadPromise) {
+      loadPromise = loadAll().catch(function (err) {
+        loadPromise = null;
+        throw err;
+      });
+    }
+    return loadPromise;
+  }
+
+  prefetch();
+
   window.SupabaseCMS = {
     enabled,
     ensureInit,
     isConfigured,
     loadAll,
+    prefetch,
     upsertField,
     upsertList,
     deleteFields,
