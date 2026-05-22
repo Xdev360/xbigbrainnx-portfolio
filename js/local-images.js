@@ -13,11 +13,34 @@
  *
  * 3. Commit the images/ folder and push — GitHub Pages serves them instantly.
  *
- * By default the public site uses local files FIRST (no Supabase wait).
- * Admin preview still prefers cloud uploads when you save in the CMS.
+ * Bundled images in LOCAL_IMAGES always win over Supabase uploads.
  */
 (function () {
   'use strict';
+
+  function detectSiteBase() {
+    var script = document.currentScript;
+    if (script && script.src) {
+      return script.src.replace(/js\/local-images\.js(\?.*)?$/i, '');
+    }
+    var path = window.location.pathname;
+    if (/\.html$/i.test(path)) {
+      return window.location.origin + path.replace(/[^/]*$/, '');
+    }
+    if (path.endsWith('/')) {
+      return window.location.origin + path;
+    }
+    return window.location.origin + path + '/';
+  }
+
+  function toAbsolute(path) {
+    if (!path) return '';
+    if (/^https?:\/\//i.test(path) || path.indexOf('data:') === 0) return path;
+    if (path.charAt(0) === '/') return window.location.origin + path;
+    return window.SITE_BASE + path.replace(/^\.\//, '');
+  }
+
+  window.SITE_BASE = detectSiteBase();
 
   window.LOCAL_IMAGES = {
     'about/headshot.jpg': 'images/about/headshot.jpg',
@@ -32,19 +55,23 @@
     'cases/credigo/screen-05.png': 'images/cases/credigo/screen-05.png'
   };
 
-  /** Public site: local files win. Set true only if you want Supabase URLs first. */
+  /** Public site: local files win. Admin sets this true to preview fresh uploads first. */
   window.LOCAL_IMAGES_PREFER_CMS = false;
 
   window.LocalImages = {
     base: 'images/',
 
+    hasLocal: function (key) {
+      if (!key) return false;
+      var k = String(key).replace(/^\//, '');
+      return !!(window.LOCAL_IMAGES && window.LOCAL_IMAGES[k]);
+    },
+
     resolve: function (key) {
       if (!key) return '';
       var k = String(key).replace(/^\//, '');
-      if (window.LOCAL_IMAGES && window.LOCAL_IMAGES[k]) {
-        return window.LOCAL_IMAGES[k];
-      }
-      return window.LocalImages.base + k;
+      var rel = (window.LOCAL_IMAGES && window.LOCAL_IMAGES[k]) || (window.LocalImages.base + k);
+      return toAbsolute(rel);
     },
 
     preferCms: function () {
