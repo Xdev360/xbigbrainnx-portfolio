@@ -79,8 +79,17 @@
 
   function collectFieldIds(cardDef) {
     const ids = (cardDef.fields || []).map(f => f.id);
-    if (cardDef.nested && cardDef.nested.fields) {
-      cardDef.nested.fields.forEach(f => ids.push(f.id));
+    if (cardDef.nested) {
+      if (cardDef.nested.fields) {
+        cardDef.nested.fields.forEach(f => ids.push(f.id));
+      }
+      if (cardDef.nested.screens && window.CMS) {
+        const screenDef = cardDef.nested.screens;
+        const screenIds = CMS.getItemList(screenDef.listKey, screenDef.defaultIds || []);
+        screenIds.forEach(screenId => {
+          screenDef.makeFields(screenId).forEach(f => ids.push(f.id));
+        });
+      }
     }
     return ids;
   }
@@ -101,14 +110,37 @@
     if (!window.CMS) return;
     const ids = CMS.getItemList(dynamicDef.listKey, dynamicDef.defaultIds || []).filter(id => id !== itemId);
     const card = dynamicDef.makeCard(itemId);
-    Promise.resolve(CMS.setItemList(dynamicDef.listKey, ids))
-      .then(() => CMS.deleteCardFields(collectFieldIds(card)))
-      .then(() => card.fieldPrefix ? CMS.deleteFieldsByPrefix(card.fieldPrefix) : null)
+    const tasks = [
+      CMS.setItemList(dynamicDef.listKey, ids),
+      CMS.deleteCardFields(collectFieldIds(card))
+    ];
+    if (card.fieldPrefix) {
+      tasks.push(CMS.deleteFieldsByPrefix(card.fieldPrefix));
+    }
+    if (card.nested && card.nested.screens) {
+      const screenDef = card.nested.screens;
+      const screenIds = CMS.getItemList(screenDef.listKey, screenDef.defaultIds || []);
+      const screenFieldIds = screenIds.flatMap(screenId => screenDef.makeFields(screenId).map(f => f.id));
+      tasks.push(CMS.deleteCardFields(screenFieldIds));
+      tasks.push(CMS.setItemList(screenDef.listKey, []));
+    }
+    Promise.all(tasks)
       .then(() => {
         setStatus('Deleted', true);
         if (onDone) onDone();
       })
       .catch(() => setStatus('Delete failed'));
+  }
+
+  function reorderDynamicItem(dynamicDef, itemId, direction, onDone) {
+    if (!window.CMS) return;
+    CMS.reorderItemList(dynamicDef.listKey, itemId, direction, dynamicDef.defaultIds || [])
+      .then(moved => {
+        if (!moved) return;
+        setStatus(CMS.isUsingRemote() ? 'Order saved to cloud' : 'Order saved', true);
+        if (onDone) onDone();
+      })
+      .catch(() => setStatus('Reorder failed'));
   }
 
   function subsectionStorageKey(panelId) {
@@ -483,6 +515,125 @@
     return label;
   }
 
+  function renderNestedScreensBlock(screenDef, content) {
+    const wrap = document.createElement('div');
+    wrap.className = 'admin-nested-block admin-nested-screens';
+
+    const toolbar = document.createElement('div');
+    toolbar.className = 'admin-group-toolbar';
+
+    const label = document.createElement('div');
+    label.className = 'admin-nested-label';
+    label.textContent = screenDef.label || 'Key screens';
+
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    addBtn.className = 'admin-btn admin-btn-ghost admin-btn-add';
+    addBtn.textContent = '+ Add screen';
+    addBtn.addEventListener('click', () => {
+      const ids = CMS.getItemList(screenDef.listKey, screenDef.defaultIds || []);
+      const newId = CMS.nextItemId(ids);
+      CMS.setItemList(screenDef.listKey, [...ids, newId])
+        .then(() => {
+          setStatus(CMS.isUsingRemote() ? 'Screen added to cloud' : 'Screen added', true);
+          paintScreens();
+        })
+        .catch(() => setStatus('Add screen failed'));
+    });
+
+    toolbar.appendChild(label);
+    toolbar.appendChild(addBtn);
+    wrap.appendChild(toolbar);
+
+    const list = document.createElement('div');
+    list.className = 'admin-nested-screen-list';
+    wrap.appendChild(list);
+
+    function paintScreens() {
+      const c = getContent();
+      list.innerHTML = '';
+      const screenIds = CMS.getItemList(screenDef.listKey, screenDef.defaultIds || []);
+      if (!screenIds.length) {
+        const empty = document.createElement('p');
+        empty.className = 'admin-empty-inline';
+        empty.textContent = 'No screens yet. Tap Add screen.';
+        list.appendChild(empty);
+        return;
+      }
+
+      screenIds.forEach((screenId, index) => {
+        const panel = document.createElement('div');
+        panel.className = 'admin-nested-screen-item';
+
+        const panelHead = document.createElement('div');
+        panelHead.className = 'admin-nested-screen-head';
+        panelHead.textContent = `Screen ${String(index + 1).padStart(2, '0')}`;
+
+        const panelActions = document.createElement('div');
+        panelActions.className = 'admin-card-actions';
+
+        if (index > 0) {
+          const upBtn = document.createElement('button');
+          upBtn.type = 'button';
+          upBtn.className = 'admin-btn admin-btn-ghost admin-btn-reorder';
+          upBtn.textContent = '↑';
+          upBtn.addEventListener('click', () => {
+            CMS.reorderItemList(screenDef.listKey, screenId, -1, screenDef.defaultIds || [])
+              .then(() => paintScreens());
+          });
+          panelActions.appendChild(upBtn);
+        }
+
+        if (index < screenIds.length - 1) {
+          const downBtn = document.createElement('button');
+          downBtn.type = 'button';
+          downBtn.className = 'admin-btn admin-btn-ghost admin-btn-reorder';
+          downBtn.textContent = '↓';
+          downBtn.addEventListener('click', () => {
+            CMS.reorderItemList(screenDef.listKey, screenId, 1, screenDef.defaultIds || [])
+              .then(() => paintScreens());
+          });
+          panelActions.appendChild(downBtn);
+        }
+
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'admin-btn admin-btn-danger';
+        delBtn.textContent = 'Remove';
+        delBtn.addEventListener('click', () => {
+          if (!window.confirm(`Remove screen ${String(index + 1).padStart(2, '0')}?`)) return;
+          const nextIds = screenIds.filter(id => id !== screenId);
+          const fieldIds = screenDef.makeFields(screenId).map(f => f.id);
+          Promise.all([
+            CMS.setItemList(screenDef.listKey, nextIds),
+            CMS.deleteCardFields(fieldIds)
+          ])
+            .then(() => {
+              setStatus('Screen removed', true);
+              paintScreens();
+            })
+            .catch(() => setStatus('Remove failed'));
+        });
+        panelActions.appendChild(delBtn);
+
+        panelHead.appendChild(panelActions);
+        panel.appendChild(panelHead);
+
+        screenDef.makeFields(screenId).forEach(field => {
+          panel.appendChild(renderField(field, c[field.id], newVal => {
+            saveField(field.id, newVal);
+            c[field.id] = newVal;
+          }));
+        });
+
+        list.appendChild(panel);
+      });
+    }
+
+    paintScreens();
+    return wrap;
+  }
+
   function createEditCard(cardDef, content, options) {
     const opts = options || {};
     const card = document.createElement('div');
@@ -559,7 +710,36 @@
       nestedLabel.textContent = cardDef.nested.label;
       nested.appendChild(nestedLabel);
       appendFields(cardDef.nested.fields, nested);
+
+      if (cardDef.nested.screens) {
+        nested.appendChild(renderNestedScreensBlock(cardDef.nested.screens, content));
+      }
+
       body.appendChild(nested);
+    }
+
+    if (cardDef.dynamic && opts.onReorder) {
+      const reorderRow = document.createElement('div');
+      reorderRow.className = 'admin-card-reorder';
+      const upBtn = document.createElement('button');
+      upBtn.type = 'button';
+      upBtn.className = 'admin-btn admin-btn-ghost admin-btn-reorder';
+      upBtn.textContent = '↑ Move up';
+      upBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        opts.onReorder(cardDef.itemId, -1);
+      });
+      const downBtn = document.createElement('button');
+      downBtn.type = 'button';
+      downBtn.className = 'admin-btn admin-btn-ghost admin-btn-reorder';
+      downBtn.textContent = '↓ Move down';
+      downBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        opts.onReorder(cardDef.itemId, 1);
+      });
+      reorderRow.appendChild(upBtn);
+      reorderRow.appendChild(downBtn);
+      body.insertBefore(reorderRow, body.firstChild);
     }
 
     if (cardDef.deletable && opts.onDelete) {
@@ -673,6 +853,11 @@
         grid.appendChild(createEditCard(cardDef, content, {
           onDelete: () => {
             deleteDynamicItem(group.dynamic, cardDef.itemId, () => {
+              if (opts.onRefresh) opts.onRefresh();
+            });
+          },
+          onReorder: (itemId, direction) => {
+            reorderDynamicItem(group.dynamic, itemId, direction, () => {
               if (opts.onRefresh) opts.onRefresh();
             });
           }

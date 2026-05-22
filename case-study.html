@@ -7,6 +7,8 @@
 <meta name="description" content="CrediGo case study — a digital wallet that helps individuals and businesses access flexible loans. Research, design system, and key screens.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://soakeuzidzgdntvhtldz.supabase.co">
+<link rel="dns-prefetch" href="https://soakeuzidzgdntvhtldz.supabase.co">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -68,7 +70,7 @@
          is uploaded. -->
     <section class="case-hero">
       <div class="case-hero-frame image-slot" data-label="HERO MOCKUP — UPLOAD VIA ADMIN">
-        <img alt="CrediGo hero artwork" loading="lazy" data-admin-image="cases/credigo/hero.png">
+        <img alt="CrediGo hero artwork" loading="eager" decoding="async" fetchpriority="high" data-admin-image="cases/credigo/hero.png">
       </div>
     </section>
 
@@ -145,87 +147,7 @@
          `.case-screen-preview` element. -->
     <section class="case-section case-screens-section">
       <h2 class="case-section-title">Key Screens</h2>
-      <div class="case-screens-stack" data-screens-stack>
-
-        <article class="case-screen-card">
-          <div class="case-screen-preview image-slot is-desktop" data-label="SCREEN 01 · MARKETING LANDING">
-            <img alt="" loading="lazy" data-admin-image="cases/credigo/screen-01.png">
-          </div>
-          <div class="case-screen-meta">
-            <span class="case-screen-step">01 / 06</span>
-            <h4 class="case-screen-title" data-cms-id="projects.case.02.study.screen.01.title">Marketing Landing</h4>
-            <p class="case-screen-desc" data-cms-id="projects.case.02.study.screen.01.desc">
-              The first impression. Big number, clear pricing, two trust signals, and a single primary action — apply for a loan. No jargon, no clever language.
-            </p>
-          </div>
-        </article>
-
-        <article class="case-screen-card">
-          <div class="case-screen-preview image-slot is-desktop" data-label="SCREEN 02 · ONBOARDING">
-            <img alt="" loading="lazy" data-admin-image="cases/credigo/screen-02.png">
-          </div>
-          <div class="case-screen-meta">
-            <span class="case-screen-step">02 / 06</span>
-            <h4 class="case-screen-title" data-cms-id="projects.case.02.study.screen.02.title">Onboarding &amp; KYC</h4>
-            <p class="case-screen-desc" data-cms-id="projects.case.02.study.screen.02.desc">
-              Three steps to a verified account, with progress always visible. We push BVN and ID capture early so the rest of the experience is friction-free.
-            </p>
-          </div>
-        </article>
-
-        <article class="case-screen-card">
-          <div class="case-screen-preview image-slot is-desktop" data-label="SCREEN 03 · LOAN SELECTOR">
-            <img alt="" loading="lazy" data-admin-image="cases/credigo/screen-03.png">
-          </div>
-          <div class="case-screen-meta">
-            <span class="case-screen-step">03 / 06</span>
-            <h4 class="case-screen-title" data-cms-id="projects.case.02.study.screen.03.title">Loan Selector</h4>
-            <p class="case-screen-desc" data-cms-id="projects.case.02.study.screen.03.desc">
-              Six loan products, one filter. The selector shows monthly cost up front and only surfaces eligible products to avoid wasted applications.
-            </p>
-          </div>
-        </article>
-
-        <article class="case-screen-card">
-          <div class="case-screen-preview image-slot is-desktop" data-label="SCREEN 04 · DASHBOARD">
-            <img alt="" loading="lazy" data-admin-image="cases/credigo/screen-04.png">
-          </div>
-          <div class="case-screen-meta">
-            <span class="case-screen-step">04 / 06</span>
-            <h4 class="case-screen-title" data-cms-id="projects.case.02.study.screen.04.title">Dashboard</h4>
-            <p class="case-screen-desc" data-cms-id="projects.case.02.study.screen.04.desc">
-              The home for returning borrowers. Balance and next repayment up top, products and quick actions below. Designed to be navigated in under 5 seconds.
-            </p>
-          </div>
-        </article>
-
-        <article class="case-screen-card">
-          <div class="case-screen-preview image-slot is-desktop" data-label="SCREEN 05 · REPAYMENT">
-            <img alt="" loading="lazy" data-admin-image="cases/credigo/screen-05.png">
-          </div>
-          <div class="case-screen-meta">
-            <span class="case-screen-step">05 / 06</span>
-            <h4 class="case-screen-title" data-cms-id="projects.case.02.study.screen.05.title">Repayment Tracking</h4>
-            <p class="case-screen-desc" data-cms-id="projects.case.02.study.screen.05.desc">
-              A clear schedule with weekly progress, plus auto-debit toggles. The goal is to remove every reason a borrower would default by accident.
-            </p>
-          </div>
-        </article>
-
-        <article class="case-screen-card">
-          <div class="case-screen-preview image-slot is-desktop" data-label="SCREEN 06 · TRANSACTION HISTORY">
-            <img alt="" loading="lazy" data-admin-image="cases/credigo/screen-06.png">
-          </div>
-          <div class="case-screen-meta">
-            <span class="case-screen-step">06 / 06</span>
-            <h4 class="case-screen-title" data-cms-id="projects.case.02.study.screen.06.title">Transaction History</h4>
-            <p class="case-screen-desc" data-cms-id="projects.case.02.study.screen.06.desc">
-              A receipts-first ledger. Every entry is searchable, exportable as PDF, and shows the loan it ties back to — no more "what was this charge?" support tickets.
-            </p>
-          </div>
-        </article>
-
-      </div>
+      <div class="case-screens-stack" data-cms-render="case-screens" data-screens-stack></div>
     </section>
 
     <!-- REFLECTION -->

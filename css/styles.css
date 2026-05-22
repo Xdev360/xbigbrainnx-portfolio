@@ -73,8 +73,19 @@ body {
     var(--cream-dark);
 }
 
-.image-slot.filled::after { display: none; }
 .image-slot.filled { background: transparent; }
+
+.image-slot:has(> img[src^="http"])::after,
+.image-slot:has(> img[src^="https"])::after,
+.image-slot:has(> img[src^="data:"])::after,
+.image-slot.filled::after { display: none; }
+
+.image-slot:has(> img[src^="http"]),
+.image-slot:has(> img[src^="https"]),
+.image-slot:has(> img[src^="data:"]),
+.image-slot.filled {
+  background: transparent;
+}
 
 /* ===== NAV ===== */
 .nav {

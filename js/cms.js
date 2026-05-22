@@ -270,6 +270,19 @@
     }
   }
 
+  function reorderItemList(listKey, itemId, direction, defaultIds) {
+    const ids = getItemList(listKey, defaultIds).slice();
+    const idx = ids.indexOf(itemId);
+    if (idx < 0) return Promise.resolve(false);
+    const newIdx = idx + direction;
+    if (newIdx < 0 || newIdx >= ids.length) return Promise.resolve(false);
+    const next = ids.slice();
+    const tmp = next[idx];
+    next[idx] = next[newIdx];
+    next[newIdx] = tmp;
+    return Promise.resolve(setItemList(listKey, next)).then(() => true);
+  }
+
   function deleteCardFields(fieldIds) {
     return persistDeleteFields(fieldIds);
   }
@@ -325,6 +338,21 @@
     return `case-studies/study-${id}.jpg`;
   }
 
+  function heroCaseCardCoverPath(id) {
+    return `hero-cards/case-${id}.jpg`;
+  }
+
+  function heroDesignCardCoverPath(id) {
+    return `hero-cards/design-${id}.jpg`;
+  }
+
+  function designCardCoverPath(id) {
+    const registry = window.CMS_DESIGN || {};
+    const known = registry[id];
+    if (known && known.image) return known.image;
+    return `design/project-${id}.jpg`;
+  }
+
   function projectCoverPath(id) {
     return caseCoverPath(id);
   }
@@ -338,6 +366,16 @@
       return direct;
     }
 
+    if (opts.fallbacks) {
+      for (let i = 0; i < opts.fallbacks.length; i++) {
+        const fb = opts.fallbacks[i];
+        const fbVal = content[fb];
+        if (fbVal !== undefined && fbVal !== null && fbVal !== '') {
+          return fbVal;
+        }
+      }
+    }
+
     if (opts.slug && /\/hero\.(png|jpg|jpeg|webp)$/i.test(key)) {
       const cover = caseCoverPath(opts.slug);
       const coverVal = content[cover];
@@ -347,6 +385,31 @@
     }
 
     return '';
+  }
+
+  function imageFallbacksForKey(key) {
+    const caseMatch = key && key.match(/^hero-cards\/case-(\d+)\.jpg$/);
+    if (caseMatch) {
+      return [caseCoverPath(caseMatch[1])];
+    }
+    const designMatch = key && key.match(/^hero-cards\/design-(\d+)\.jpg$/);
+    if (designMatch) {
+      return [designCardCoverPath(designMatch[1])];
+    }
+    return [];
+  }
+
+  function preloadImageUrl(url) {
+    if (!url || typeof url !== 'string') return;
+    if (!/^https?:\/\//.test(url)) return;
+    const existing = document.querySelector(`link[data-cms-preload="${url}"]`);
+    if (existing) return;
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'image';
+    link.href = url;
+    link.dataset.cmsPreload = url;
+    document.head.appendChild(link);
   }
 
   const CASE_CARD_DEFAULTS = {
@@ -532,7 +595,7 @@
     const about = fieldValue(content, `projects.case.${id}.about`, d.about);
     const tags = formatCategoryText(content, `projects.case.${id}.categories`, d.tags);
     const link = getCaseStudyLink(id, content);
-    const cover = caseCoverPath(id);
+    const cover = heroCaseCardCoverPath(id);
     const num = String(index + 1).padStart(2, '0');
     const totalStr = String(total).padStart(2, '0');
 
@@ -540,7 +603,7 @@
       <article class="case-card" data-i="${index}">
         <div class="case-corner">${num}</div>
         <div class="case-preview image-slot" data-label="DASHBOARD PREVIEW">
-          <img alt="" loading="lazy" data-admin-image="${cover}">
+          <img alt="" loading="eager" decoding="async" fetchpriority="high" data-admin-image="${cover}">
         </div>
         <div class="case-text">
           <div class="case-count">${num} / ${totalStr}</div>
@@ -582,7 +645,7 @@
           <a href="${escapeHtml(link)}" class="project-cta" data-admin-link="projects.case.${id}.link"><span>Read case study</span><span>↗</span></a>
         </div>
         <div class="project-preview image-slot" data-label="PROJECT PREVIEW">
-          <img alt="" loading="lazy" data-admin-image="${cover}">
+          <img alt="" loading="eager" decoding="async" data-admin-image="${cover}">
         </div>
       </article>
     `;
@@ -600,12 +663,12 @@
     const name = fieldValue(content, `projects.design.${id}.name`, meta.name || d.name);
     const about = fieldValue(content, `projects.design.${id}.about`, d.about);
     const label = fieldValue(content, `projects.design.${id}.label`, d.label || 'DESIGN');
-    const imageKey = meta.image || d.image;
+    const imageKey = heroDesignCardCoverPath(id);
 
     return `
       <article class="design-card" data-i="${index}">
         <div class="design-card-hero image-slot" data-label="PROJECT COVER">
-          <img alt="" loading="lazy" data-admin-image="${escapeHtml(imageKey)}">
+          <img alt="" loading="eager" decoding="async" fetchpriority="high" data-admin-image="${escapeHtml(imageKey)}">
         </div>
         <div class="design-card-body">
           <div class="design-card-label" data-cms-id="projects.design.${id}.label">${escapeHtml(label)}</div>
@@ -641,23 +704,72 @@
     syncDesignRegistry(content);
     const caseIds = getItemList('__list.projects.case', ['01', '02', '03', '04', '05']);
     const designIds = getItemList('__list.projects.design', ['01', '02', '03']);
+    const caseKey = caseIds.join(',');
+    const designKey = designIds.join(',');
 
     const heroCaseDeck = root.querySelector('#hero-case-deck');
-    if (heroCaseDeck) {
+    if (heroCaseDeck && heroCaseDeck.dataset.renderKey !== caseKey) {
+      heroCaseDeck.dataset.renderKey = caseKey;
       heroCaseDeck.innerHTML = caseIds.map((id, i) => renderHeroCaseCard(id, i, caseIds.length, content)).join('');
       markDeckActiveCards(heroCaseDeck);
     }
 
     const heroDesignDeck = root.querySelector('#hero-design-deck');
-    if (heroDesignDeck) {
+    if (heroDesignDeck && heroDesignDeck.dataset.renderKey !== designKey) {
+      heroDesignDeck.dataset.renderKey = designKey;
       heroDesignDeck.innerHTML = designIds.map((id, i) => renderHeroDesignCard(id, i, content)).join('');
       markDeckActiveCards(heroDesignDeck);
     }
 
     const projectStack = root.querySelector('#project-stack');
-    if (projectStack) {
+    if (projectStack && projectStack.dataset.renderKey !== caseKey) {
+      projectStack.dataset.renderKey = caseKey;
       projectStack.innerHTML = caseIds.map((id, i) => renderProjectStackCard(id, i, caseIds.length, content)).join('');
     }
+  }
+
+  function caseScreenListKey(slug) {
+    return `__list.projects.case.${slug}.screens`;
+  }
+
+  function renderCaseStudyScreens(root, content, slug) {
+    const stack = root.querySelector('[data-cms-render="case-screens"]');
+    if (!stack || !slug) return;
+
+    syncCaseRegistry(content);
+    const meta = getCaseMeta(slug);
+    if (!meta) return;
+
+    const screenIds = getItemList(caseScreenListKey(slug), ['01', '02', '03', '04', '05', '06']);
+    const renderKey = `${slug}:${screenIds.join(',')}`;
+    if (stack.dataset.renderKey === renderKey) return;
+
+    stack.dataset.renderKey = renderKey;
+    const studyFolder = meta.study;
+    const total = screenIds.length;
+
+    stack.innerHTML = screenIds.map((screenId, index) => {
+      const num = String(index + 1).padStart(2, '0');
+      const totalStr = String(total).padStart(2, '0');
+      const imageKey = `${studyFolder}/screen-${screenId}.png`;
+      const titleKey = `projects.case.${slug}.study.screen.${screenId}.title`;
+      const descKey = `projects.case.${slug}.study.screen.${screenId}.desc`;
+      const title = fieldValue(content, titleKey, `Screen ${num}`);
+      const desc = fieldValue(content, descKey, '');
+
+      return `
+        <article class="case-screen-card">
+          <div class="case-screen-preview image-slot is-desktop" data-label="SCREEN ${num}">
+            <img alt="" loading="eager" decoding="async" data-admin-image="${escapeHtml(imageKey)}">
+          </div>
+          <div class="case-screen-meta">
+            <span class="case-screen-step">${num} / ${totalStr}</span>
+            <h4 class="case-screen-title" data-cms-id="${titleKey}">${escapeHtml(title)}</h4>
+            <p class="case-screen-desc" data-cms-id="${descKey}">${escapeHtml(desc)}</p>
+          </div>
+        </article>
+      `;
+    }).join('');
   }
 
   function renderFoodItems(ids, content) {
@@ -930,13 +1042,18 @@
     applyCaseStudyLinks(root, content);
 
     const caseSlug = root.querySelector('.case-study') ? getCaseSlug() : null;
+    if (caseSlug) {
+      renderCaseStudyScreens(root, content, caseSlug);
+    }
 
     root.querySelectorAll('[data-admin-image]').forEach(el => {
       const key = el.dataset.adminImage;
-      const val = resolveAdminImageValue(content, key, { slug: caseSlug });
+      const fallbacks = imageFallbacksForKey(key);
+      const val = resolveAdminImageValue(content, key, { slug: caseSlug, fallbacks });
       if (val) {
         el.src = val;
         el.removeAttribute('srcset');
+        preloadImageUrl(val);
         const slot = el.parentElement;
         if (slot && slot.classList.contains('image-slot')) {
           slot.classList.add('filled');
@@ -1112,6 +1229,8 @@
     getItemList,
     setItemList,
     nextItemId,
+    reorderItemList,
+    caseScreenListKey,
     deleteCardFields,
     deleteFieldsByPrefix,
     syncCaseRegistry,

@@ -35,8 +35,8 @@
     '03': { name: 'Wintech Studio', image: 'design/wintech.jpg' }
   };
 
-  const studyFields = (cardSlug, studyFolder) => [
-    img(`${studyFolder}/hero.png`, 'Hero banner', '1920 × 900 px'),
+  const studyBaseFields = (cardSlug, studyFolder) => [
+    img(`${studyFolder}/hero.png`, 'Case study hero banner', '1920 × 900 px'),
     text(`projects.case.${cardSlug}.study.title`, 'Project title'),
     textarea(`projects.case.${cardSlug}.study.tagline`, 'Tagline'),
     textarea(`projects.case.${cardSlug}.study.body`, 'Intro body'),
@@ -44,13 +44,24 @@
     textarea(`projects.case.${cardSlug}.study.outcome`, 'Outcome'),
     textarea(`projects.case.${cardSlug}.study.research`, 'Research'),
     img(`${studyFolder}/design-system.png`, 'Design system image', '1920 × 1080 px'),
-    textarea(`projects.case.${cardSlug}.study.reflection`, 'Reflection'),
-    ...[1, 2, 3, 4, 5, 6].flatMap(n => [
-      img(`${studyFolder}/screen-0${n}.png`, `Screen ${n} — image`, '1440 × 900 px'),
-      text(`projects.case.${cardSlug}.study.screen.0${n}.title`, `Screen ${n} — title`),
-      textarea(`projects.case.${cardSlug}.study.screen.0${n}.desc`, `Screen ${n} — description`)
-    ])
+    textarea(`projects.case.${cardSlug}.study.reflection`, 'Reflection')
   ];
+
+  function makeScreenFields(cardSlug, studyFolder, screenId) {
+    return [
+      img(`${studyFolder}/screen-${screenId}.png`, 'Screen image', '1440 × 900 px'),
+      text(`projects.case.${cardSlug}.study.screen.${screenId}.title`, 'Screen title'),
+      textarea(`projects.case.${cardSlug}.study.screen.${screenId}.desc`, 'Screen description')
+    ];
+  }
+
+  function heroCaseCardCover(itemId) {
+    return `hero-cards/case-${itemId}.jpg`;
+  }
+
+  function heroDesignCardCover(itemId) {
+    return `hero-cards/design-${itemId}.jpg`;
+  }
 
   function caseMeta(itemId) {
     return CASE_REGISTRY[itemId] || {
@@ -95,17 +106,19 @@
 
   function makeCaseCard(itemId) {
     const meta = caseMeta(itemId);
-    const cover = CASE_REGISTRY[itemId]
+    const projectCover = CASE_REGISTRY[itemId]
       ? `case-studies/${meta.study.replace('cases/', '')}.jpg`
       : `case-studies/study-${itemId}.jpg`;
+    const heroCover = heroCaseCardCover(itemId);
 
     return {
       id: `case-${itemId}`,
       title: meta.name,
-      previewImage: cover,
+      previewImage: heroCover,
       fieldPrefix: `projects.case.${itemId}.`,
       fields: [
-        img(cover, 'Card cover image', '1200 × 900 px (4:3)'),
+        img(heroCover, 'Hero carousel cover', '1200 × 900 px — homepage hero tab'),
+        img(projectCover, 'Projects section cover', '1200 × 900 px — projects stack'),
         text(`projects.case.${itemId}.name`, 'Project name'),
         textarea(`projects.case.${itemId}.about`, 'About'),
         cats(`projects.case.${itemId}.categories`, 'Categories (pick up to 2)'),
@@ -114,7 +127,13 @@
       ],
       nested: {
         label: 'Case study page',
-        fields: studyFields(itemId, meta.study)
+        fields: studyBaseFields(itemId, meta.study),
+        screens: {
+          listKey: `__list.projects.case.${itemId}.screens`,
+          defaultIds: ['01', '02', '03', '04', '05', '06'],
+          label: 'Key screens',
+          makeFields: screenId => makeScreenFields(itemId, meta.study, screenId)
+        }
       }
     };
   }

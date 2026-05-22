@@ -562,6 +562,49 @@
   border: 1px dashed var(--line);
 }
 
+.admin-card-reorder {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.admin-btn-reorder {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.admin-nested-screens {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--line);
+}
+
+.admin-nested-screen-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-nested-screen-item {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px;
+  background: var(--cream-soft);
+}
+
+.admin-nested-screen-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
 @media (max-width: 768px) {
   .admin-sidebar-toggle {
     display: flex;
