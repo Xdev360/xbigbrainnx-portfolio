@@ -1,6 +1,6 @@
 /**
  * Local images — all site images load from the images/ folder in this repo.
- * Admin handles text + voice notes only. Drop files here, commit, push.
+ * Admin handles text + voice notes only. Supabase never stores or loads images.
  */
 (function () {
   'use strict';
@@ -25,7 +25,37 @@
   window.LocalImages = {
     base: 'images/',
 
-    /** CMS key → repo path under images/ (relative, works on GitHub Pages) */
+    isStorageKey: function (key) {
+      if (!key || typeof key !== 'string') return false;
+      if (key.indexOf('__list.') === 0 || key.indexOf('settings.') === 0) return false;
+      if (/\.(mp3|wav|m4a|ogg|aac)$/i.test(key)) return false;
+      if (/\.(jpg|jpeg|png|webp|gif)$/i.test(key)) return true;
+      return false;
+    },
+
+    isImageValue: function (val) {
+      if (typeof val !== 'string' || !val) return false;
+      if (val.indexOf('data:image') === 0) return true;
+      if ((val.indexOf('http://') === 0 || val.indexOf('https://') === 0) &&
+          /\.(jpg|jpeg|png|webp|gif)(\?|$)/i.test(val)) {
+        return true;
+      }
+      return false;
+    },
+
+    /** Remove legacy Supabase image entries from CMS store objects. */
+    stripFromStore: function (data) {
+      if (!data || typeof data !== 'object') return {};
+      var out = {};
+      Object.keys(data).forEach(function (key) {
+        var val = data[key];
+        if (window.LocalImages.isStorageKey(key)) return;
+        if (window.LocalImages.isImageValue(val)) return;
+        out[key] = val;
+      });
+      return out;
+    },
+
     resolve: function (key) {
       if (!key) return '';
       var k = String(key).replace(/^\//, '');
@@ -34,6 +64,23 @@
 
     repoPath: function (key) {
       return this.resolve(key);
+    },
+
+    applyAll: function (root) {
+      root = root || document;
+      if (!root.querySelectorAll) return;
+      root.querySelectorAll('[data-admin-image]').forEach(function (img) {
+        var key = img.getAttribute('data-admin-image');
+        if (!key) return;
+        var val = window.LocalImages.resolve(key);
+        if (!val) return;
+        img.src = val;
+        img.classList.add('is-loaded');
+        var slot = img.parentElement;
+        if (slot && slot.classList.contains('image-slot')) {
+          slot.classList.add('filled');
+        }
+      });
     }
   };
 })();

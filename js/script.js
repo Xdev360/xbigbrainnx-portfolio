@@ -220,7 +220,9 @@
       };
 
       img.addEventListener('load', markFilled);
-      img.addEventListener('error', () => slot.classList.remove('filled'));
+      img.addEventListener('error', () => {
+        img.classList.remove('is-loaded');
+      });
 
       const observer = new MutationObserver(markFilled);
       observer.observe(img, { attributes: true, attributeFilter: ['src', 'srcset'] });

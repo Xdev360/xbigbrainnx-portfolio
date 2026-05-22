@@ -55,7 +55,8 @@
   function readStore() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : {};
+      const parsed = raw ? JSON.parse(raw) : {};
+      return window.LocalImages ? window.LocalImages.stripFromStore(parsed) : parsed;
     } catch {
       return {};
     }
@@ -66,9 +67,10 @@
   let usingRemote = false;
 
   function writeStore(data) {
-    memoryStore = { ...data };
+    const cleaned = window.LocalImages ? window.LocalImages.stripFromStore(data) : data;
+    memoryStore = { ...cleaned };
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned));
     } catch {
       /* Storage blocked or full — site still works, login uses built-in password */
     }
@@ -76,7 +78,8 @@
 
   function mergeRemote(data, markConnected) {
     if (data && Object.keys(data).length) {
-      memoryStore = { ...memoryStore, ...data };
+      const cleaned = window.LocalImages ? window.LocalImages.stripFromStore(data) : data;
+      memoryStore = { ...memoryStore, ...cleaned };
       writeStore(memoryStore);
     }
     if (markConnected || (data && Object.keys(data).length)) {
@@ -141,6 +144,13 @@
   }
 
   async function persistField(id, value) {
+    if (window.LocalImages && window.LocalImages.isStorageKey(id)) {
+      return value;
+    }
+    if (window.LocalImages && window.LocalImages.isImageValue(value)) {
+      return value;
+    }
+
     const data = { ...memoryStore };
     if (value === '' || value === null || value === undefined) {
       delete data[id];
@@ -204,7 +214,6 @@
     const data = { ...memoryStore };
     const admin = data['settings.adminPassword'];
     const lifePw = defaults['settings.lifePassword'];
-    const adminPw = defaults['settings.adminPassword'];
 
     /* Clear stale admin passwords — especially when life password was saved by mistake */
     if (
@@ -214,14 +223,22 @@
       admin === null
     ) {
       delete data['settings.adminPassword'];
-      writeStore(data);
     }
+
+    /* Drop legacy Supabase image URLs from localStorage — images live in images/ only */
+    if (window.LocalImages) {
+      writeStore(window.LocalImages.stripFromStore(data));
+      return;
+    }
+
+    writeStore(data);
   }
 
   migrateStore();
 
   function getContent() {
-    return { ...defaults, ...memoryStore };
+    const data = { ...defaults, ...memoryStore };
+    return window.LocalImages ? window.LocalImages.stripFromStore(data) : data;
   }
 
   function getField(id) {
@@ -1178,8 +1195,11 @@
     if (document.body) {
       document.body.classList.add('cms-ready');
     }
-    if (window.__CMS_HYDRATE_IMAGES__) {
-      window.__CMS_HYDRATE_IMAGES__(content);
+
+    if (window.LocalImages) {
+      window.LocalImages.applyAll(root);
+    } else if (window.__CMS_HYDRATE_IMAGES__) {
+      window.__CMS_HYDRATE_IMAGES__();
     }
 
     document.dispatchEvent(new CustomEvent('cms:applied', { detail: { root } }));

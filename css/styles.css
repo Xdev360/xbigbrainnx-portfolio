@@ -75,40 +75,13 @@ body {
 
 .image-slot.filled { background: transparent; }
 
-/* Hide striped placeholders until CMS has run; then only if still no image. */
-body:not(.cms-ready) .image-slot::after {
-  display: none;
-}
-
-body.cms-ready .image-slot:not(.filled)::after {
-  display: flex;
-}
-
-.image-slot:has(> img[src^="images/"])::after,
-.image-slot:has(> img[src^="http"])::after,
-.image-slot:has(> img[src^="https"])::after,
-.image-slot:has(> img[src^="data:"])::after,
-.image-slot.filled::after { display: none; }
-
-.image-slot:has(> img[src^="images/"]),
-.image-slot:has(> img[src^="http"]),
-.image-slot:has(> img[src^="https"]),
-.image-slot:has(> img[src^="data:"]),
-.image-slot.filled {
-  background: transparent;
+/* Local images: no upload placeholders — images come from images/ folder. */
+.image-slot::after {
+  display: none !important;
+  content: none !important;
 }
 
 .image-slot > img {
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.image-slot.filled > img,
-.image-slot > img.is-loaded,
-.image-slot:has(> img[src^="images/"]) > img,
-.image-slot:has(> img[src^="http"]) > img,
-.image-slot:has(> img[src^="https"]) > img,
-.image-slot:has(> img[src^="data:"]) > img {
   opacity: 1;
 }
 

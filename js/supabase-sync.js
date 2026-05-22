@@ -69,7 +69,9 @@
 
   async function uploadDataUrl(fieldId, dataUrl) {
     if (!enabled || !writeClient) return dataUrl;
+    if (window.LocalImages && window.LocalImages.isStorageKey(fieldId)) return dataUrl;
     if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) return dataUrl;
+    if (typeof dataUrl === 'string' && dataUrl.startsWith('data:image')) return dataUrl;
 
     const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
     if (!match) return dataUrl;
@@ -125,8 +127,15 @@
     return out;
   }
 
+  function isImageField(id, value) {
+    if (window.LocalImages && window.LocalImages.isStorageKey(id)) return true;
+    if (window.LocalImages && window.LocalImages.isImageValue(value)) return true;
+    return false;
+  }
+
   async function upsertField(id, value) {
     if (!enabled || !writeClient) return;
+    if (isImageField(id, value)) return value;
 
     if (value === '' || value === null || value === undefined) {
       const { error } = await writeClient.rpc('cms_delete_content', {
