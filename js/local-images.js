@@ -20,12 +20,16 @@
   'use strict';
 
   window.LOCAL_IMAGES = {
-    // Paste overrides here (CMS key → path or URL). Examples:
-    // 'about/headshot.jpg': 'images/about/headshot.jpg',
-    // 'hero-cards/case-01.jpg': 'images/hero-cards/case-01.jpg',
-    // 'hero-cards/design-01.jpg': 'images/hero-cards/design-01.jpg',
-    // 'case-studies/credigo.jpg': 'images/case-studies/credigo.jpg',
-    // 'cases/credigo/hero.png': 'images/cases/credigo/hero.png',
+    'about/headshot.jpg': 'images/about/headshot.jpg',
+    'hero-cards/case-02.jpg': 'images/hero-cards/case-02.jpg',
+    'case-studies/credigo.jpg': 'images/case-studies/credigo.jpg',
+    'cases/credigo/hero.png': 'images/cases/credigo/hero.png',
+    'cases/credigo/design-system.png': 'images/cases/credigo/design-system.png',
+    'cases/credigo/screen-01.png': 'images/cases/credigo/screen-01.png',
+    'cases/credigo/screen-02.png': 'images/cases/credigo/screen-02.png',
+    'cases/credigo/screen-03.png': 'images/cases/credigo/screen-03.png',
+    'cases/credigo/screen-04.png': 'images/cases/credigo/screen-04.png',
+    'cases/credigo/screen-05.png': 'images/cases/credigo/screen-05.png'
   };
 
   /** Public site: local files win. Set true only if you want Supabase URLs first. */
