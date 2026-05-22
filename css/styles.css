@@ -51,38 +51,15 @@ body {
 }
 
 .image-slot::after {
-  content: attr(data-label);
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  color: var(--muted);
-  text-align: center;
-  padding: 16px;
-  pointer-events: none;
-  background:
-    repeating-linear-gradient(
-      45deg,
-      transparent 0 12px,
-      rgba(0,0,0,0.025) 12px 13px
-    ),
-    var(--cream-dark);
-}
-
-.image-slot.filled { background: transparent; }
-
-/* Local images: no upload placeholders — images come from images/ folder. */
-.image-slot::after {
   display: none !important;
   content: none !important;
+  pointer-events: none;
 }
 
 .image-slot > img {
   opacity: 1;
+  position: relative;
+  z-index: 1;
 }
 
 /* ===== NAV ===== */
@@ -1775,18 +1752,13 @@ body {
   overflow: hidden;
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.08);
 }
-/* The image-slot's striped placeholder is fine on cream, but the
- * hero sits on the accent colour — swap to a more neutral overlay
- * so the placeholder reads while still hinting at the brand. */
-.case-hero-frame.image-slot::after {
-  color: rgba(255, 255, 255, 0.78);
-  background:
-    repeating-linear-gradient(
-      45deg,
-      transparent 0 14px,
-      rgba(255, 255, 255, 0.08) 14px 15px
-    ),
-    var(--case-accent);
+/* Placeholders disabled — images load from images/ folder. */
+.case-hero-frame.image-slot::after,
+.case-system-image.image-slot::after,
+.life-media.image-slot::after,
+.products-media.image-slot::after {
+  display: none !important;
+  content: none !important;
 }
 
 /* ---- intro: title, tagline, body, problem/outcome + meta sidebar ---- */
@@ -1950,9 +1922,8 @@ body {
 .case-system-image.filled {
   min-height: 0;
 }
-/* The image-slot placeholder text uses 100% width by default,
- * but we want it to read against the full-bleed background. */
-.case-system-image.image-slot::after { padding: 32px; }
+/* Placeholder padding rule disabled — images load from images/ folder. */
+.case-system-image.image-slot::after { display: none !important; }
 
 /* ---- key screens (sticky stacking parallax)
  *
@@ -2186,14 +2157,8 @@ body {
   background: var(--red);
 }
 .life-media.image-slot::after {
-  color: rgba(255, 255, 255, 0.78);
-  background:
-    repeating-linear-gradient(
-      45deg,
-      transparent 0 14px,
-      rgba(255, 255, 255, 0.1) 14px 15px
-    ),
-    var(--red);
+  display: none !important;
+  content: none !important;
 }
 
 /* Section base — only the active section is visible at a time;
@@ -2892,14 +2857,8 @@ body {
  * so the page reads cream-on-red (opposite of Life). */
 .products-media { background: var(--cream-soft); }
 .products-media.image-slot::after {
-  color: var(--red);
-  background:
-    repeating-linear-gradient(
-      45deg,
-      transparent 0 14px,
-      rgba(213, 60, 56, 0.06) 14px 15px
-    ),
-    var(--cream-soft);
+  display: none !important;
+  content: none !important;
 }
 
 /* Tabs */

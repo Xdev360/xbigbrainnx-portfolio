@@ -74,13 +74,30 @@
         if (!key) return;
         var val = window.LocalImages.resolve(key);
         if (!val) return;
-        img.src = val;
+        if (img.getAttribute('src') !== val) {
+          img.src = val;
+        }
         img.classList.add('is-loaded');
+        img.dataset.localSrc = val;
         var slot = img.parentElement;
         if (slot && slot.classList.contains('image-slot')) {
           slot.classList.add('filled');
         }
+        if (img.dataset.localWatch === 'true') return;
+        img.dataset.localWatch = 'true';
+        var observer = new MutationObserver(function () {
+          var currentKey = img.getAttribute('data-admin-image');
+          var currentVal = window.LocalImages.resolve(currentKey);
+          if (currentVal && img.getAttribute('src') !== currentVal) {
+            img.src = currentVal;
+          }
+        });
+        observer.observe(img, { attributes: true, attributeFilter: ['src', 'data-admin-image'] });
       });
     }
   };
+
+  document.addEventListener('cms:applied', function () {
+    window.LocalImages.applyAll(document);
+  });
 })();

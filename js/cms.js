@@ -99,7 +99,7 @@
     try {
       const remote = sb.prefetch ? await sb.prefetch() : await sb.loadAll();
       mergeRemote(remote, true);
-      applyContent();
+      applyContent(document, { textOnly: true });
 
       const localOnly = readStore();
       const listSyncTasks = [];
@@ -121,7 +121,7 @@
           .then(() => sb.loadAll())
           .then(fresh => {
             mergeRemote(fresh, true);
-            applyContent();
+            applyContent(document, { textOnly: true });
           })
           .catch(err => console.warn('Background list sync failed', err));
       }
@@ -133,13 +133,13 @@
           .then(() => sb.loadAll())
           .then(fresh => {
             mergeRemote(fresh);
-            applyContent();
+            applyContent(document, { textOnly: true });
           })
           .catch(err => console.warn('Local migrate failed', err));
       }
     } catch (err) {
       console.error('Supabase load failed — using local cache', err);
-      applyContent();
+      applyContent(document, { textOnly: true });
     }
   }
 
@@ -454,27 +454,9 @@
     if (!isRealImageUrl(val)) return;
 
     el.classList.add('is-loaded');
-    if (el.getAttribute('src') !== val) {
-      el.src = val;
-    }
+    el.src = val;
     el.removeAttribute('srcset');
     markImageSlotFilled(el);
-
-    if (!el.dataset.imageBound) {
-      el.dataset.imageBound = 'true';
-      el.addEventListener('load', () => markImageSlotFilled(el), { once: true });
-      el.addEventListener('error', () => {
-        el.classList.remove('is-loaded');
-        const slot = el.parentElement;
-        if (slot && slot.classList.contains('image-slot')) {
-          slot.classList.remove('filled');
-        }
-      }, { once: true });
-    }
-
-    if (el.complete && el.naturalWidth > 0) {
-      markImageSlotFilled(el);
-    }
   }
 
   const CASE_CARD_DEFAULTS = {
@@ -809,10 +791,7 @@
     if (!meta) return;
 
     const screenIds = getItemList(caseScreenListKey(slug), ['01', '02', '03', '04', '05']);
-    const titleSig = screenIds
-      .map(id => fieldValue(content, `projects.case.${slug}.study.screen.${id}.title`, ''))
-      .join('|');
-    const renderKey = `${slug}:${screenIds.join(',')}:${titleSig}`;
+    const renderKey = `${slug}:${screenIds.join(',')}`;
     if (stack.dataset.renderKey === renderKey) return;
 
     stack.dataset.renderKey = renderKey;
@@ -1105,25 +1084,31 @@
     });
   }
 
-  function applyContent(root) {
+  function applyContent(root, options) {
     root = root || document;
+    const opts = options || {};
+    const textOnly = opts.textOnly === true;
     const content = getContent();
 
     if (root.querySelector('.case-study')) {
       prepareCaseStudyPage(root);
     }
 
-    renderDynamicLists(root, content);
+    if (!textOnly) {
+      renderDynamicLists(root, content);
+    }
     applyCaseStudyLinks(root, content);
 
     const caseSlug = root.querySelector('.case-study') ? getCaseSlug() : null;
-    if (caseSlug) {
+    if (caseSlug && !textOnly) {
       renderCaseStudyScreens(root, content, caseSlug);
     }
 
-    root.querySelectorAll('[data-admin-image]').forEach(el => {
-      applyImageToElement(el, content, caseSlug);
-    });
+    if (!textOnly) {
+      root.querySelectorAll('[data-admin-image]').forEach(el => {
+        applyImageToElement(el, content, caseSlug);
+      });
+    }
 
     root.querySelectorAll('[data-admin-link]').forEach(el => {
       const key = el.dataset.adminLink;
@@ -1321,8 +1306,10 @@
 
   function boot() {
     applyContent();
-    CMS.ready.catch(function () {
-      applyContent();
+    CMS.ready.then(function () {
+      applyContent(document, { textOnly: true });
+    }).catch(function () {
+      applyContent(document, { textOnly: true });
     });
   }
 

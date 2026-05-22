@@ -237,6 +237,9 @@
     initCardCarousels(document.getElementById('projects-mobile'));
     refreshCardCarousels();
     initProjectStack();
+    if (window.LocalImages) {
+      window.LocalImages.applyAll(document);
+    }
     initImageSlots();
     initImageSlots(document.getElementById('projects-mobile'));
   }
