@@ -373,16 +373,6 @@
     const opts = options || {};
     if (!key) return '';
 
-    if (window.LocalImages && window.LocalImages.hasLocal && window.LocalImages.hasLocal(key)) {
-      return window.LocalImages.resolve(key);
-    }
-
-    const preferCms = window.LocalImages && window.LocalImages.preferCms();
-
-    if (!preferCms && window.LocalImages) {
-      return window.LocalImages.resolve(key);
-    }
-
     const direct = content[key];
     if (direct !== undefined && direct !== null && direct !== '') {
       return direct;
@@ -395,9 +385,6 @@
         if (fbVal !== undefined && fbVal !== null && fbVal !== '') {
           return fbVal;
         }
-        if (!preferCms && window.LocalImages) {
-          return window.LocalImages.resolve(fb);
-        }
       }
     }
 
@@ -407,13 +394,6 @@
       if (coverVal !== undefined && coverVal !== null && coverVal !== '') {
         return coverVal;
       }
-      if (!preferCms && window.LocalImages) {
-        return window.LocalImages.resolve(cover);
-      }
-    }
-
-    if (window.LocalImages) {
-      return window.LocalImages.resolve(key);
     }
 
     return '';
@@ -432,13 +412,7 @@
   }
 
   function isRealImageUrl(val) {
-    return typeof val === 'string' && (
-      val.startsWith('http') ||
-      val.startsWith('data:') ||
-      val.startsWith('images/') ||
-      val.startsWith('/') ||
-      (window.SITE_BASE && val.startsWith(window.SITE_BASE))
-    );
+    return typeof val === 'string' && (val.startsWith('http') || val.startsWith('data:'));
   }
 
   function imageSrcAttr(content, key, options) {
@@ -465,16 +439,6 @@
         el.src = val;
       }
       el.removeAttribute('srcset');
-      if (el.dataset.localFallback !== 'true') {
-        el.dataset.localFallback = 'true';
-        el.addEventListener('error', () => {
-          if (!window.LocalImages) return;
-          const local = window.LocalImages.resolve(key);
-          if (!local || el.src === local) return;
-          el.src = local;
-          markImageSlotFilled(el);
-        }, { once: true });
-      }
       if (el.complete && el.naturalWidth > 0) {
         markImageSlotFilled(el);
       }
