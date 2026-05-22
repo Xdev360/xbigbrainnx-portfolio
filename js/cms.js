@@ -373,6 +373,12 @@
     const opts = options || {};
     if (!key) return '';
 
+    const preferCms = window.LocalImages && window.LocalImages.preferCms();
+
+    if (!preferCms && window.LocalImages) {
+      return window.LocalImages.resolve(key);
+    }
+
     const direct = content[key];
     if (direct !== undefined && direct !== null && direct !== '') {
       return direct;
@@ -385,6 +391,9 @@
         if (fbVal !== undefined && fbVal !== null && fbVal !== '') {
           return fbVal;
         }
+        if (!preferCms && window.LocalImages) {
+          return window.LocalImages.resolve(fb);
+        }
       }
     }
 
@@ -394,6 +403,13 @@
       if (coverVal !== undefined && coverVal !== null && coverVal !== '') {
         return coverVal;
       }
+      if (!preferCms && window.LocalImages) {
+        return window.LocalImages.resolve(cover);
+      }
+    }
+
+    if (window.LocalImages) {
+      return window.LocalImages.resolve(key);
     }
 
     return '';
@@ -412,7 +428,7 @@
   }
 
   function isRealImageUrl(val) {
-    return typeof val === 'string' && (val.startsWith('http') || val.startsWith('data:'));
+    return typeof val === 'string' && (val.startsWith('http') || val.startsWith('data:') || val.startsWith('images/'));
   }
 
   function imageSrcAttr(content, key, options) {
