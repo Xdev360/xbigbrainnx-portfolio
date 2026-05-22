@@ -211,6 +211,9 @@
       if (!slot) return;
 
       const markFilled = () => {
+        if (img.getAttribute('src')) {
+          img.classList.add('is-loaded');
+        }
         if (img.complete && img.naturalWidth > 0) {
           slot.classList.add('filled');
         }

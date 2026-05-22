@@ -434,14 +434,29 @@
     if (!key) return;
     const fallbacks = imageFallbacksForKey(key);
     const val = resolveAdminImageValue(content, key, { slug: caseSlug, fallbacks });
-    if (isRealImageUrl(val)) {
-      if (el.getAttribute('src') !== val) {
-        el.src = val;
-      }
-      el.removeAttribute('srcset');
-      if (el.complete && el.naturalWidth > 0) {
-        markImageSlotFilled(el);
-      }
+    if (!isRealImageUrl(val)) return;
+
+    el.classList.add('is-loaded');
+    if (el.getAttribute('src') !== val) {
+      el.src = val;
+    }
+    el.removeAttribute('srcset');
+    markImageSlotFilled(el);
+
+    if (!el.dataset.imageBound) {
+      el.dataset.imageBound = 'true';
+      el.addEventListener('load', () => markImageSlotFilled(el), { once: true });
+      el.addEventListener('error', () => {
+        el.classList.remove('is-loaded');
+        const slot = el.parentElement;
+        if (slot && slot.classList.contains('image-slot')) {
+          slot.classList.remove('filled');
+        }
+      }, { once: true });
+    }
+
+    if (el.complete && el.naturalWidth > 0) {
+      markImageSlotFilled(el);
     }
   }
 
@@ -777,7 +792,10 @@
     if (!meta) return;
 
     const screenIds = getItemList(caseScreenListKey(slug), ['01', '02', '03', '04', '05']);
-    const renderKey = `${slug}:${screenIds.join(',')}`;
+    const titleSig = screenIds
+      .map(id => fieldValue(content, `projects.case.${slug}.study.screen.${id}.title`, ''))
+      .join('|');
+    const renderKey = `${slug}:${screenIds.join(',')}:${titleSig}`;
     if (stack.dataset.renderKey === renderKey) return;
 
     stack.dataset.renderKey = renderKey;
@@ -789,10 +807,11 @@
       const descKey = `projects.case.${slug}.study.screen.${screenId}.desc`;
       const title = fieldValue(content, titleKey, '');
       const desc = fieldValue(content, descKey, '');
-      if (!title) return '';
-
       const totalStr = String(screenIds.length).padStart(2, '0');
       const screenSrc = imageSrcAttr(content, imageKey, { slug });
+      const titleHtml = title
+        ? `<h4 class="case-screen-title" data-cms-id="${titleKey}">${escapeHtml(title)}</h4>`
+        : `<h4 class="case-screen-title" data-cms-id="${titleKey}"></h4>`;
 
       return `
         <article class="case-screen-card">
@@ -801,12 +820,12 @@
           </div>
           <div class="case-screen-meta">
             <span class="case-screen-step">${num} / ${totalStr}</span>
-            <h4 class="case-screen-title" data-cms-id="${titleKey}">${escapeHtml(title)}</h4>
+            ${titleHtml}
             <p class="case-screen-desc" data-cms-id="${descKey}">${escapeHtml(desc)}</p>
           </div>
         </article>
       `;
-    }).filter(Boolean);
+    });
 
     stack.innerHTML = rendered.join('');
   }

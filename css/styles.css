@@ -84,11 +84,13 @@ body.cms-ready .image-slot:not(.filled)::after {
   display: flex;
 }
 
+.image-slot:has(> img[src^="images/"])::after,
 .image-slot:has(> img[src^="http"])::after,
 .image-slot:has(> img[src^="https"])::after,
 .image-slot:has(> img[src^="data:"])::after,
 .image-slot.filled::after { display: none; }
 
+.image-slot:has(> img[src^="images/"]),
 .image-slot:has(> img[src^="http"]),
 .image-slot:has(> img[src^="https"]),
 .image-slot:has(> img[src^="data:"]),
@@ -102,6 +104,8 @@ body.cms-ready .image-slot:not(.filled)::after {
 }
 
 .image-slot.filled > img,
+.image-slot > img.is-loaded,
+.image-slot:has(> img[src^="images/"]) > img,
 .image-slot:has(> img[src^="http"]) > img,
 .image-slot:has(> img[src^="https"]) > img,
 .image-slot:has(> img[src^="data:"]) > img {

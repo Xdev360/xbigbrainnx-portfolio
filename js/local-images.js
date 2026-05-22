@@ -20,28 +20,20 @@
     return window.location.origin + path + '/';
   }
 
-  function toAbsolute(path) {
-    if (!path) return '';
-    if (/^https?:\/\//i.test(path) || path.indexOf('data:') === 0) return path;
-    if (path.charAt(0) === '/') return window.location.origin + path;
-    return window.SITE_BASE + path.replace(/^\.\//, '');
-  }
-
   window.SITE_BASE = detectSiteBase();
 
   window.LocalImages = {
     base: 'images/',
 
-    /** CMS key → repo path under images/ */
+    /** CMS key → repo path under images/ (relative, works on GitHub Pages) */
     resolve: function (key) {
       if (!key) return '';
       var k = String(key).replace(/^\//, '');
-      return toAbsolute('images/' + k);
+      return 'images/' + k;
     },
 
     repoPath: function (key) {
-      if (!key) return '';
-      return 'images/' + String(key).replace(/^\//, '');
+      return this.resolve(key);
     }
   };
 })();
