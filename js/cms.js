@@ -287,7 +287,7 @@
   }
 
   function setItemList(listKey, ids) {
-    setField(listKey, ids);
+    return setField(listKey, ids);
   }
 
   function nextItemId(existingIds) {
@@ -548,10 +548,13 @@
 
   function getCaseSlug() {
     try {
-      return new URLSearchParams(window.location.search).get('case') || '02';
+      const param = new URLSearchParams(window.location.search).get('case');
+      if (param) return param;
     } catch {
-      return '02';
+      /* ignore */
     }
+    const ids = getItemList('__list.projects.case', ['01', '02', '03', '04', '05']);
+    return ids[0] || '01';
   }
 
   function getCaseMeta(slug) {
@@ -575,6 +578,46 @@
         el.href = href;
       });
     });
+  }
+
+  function caseStudyFieldValue(content, slug, suffix) {
+    const key = `projects.case.${slug}.study.${suffix}`;
+    const val = content[key];
+    if (val !== undefined && val !== null && val !== '') return val;
+
+    if (suffix === 'title') {
+      return fieldValue(content, `projects.case.${slug}.name`, (getCaseMeta(slug) || {}).name || '');
+    }
+
+    const screenMatch = suffix.match(/^screen\.(\d+)\.(title|desc)$/);
+    if (screenMatch) {
+      return screenFieldValue(content, slug, screenMatch[1], screenMatch[2]);
+    }
+
+    return '';
+  }
+
+  function applyCaseStudyTextContent(root, content, slug) {
+    if (!slug) return;
+
+    root.querySelectorAll('[data-cms-id]').forEach(el => {
+      const key = el.dataset.cmsId;
+      if (!key || !key.startsWith(`projects.case.${slug}.study.`)) return;
+
+      const suffix = key.slice(`projects.case.${slug}.study.`.length);
+      const val = caseStudyFieldValue(content, slug, suffix);
+
+      if (el.dataset.cmsHtml === 'true') {
+        el.innerHTML = val;
+      } else {
+        el.textContent = val;
+      }
+    });
+
+    const titleEl = root.querySelector('[data-case-page-title]');
+    const titleVal = caseStudyFieldValue(content, slug, 'title');
+    if (titleEl) titleEl.textContent = titleVal;
+    document.title = `${titleVal || 'Case study'} — Case Study · xbigbrainnx`;
   }
 
   function prepareCaseStudyPage(root) {
@@ -617,11 +660,7 @@
       }
     });
 
-    const titleEl = root.querySelector('[data-case-page-title]');
-    const titleVal = fieldValue(content, `projects.case.${slug}.study.title`, fieldValue(content, `projects.case.${slug}.name`, meta.name));
-    if (titleEl) titleEl.textContent = titleVal;
-
-    document.title = `${titleVal} — Case Study · xbigbrainnx`;
+    applyCaseStudyTextContent(root, content, slug);
   }
 
   function renderMediumList(root, content) {
@@ -1195,6 +1234,12 @@
 
     root.querySelectorAll('[data-cms-id]').forEach(el => {
       const key = el.dataset.cmsId;
+      if (!key) return;
+
+      if (caseSlug && key.startsWith(`projects.case.${caseSlug}.study.`)) {
+        return;
+      }
+
       let val = content[key];
       const screenMatch = key && key.match(/^projects\.case\.(\d+)\.study\.screen\.(\d+)\.(title|desc)$/);
       if (screenMatch && (val === undefined || val === null || val === '')) {

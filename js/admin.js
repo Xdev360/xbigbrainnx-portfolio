@@ -141,13 +141,20 @@
 
   function reorderDynamicItem(dynamicDef, itemId, direction, onDone) {
     if (!window.CMS) return;
+    setStatus('Saving order…');
     CMS.reorderItemList(dynamicDef.listKey, itemId, direction, dynamicDef.defaultIds || [])
       .then(moved => {
-        if (!moved) return;
+        if (!moved) {
+          setStatus('Already at the edge of the list');
+          return;
+        }
         setStatus(CMS.isUsingRemote() ? 'Order saved to cloud' : 'Order saved', true);
         if (onDone) onDone();
       })
-      .catch(() => setStatus('Reorder failed'));
+      .catch(err => {
+        console.error('Reorder failed', err);
+        setStatus(saveErrorMessage(err));
+      });
   }
 
   function subsectionStorageKey(panelId) {
@@ -745,6 +752,33 @@
 
     head.appendChild(thumb);
     head.appendChild(meta);
+
+    if (cardDef.dynamic && opts.onReorder) {
+      const reorderRow = document.createElement('div');
+      reorderRow.className = 'admin-card-head-reorder';
+      const upBtn = document.createElement('button');
+      upBtn.type = 'button';
+      upBtn.className = 'admin-btn admin-btn-ghost admin-btn-reorder';
+      upBtn.textContent = '↑';
+      upBtn.setAttribute('aria-label', 'Move up');
+      upBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        opts.onReorder(cardDef.itemId, -1);
+      });
+      const downBtn = document.createElement('button');
+      downBtn.type = 'button';
+      downBtn.className = 'admin-btn admin-btn-ghost admin-btn-reorder';
+      downBtn.textContent = '↓';
+      downBtn.setAttribute('aria-label', 'Move down');
+      downBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        opts.onReorder(cardDef.itemId, 1);
+      });
+      reorderRow.appendChild(upBtn);
+      reorderRow.appendChild(downBtn);
+      head.appendChild(reorderRow);
+    }
+
     head.appendChild(chevron);
 
     const body = document.createElement('div');
@@ -800,30 +834,6 @@
       body.appendChild(nested);
     } else {
       appendFields(cardDef.fields, body);
-    }
-
-    if (cardDef.dynamic && opts.onReorder) {
-      const reorderRow = document.createElement('div');
-      reorderRow.className = 'admin-card-reorder';
-      const upBtn = document.createElement('button');
-      upBtn.type = 'button';
-      upBtn.className = 'admin-btn admin-btn-ghost admin-btn-reorder';
-      upBtn.textContent = '↑ Move up';
-      upBtn.addEventListener('click', e => {
-        e.stopPropagation();
-        opts.onReorder(cardDef.itemId, -1);
-      });
-      const downBtn = document.createElement('button');
-      downBtn.type = 'button';
-      downBtn.className = 'admin-btn admin-btn-ghost admin-btn-reorder';
-      downBtn.textContent = '↓ Move down';
-      downBtn.addEventListener('click', e => {
-        e.stopPropagation();
-        opts.onReorder(cardDef.itemId, 1);
-      });
-      reorderRow.appendChild(upBtn);
-      reorderRow.appendChild(downBtn);
-      body.insertBefore(reorderRow, body.firstChild);
     }
 
     if (cardDef.deletable && opts.onDelete) {

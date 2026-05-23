@@ -448,6 +448,19 @@
   transform: rotate(90deg);
 }
 
+.admin-card-head-reorder {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: auto;
+  margin-right: 8px;
+}
+
+.admin-card-head-reorder .admin-btn-reorder {
+  padding: 6px 10px;
+  font-size: 14px;
+  line-height: 1;
+}
+
 .admin-nested-label {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
