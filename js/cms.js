@@ -525,8 +525,9 @@
 
   function screenFieldValue(content, slug, screenId, field) {
     const key = `projects.case.${slug}.study.screen.${screenId}.${field}`;
-    const fallback = ((CASE_SCREEN_DEFAULTS[slug] || {})[screenId] || {})[field] || '';
-    return fieldValue(content, key, fallback);
+    const val = content[key];
+    if (val !== undefined && val !== null && val !== '') return val;
+    return '';
   }
 
   function fieldValue(content, key, fallback) {
@@ -614,10 +615,29 @@
       }
     });
 
+    syncCaseStudyScreenText(root, content, slug);
+
     const titleEl = root.querySelector('[data-case-page-title]');
     const titleVal = caseStudyFieldValue(content, slug, 'title');
     if (titleEl) titleEl.textContent = titleVal;
     document.title = `${titleVal || 'Case study'} — Case Study · xbigbrainnx`;
+  }
+
+  function syncCaseStudyScreenText(root, content, slug) {
+    const stack = root.querySelector('[data-cms-render="case-screens"]');
+    if (!stack || !slug) return;
+
+    const screenIds = getItemList(caseScreenListKey(slug), ['01', '02', '03', '04', '05']);
+    screenIds.forEach(screenId => {
+      const titleKey = `projects.case.${slug}.study.screen.${screenId}.title`;
+      const descKey = `projects.case.${slug}.study.screen.${screenId}.desc`;
+      const titleEl = stack.querySelector(`[data-cms-id="${titleKey}"]`);
+      const descEl = stack.querySelector(`[data-cms-id="${descKey}"]`);
+      const titleVal = caseStudyFieldValue(content, slug, `screen.${screenId}.title`);
+      const descVal = caseStudyFieldValue(content, slug, `screen.${screenId}.desc`);
+      if (titleEl) titleEl.textContent = titleVal;
+      if (descEl) descEl.textContent = descVal;
+    });
   }
 
   function prepareCaseStudyPage(root) {
@@ -659,8 +679,6 @@
         el.dataset.adminLink = key.replace(`projects.case.${templateSlug}`, `projects.case.${slug}`);
       }
     });
-
-    applyCaseStudyTextContent(root, content, slug);
   }
 
   function renderMediumList(root, content) {
@@ -896,8 +914,8 @@
       const imageKey = `${studyFolder}/screen-${screenId}.png`;
       const titleKey = `projects.case.${slug}.study.screen.${screenId}.title`;
       const descKey = `projects.case.${slug}.study.screen.${screenId}.desc`;
-      const title = screenFieldValue(content, slug, screenId, 'title');
-      const desc = screenFieldValue(content, slug, screenId, 'desc');
+      const title = caseStudyFieldValue(content, slug, `screen.${screenId}.title`);
+      const desc = caseStudyFieldValue(content, slug, `screen.${screenId}.desc`);
       const totalStr = String(screenIds.length).padStart(2, '0');
       const screenSrc = imageSrcAttr(content, imageKey, { slug });
       const titleHtml = title
@@ -1284,6 +1302,10 @@
 
     if (document.body) {
       document.body.classList.add('cms-ready');
+    }
+
+    if (caseSlug) {
+      applyCaseStudyTextContent(root, content, caseSlug);
     }
 
     if (window.LocalImages) {

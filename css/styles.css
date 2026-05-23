@@ -1925,32 +1925,19 @@ body {
 /* Placeholder padding rule disabled — images load from images/ folder. */
 .case-system-image.image-slot::after { display: none !important; }
 
-/* ---- key screens (sticky stacking parallax)
- *
- * The container holds N sibling `.case-screen-card`s. Every card has
- * `position: sticky; top: <nav-offset>` and a solid background, so as
- * the page scrolls each successive card slides into the same top
- * position and visually covers the previous one (later DOM siblings
- * paint on top). Cards are natural content height — the spacing
- * between them comes from `gap` on the stack (Figma-style auto
- * layout), not from any per-card min-height. The effect runs in
- * both scroll directions naturally. */
+/* ---- key screens — structured scroll (no sticky card overlap) ---- */
 .case-screens-section { margin-bottom: 64px; }
 
-/* Figma-style auto-layout — each card sizes to its content, the
- * `gap` on the stack puts a consistent space between siblings (no
- * empty space inside any card). Sticky behaviour is unchanged: as
- * the user scrolls, the next card's natural top reaches top:88,
- * sticks, and visually covers the previous card. */
 .case-screens-stack {
   display: flex;
   flex-direction: column;
-  gap: 64px;
+  gap: 80px;
 }
 
 .case-screen-card {
-  position: sticky;
-  top: 88px;
+  position: relative;
+  top: auto;
+  scroll-margin-top: 96px;
   background: var(--cream);
   border: 1px solid var(--line);
   border-radius: 16px;
@@ -1958,7 +1945,14 @@ body {
   display: flex;
   flex-direction: column;
   gap: 22px;
-  box-shadow: 0 -1px 0 var(--cream);
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+
+.case-screen-card.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Preview frame — full screenshot visible (contain), not cropped. */
@@ -3601,44 +3595,18 @@ body {
    * radius); height follows the upload. */
   .case-system-image.image-slot::after { padding: 18px; font-size: 9px; }
 
-  /* Key Screens — same sticky stack parallax as desktop; cap image
-   * height so cards are short enough for the cover-up effect to read. */
-  .case-screens-stack { gap: 48px; }
+  /* Key Screens — structured scroll on mobile (no sticky overlap). */
+  .case-screens-stack { gap: 56px; }
 
   .case-screen-card {
-    position: sticky;
-    top: 72px;
     padding: 20px;
     border-radius: 14px;
-    gap: 14px;
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06);
+    gap: 16px;
+    scroll-margin-top: 80px;
   }
-
-  .case-screens-stack .case-screen-card:nth-child(1) { z-index: 1; }
-  .case-screens-stack .case-screen-card:nth-child(2) { z-index: 2; }
-  .case-screens-stack .case-screen-card:nth-child(3) { z-index: 3; }
-  .case-screens-stack .case-screen-card:nth-child(4) { z-index: 4; }
-  .case-screens-stack .case-screen-card:nth-child(5) { z-index: 5; }
-  .case-screens-stack .case-screen-card:nth-child(6) { z-index: 6; }
 
   .case-screen-preview.is-mobile {
     max-width: 100%;
-  }
-
-  .case-screen-preview.image-slot > img {
-    max-height: 52vh;
-    width: 100%;
-    object-fit: contain;
-  }
-
-  /* Title + description stay visible at the top of each card while it sticks. */
-  .case-screen-meta {
-    max-width: none;
-    order: -1;
-  }
-
-  .case-screen-preview {
-    order: 0;
   }
 
   .case-screen-title { font-size: 20px; }
@@ -3651,5 +3619,10 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .case-screen-card {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

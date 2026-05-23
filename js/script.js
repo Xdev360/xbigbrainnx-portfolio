@@ -244,8 +244,43 @@
     initImageSlots(document.getElementById('projects-mobile'));
   }
 
+  function initCaseScreenReveal() {
+    const cards = document.querySelectorAll('.case-screen-card');
+    if (!cards.length) return;
+
+    cards.forEach(card => {
+      if (card.classList.contains('is-visible')) return;
+      const rect = card.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.92) {
+        card.classList.add('is-visible');
+      }
+    });
+
+    if (!('IntersectionObserver' in window)) {
+      cards.forEach(card => card.classList.add('is-visible'));
+      return;
+    }
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -5% 0px' });
+
+    cards.forEach(card => {
+      if (!card.classList.contains('is-visible')) {
+        observer.observe(card);
+      }
+    });
+  }
+
+  document.addEventListener('cms:applied', initCaseScreenReveal);
   document.addEventListener('cms:applied', initHeroProjects);
   initHeroProjects();
+  initCaseScreenReveal();
 
   /* ---------------------------------------------------------
    * Mobile navigation drawer
