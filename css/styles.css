@@ -3601,27 +3601,44 @@ body {
    * radius); height follows the upload. */
   .case-system-image.image-slot::after { padding: 18px; font-size: 9px; }
 
-  /* Key Screens — normal scroll on mobile (no sticky cover-up). */
-  .case-screens-stack { gap: 32px; }
+  /* Key Screens — same sticky stack parallax as desktop; cap image
+   * height so cards are short enough for the cover-up effect to read. */
+  .case-screens-stack { gap: 48px; }
+
   .case-screen-card {
-    position: relative;
-    top: auto;
+    position: sticky;
+    top: 72px;
     padding: 20px;
     border-radius: 14px;
-    gap: 16px;
+    gap: 14px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06);
   }
+
+  .case-screens-stack .case-screen-card:nth-child(1) { z-index: 1; }
+  .case-screens-stack .case-screen-card:nth-child(2) { z-index: 2; }
+  .case-screens-stack .case-screen-card:nth-child(3) { z-index: 3; }
+  .case-screens-stack .case-screen-card:nth-child(4) { z-index: 4; }
+  .case-screens-stack .case-screen-card:nth-child(5) { z-index: 5; }
+  .case-screens-stack .case-screen-card:nth-child(6) { z-index: 6; }
 
   .case-screen-preview.is-mobile {
     max-width: 100%;
   }
 
+  .case-screen-preview.image-slot > img {
+    max-height: 52vh;
+    width: 100%;
+    object-fit: contain;
+  }
+
+  /* Title + description stay visible at the top of each card while it sticks. */
   .case-screen-meta {
     max-width: none;
-    order: 2;
+    order: -1;
   }
 
   .case-screen-preview {
-    order: 1;
+    order: 0;
   }
 
   .case-screen-title { font-size: 20px; }
