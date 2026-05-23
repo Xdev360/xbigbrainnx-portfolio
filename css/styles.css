@@ -1961,20 +1961,26 @@ body {
   box-shadow: 0 -1px 0 var(--cream);
 }
 
-/* Preview frame — defaults to a wide desktop aspect; admin can flip
- * to `.is-mobile` for a portrait phone mockup. */
+/* Preview frame — full screenshot visible (contain), not cropped. */
 .case-screen-preview {
   width: 100%;
   border-radius: 10px;
   background: var(--cream-soft);
   border: 1px solid var(--line);
+  overflow: hidden;
+}
+.case-screen-preview.image-slot > img {
+  height: auto;
+  width: 100%;
+  object-fit: contain;
+  object-position: center top;
 }
 .case-screen-preview.is-desktop {
-  aspect-ratio: 16 / 9;
+  aspect-ratio: auto;
 }
 .case-screen-preview.is-mobile {
-  aspect-ratio: 9 / 19;
-  max-width: 240px;
+  aspect-ratio: auto;
+  max-width: 280px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -1984,6 +1990,7 @@ body {
   flex-direction: column;
   gap: 8px;
   max-width: 70ch;
+  flex-shrink: 0;
 }
 .case-screen-step {
   font-family: 'JetBrains Mono', monospace;
@@ -3594,25 +3601,31 @@ body {
    * radius); height follows the upload. */
   .case-system-image.image-slot::after { padding: 18px; font-size: 9px; }
 
-  /* Key Screens cards on mobile — natural content height (no
-   * min-height), the `gap` on the stack creates the visible
-   * spacing between cards. Sticky covering behaviour is identical
-   * to desktop. */
-  .case-screens-stack { gap: 48px; }
+  /* Key Screens — normal scroll on mobile (no sticky cover-up). */
+  .case-screens-stack { gap: 32px; }
   .case-screen-card {
+    position: relative;
+    top: auto;
     padding: 20px;
     border-radius: 14px;
-    gap: 18px;
-    top: 72px;
+    gap: 16px;
   }
 
-  .case-screen-preview.is-desktop { aspect-ratio: 16 / 10; }
   .case-screen-preview.is-mobile {
-    max-width: 180px;
-    aspect-ratio: 9 / 18;
+    max-width: 100%;
   }
+
+  .case-screen-meta {
+    max-width: none;
+    order: 2;
+  }
+
+  .case-screen-preview {
+    order: 1;
+  }
+
   .case-screen-title { font-size: 20px; }
-  .case-screen-desc { font-size: 13.5px; }
+  .case-screen-desc { font-size: 13.5px; line-height: 1.6; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -488,6 +488,37 @@
     '03': { name: 'Wintech Studio', image: 'design/wintech.jpg' }
   };
 
+  const CASE_SCREEN_DEFAULTS = {
+    '02': {
+      '01': {
+        title: 'Marketing landing page',
+        desc: 'Hero, value props, and loan types above the fold — built so a first-time borrower understands the offer in under 30 seconds.'
+      },
+      '02': {
+        title: 'Loan product selector',
+        desc: 'HomeFlex, BusinessLoan, QuickFund, CrediMini, FlexLoan, and MilestonePay — each product gets a clear card with pricing and eligibility cues.'
+      },
+      '03': {
+        title: 'Onboarding & KYC',
+        desc: 'Step-by-step verification with plain language, progress indicators, and one obvious action per screen to reduce drop-off.'
+      },
+      '04': {
+        title: 'Borrower dashboard',
+        desc: 'Active loans, repayment goals, and account status in a single view — big numbers, clear hierarchy, no jargon.'
+      },
+      '05': {
+        title: 'Repayment & transaction history',
+        desc: 'Payment schedules, completed transactions, and upcoming due dates so returning borrowers always know where they stand.'
+      }
+    }
+  };
+
+  function screenFieldValue(content, slug, screenId, field) {
+    const key = `projects.case.${slug}.study.screen.${screenId}.${field}`;
+    const fallback = ((CASE_SCREEN_DEFAULTS[slug] || {})[screenId] || {})[field] || '';
+    return fieldValue(content, key, fallback);
+  }
+
   function fieldValue(content, key, fallback) {
     const val = content[key];
     if (val !== undefined && val !== null && val !== '') return val;
@@ -816,8 +847,8 @@
       const imageKey = `${studyFolder}/screen-${screenId}.png`;
       const titleKey = `projects.case.${slug}.study.screen.${screenId}.title`;
       const descKey = `projects.case.${slug}.study.screen.${screenId}.desc`;
-      const title = fieldValue(content, titleKey, '');
-      const desc = fieldValue(content, descKey, '');
+      const title = screenFieldValue(content, slug, screenId, 'title');
+      const desc = screenFieldValue(content, slug, screenId, 'desc');
       const totalStr = String(screenIds.length).padStart(2, '0');
       const screenSrc = imageSrcAttr(content, imageKey, { slug });
       const titleHtml = title
@@ -1154,7 +1185,11 @@
 
     root.querySelectorAll('[data-cms-id]').forEach(el => {
       const key = el.dataset.cmsId;
-      const val = content[key];
+      let val = content[key];
+      const screenMatch = key && key.match(/^projects\.case\.(\d+)\.study\.screen\.(\d+)\.(title|desc)$/);
+      if (screenMatch && (val === undefined || val === null || val === '')) {
+        val = screenFieldValue(content, screenMatch[1], screenMatch[2], screenMatch[3]);
+      }
       if (val === undefined || val === null || val === '') return;
 
       if (el.dataset.cmsHtml === 'true') {
