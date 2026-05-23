@@ -59,7 +59,13 @@
     resolve: function (key) {
       if (!key) return '';
       var k = String(key).replace(/^\//, '');
-      return 'images/' + k;
+      if (/^images\//i.test(k)) k = k.slice(7);
+      var rel = 'images/' + k;
+      var base = window.SITE_BASE || '';
+      if (base && /^https?:\/\//i.test(base)) {
+        return base.replace(/\/?$/, '/') + rel;
+      }
+      return rel;
     },
 
     repoPath: function (key) {

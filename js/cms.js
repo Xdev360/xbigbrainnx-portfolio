@@ -323,7 +323,7 @@
   function syncDesignRegistry(content) {
     content = content || getContent();
     const ids = getItemList('__list.projects.design', ['01', '02', '03']);
-    const base = { ...(window.CMS_DESIGN || {}) };
+    const base = { ...FALLBACK_DESIGN_REGISTRY, ...(window.CMS_DESIGN || {}) };
     ids.forEach(id => {
       const known = base[id];
       base[id] = {
@@ -338,7 +338,7 @@
   function syncCaseRegistry(content) {
     content = content || getContent();
     const ids = getItemList('__list.projects.case', ['01', '02', '03', '04', '05']);
-    const base = { ...(window.CMS_CASES || {}) };
+    const base = { ...FALLBACK_CASE_REGISTRY, ...(window.CMS_CASES || {}) };
     ids.forEach(id => {
       const known = base[id];
       base[id] = {
@@ -471,6 +471,21 @@
     '01': { name: 'Lumèa Essence', about: 'A self-care retail brand. Identity, packaging, web presence and a TikTok-first content system.', label: 'BRAND DESIGN', image: 'design/lumea-essence.jpg' },
     '02': { name: 'The Brain Room', about: 'A visual system for the essay series — covers, illustrations and a shared grammar that runs across Substack, Medium and print.', label: 'EDITORIAL DESIGN', image: 'design/brain-room.jpg' },
     '03': { name: 'Wintech Studio', about: 'A boutique design and engineering studio out of Lagos — identity, narrative and a site that punches above its weight.', label: 'AGENCY IDENTITY', image: 'design/wintech.jpg' }
+  };
+
+  /* Must match js/content-schema.js — public pages need correct study folders for images. */
+  const FALLBACK_CASE_REGISTRY = {
+    '01': { name: 'Zalary', study: 'cases/zalary', theme: '#2D6A4F' },
+    '02': { name: 'CrediGo', study: 'cases/credigo', theme: '#3859E6' },
+    '03': { name: 'Lumèa Essence', study: 'cases/lumea-essence', theme: '#B8860B' },
+    '04': { name: 'Wintech Studio', study: 'cases/wintech', theme: '#E63946' },
+    '05': { name: 'Untitled AI', study: 'cases/untitled-ai', theme: '#7C3AED' }
+  };
+
+  const FALLBACK_DESIGN_REGISTRY = {
+    '01': { name: 'Lumèa Essence', image: 'design/lumea-essence.jpg' },
+    '02': { name: 'The Brain Room', image: 'design/brain-room.jpg' },
+    '03': { name: 'Wintech Studio', image: 'design/wintech.jpg' }
   };
 
   function fieldValue(content, key, fallback) {
