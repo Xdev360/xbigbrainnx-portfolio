@@ -412,6 +412,42 @@
   border-top: 1px dashed var(--line);
 }
 
+.admin-nested-block--page {
+  margin-top: 24px;
+  padding: 20px 16px 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--cream-soft);
+}
+
+.admin-nested-hint {
+  margin: 0 0 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.admin-card-section {
+  margin-bottom: 8px;
+}
+
+.admin-card-section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.admin-edit-card--case-study .admin-edit-card-body {
+  display: block;
+}
+
+.admin-edit-card--case-study .admin-edit-card-chevron {
+  transform: rotate(90deg);
+}
+
 .admin-nested-label {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;

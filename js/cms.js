@@ -320,6 +320,15 @@
     return persistDeleteByPrefix(prefix);
   }
 
+  function normalizeStudyFolder(val, fallback) {
+    const fb = fallback || 'cases/study-01';
+    if (val === undefined || val === null || val === '') return fb;
+    const trimmed = String(val).trim().replace(/^\/+|\/+$/g, '');
+    if (!trimmed) return fb;
+    if (trimmed.startsWith('cases/')) return trimmed;
+    return `cases/${trimmed}`;
+  }
+
   function syncDesignRegistry(content) {
     content = content || getContent();
     const ids = getItemList('__list.projects.design', ['01', '02', '03']);
@@ -341,9 +350,10 @@
     const base = { ...FALLBACK_CASE_REGISTRY, ...(window.CMS_CASES || {}) };
     ids.forEach(id => {
       const known = base[id];
+      const folderDefault = known ? known.study : `cases/study-${id}`;
       base[id] = {
         name: fieldValue(content, `projects.case.${id}.name`, known ? known.name : `Case study ${id}`),
-        study: known ? known.study : `cases/study-${id}`,
+        study: normalizeStudyFolder(content[`projects.case.${id}.studyFolder`], folderDefault),
         theme: fieldValue(content, `projects.case.${id}.theme`, known ? known.theme : '#3859E6')
       };
     });
@@ -460,7 +470,7 @@
   }
 
   const CASE_CARD_DEFAULTS = {
-    '01': { name: 'Zalary <em>Privacy Payroll</em>', about: 'A privacy-first payroll system built on Zcash in 24 hours. No wallet connections — viewing keys only.', tags: 'FINTECH · WEB3', role: 'Brand & UX Lead', year: '2025' },
+    '01': { name: 'Yieldmate <em>DeFi Yield</em>', about: 'A yield optimization platform built for clarity, trust, and speed in DeFi.', tags: 'FINTECH · WEB3', role: 'Brand & UX Lead', year: '2025' },
     '02': { name: 'Credigo <em>Website &amp; Dashboard</em>', about: 'CrediGo enables individuals and businesses to access secure flexible loans across Nigeria.', tags: 'FINTECH · WEB 2', role: 'Graphics & UI/UX Designer', year: '2025' },
     '03': { name: 'Lumèa Essence <em>Brand System</em>', about: 'A self-care retail brand. Full identity, packaging, web presence and a TikTok-first content system.', tags: 'RETAIL · BRAND', role: 'Brand Strategist & Designer', year: '2024' },
     '04': { name: 'Wintech Studio <em>Agency Site</em>', about: 'A boutique design and engineering studio out of Lagos — identity, narrative and a site that punches above its weight.', tags: 'AGENCY · SAAS', role: 'Founder & Design Lead', year: '2024' },
@@ -475,7 +485,7 @@
 
   /* Must match js/content-schema.js — public pages need correct study folders for images. */
   const FALLBACK_CASE_REGISTRY = {
-    '01': { name: 'Zalary', study: 'cases/zalary', theme: '#2D6A4F' },
+    '01': { name: 'Yieldmate', study: 'cases/Yieldmate', theme: '#2D6A4F' },
     '02': { name: 'CrediGo', study: 'cases/credigo', theme: '#3859E6' },
     '03': { name: 'Lumèa Essence', study: 'cases/lumea-essence', theme: '#B8860B' },
     '04': { name: 'Wintech Studio', study: 'cases/wintech', theme: '#E63946' },

@@ -27,10 +27,11 @@ Each case study folder has: **hero**, **design-system**, **screen-01 … screen-
 
 ### Case 01 — Zalary
 - `hero-cards/case-01.jpg` — homepage hero carousel
-- `case-studies/zalary.jpg` — projects stack cover
-- `cases/zalary/hero.png`
-- `cases/zalary/design-system.png`
-- `cases/zalary/screen-01.png` … `screen-05.png`
+- `case-studies/yieldmate.jpg` — projects stack cover (case 01)
+- `case-studies/credigo.jpg` — projects stack cover (case 02)
+- `cases/Yieldmate/hero.png`
+- `cases/Yieldmate/design-system.png`
+- `cases/Yieldmate/screen-01.png` … `screen-05.png`
 
 ### Case 02 — CrediGo
 - `hero-cards/case-02.jpg`

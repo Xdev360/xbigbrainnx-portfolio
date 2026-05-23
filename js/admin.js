@@ -65,11 +65,12 @@
     return schema && schema.categories ? schema.categories.slice() : [];
   }
 
-  function getDynamicCards(dynamicDef) {
+  function getDynamicCards(dynamicDef, content) {
     if (!window.CMS || !dynamicDef || !dynamicDef.makeCard) return [];
+    content = content || getContent();
     const ids = CMS.getItemList(dynamicDef.listKey, dynamicDef.defaultIds || []);
     return ids.map(itemId => {
-      const card = dynamicDef.makeCard(itemId);
+      const card = dynamicDef.makeCard(itemId, content);
       card.deletable = true;
       card.itemId = itemId;
       card.dynamic = dynamicDef;
@@ -243,6 +244,15 @@
       block.appendChild(hint);
     }
 
+    function bindTextSave(el, trim) {
+      const commit = () => {
+        const next = trim ? el.value.trim() : el.value;
+        onUpdate(next);
+      };
+      el.addEventListener('change', commit);
+      el.addEventListener('blur', commit);
+    }
+
     if (field.type === 'localImage') {
       block.appendChild(renderLocalImageHint(field));
     } else if (field.type === 'image') {
@@ -255,7 +265,7 @@
       const ta = document.createElement('textarea');
       ta.className = 'admin-textarea';
       ta.value = value || '';
-      ta.addEventListener('change', () => onUpdate(ta.value));
+      bindTextSave(ta, false);
       block.appendChild(ta);
     } else if (field.type === 'toggle') {
       block.appendChild(renderToggleInput(field, value, onUpdate));
@@ -280,7 +290,7 @@
       input.className = 'admin-input';
       input.value = value || '';
       if (field.placeholder) input.placeholder = field.placeholder;
-      input.addEventListener('change', () => onUpdate(input.value.trim()));
+      bindTextSave(input, true);
       block.appendChild(input);
     }
 
@@ -681,10 +691,18 @@
     return wrap;
   }
 
+  function appendSectionLabel(container, text) {
+    const label = document.createElement('div');
+    label.className = 'admin-card-section-label';
+    label.textContent = text;
+    container.appendChild(label);
+  }
+
   function createEditCard(cardDef, content, options) {
     const opts = options || {};
     const card = document.createElement('div');
     card.className = 'admin-edit-card';
+    if (cardDef.nested) card.classList.add('admin-edit-card--case-study');
     card.dataset.cardId = cardDef.id;
 
     const previewVal = cardDef.previewImage && window.LocalImages
@@ -715,7 +733,9 @@
     titleEl.textContent = nameVal || cardDef.title;
     const sub = document.createElement('div');
     sub.className = 'admin-edit-card-sub';
-    sub.textContent = 'Tap to expand and edit fields';
+    sub.textContent = cardDef.nested
+      ? 'Homepage card + full case study page (problem, outcome, screens…)'
+      : 'Tap to expand and edit fields';
     meta.appendChild(titleEl);
     meta.appendChild(sub);
 
@@ -745,19 +765,32 @@
           saveField(field.id, newVal);
           content[field.id] = newVal;
           refreshCardHeader();
+          if (field.id.endsWith('.studyFolder') && opts.onRefresh) {
+            opts.onRefresh();
+          }
         }));
       });
     }
 
-    appendFields(cardDef.fields, body);
-
     if (cardDef.nested) {
+      const homeSection = document.createElement('div');
+      homeSection.className = 'admin-card-section';
+      appendSectionLabel(homeSection, 'Homepage & projects list');
+      appendFields(cardDef.fields, homeSection);
+      body.appendChild(homeSection);
+
       const nested = document.createElement('div');
-      nested.className = 'admin-nested-block';
+      nested.className = 'admin-nested-block admin-nested-block--page';
       const nestedLabel = document.createElement('div');
       nestedLabel.className = 'admin-nested-label';
       nestedLabel.textContent = cardDef.nested.label;
       nested.appendChild(nestedLabel);
+      if (cardDef.nested.hint) {
+        const nestedHint = document.createElement('p');
+        nestedHint.className = 'admin-nested-hint';
+        nestedHint.textContent = cardDef.nested.hint;
+        nested.appendChild(nestedHint);
+      }
       appendFields(cardDef.nested.fields, nested);
 
       if (cardDef.nested.screens) {
@@ -765,6 +798,8 @@
       }
 
       body.appendChild(nested);
+    } else {
+      appendFields(cardDef.fields, body);
     }
 
     if (cardDef.dynamic && opts.onReorder) {
@@ -809,12 +844,20 @@
     }
 
     head.addEventListener('click', () => {
+      if (cardDef.nested) {
+        card.classList.toggle('is-open');
+        return;
+      }
       const wasOpen = card.classList.contains('is-open');
       card.closest('.admin-card-grid').querySelectorAll('.admin-edit-card').forEach(c => {
         c.classList.remove('is-open');
       });
       if (!wasOpen) card.classList.add('is-open');
     });
+
+    if (cardDef.nested) {
+      card.classList.add('is-open');
+    }
 
     card.appendChild(head);
     card.appendChild(body);
@@ -868,7 +911,7 @@
 
     const hint = document.createElement('p');
     hint.className = 'admin-group-hint';
-    hint.textContent = `${getDynamicCards(group.dynamic).length} item${getDynamicCards(group.dynamic).length === 1 ? '' : 's'}`;
+    hint.textContent = `${getDynamicCards(group.dynamic, content).length} item${getDynamicCards(group.dynamic, content).length === 1 ? '' : 's'}`;
 
     const addBtn = document.createElement('button');
     addBtn.type = 'button';
@@ -889,7 +932,7 @@
 
     function fillGrid() {
       grid.innerHTML = '';
-      const cards = getDynamicCards(group.dynamic);
+      const cards = getDynamicCards(group.dynamic, getContent());
       if (!cards.length) {
         const empty = document.createElement('p');
         empty.className = 'admin-empty admin-empty-inline';

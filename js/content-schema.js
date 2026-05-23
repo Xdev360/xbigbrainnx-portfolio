@@ -22,7 +22,7 @@
   const color = (id, label) => ({ id, type: 'color', label });
 
   const CASE_REGISTRY = {
-    '01': { name: 'Zalary', study: 'cases/zalary', theme: '#2D6A4F' },
+    '01': { name: 'Yieldmate', study: 'cases/Yieldmate', theme: '#2D6A4F' },
     '02': { name: 'CrediGo', study: 'cases/credigo', theme: '#3859E6' },
     '03': { name: 'Lumèa Essence', study: 'cases/lumea-essence', theme: '#B8860B' },
     '04': { name: 'Wintech Studio', study: 'cases/wintech', theme: '#E63946' },
@@ -71,6 +71,22 @@
     };
   }
 
+  function normalizeStudyFolder(val, fallback) {
+    const fb = fallback || 'cases/study-01';
+    if (val === undefined || val === null || val === '') return fb;
+    const trimmed = String(val).trim().replace(/^\/+|\/+$/g, '');
+    if (!trimmed) return fb;
+    if (trimmed.startsWith('cases/')) return trimmed;
+    return `cases/${trimmed}`;
+  }
+
+  function resolveStudyFolder(itemId, content) {
+    content = content || {};
+    const meta = caseMeta(itemId);
+    const key = `projects.case.${itemId}.studyFolder`;
+    return normalizeStudyFolder(content[key], meta.study);
+  }
+
   function designLabelDefault(itemId) {
     const labels = {
       '01': 'BRAND DESIGN',
@@ -87,7 +103,7 @@
     };
   }
 
-  function makeDesignCard(itemId) {
+  function makeDesignCard(itemId, content) {
     const meta = designMeta(itemId);
     return {
       id: `design-${itemId}`,
@@ -104,11 +120,11 @@
     };
   }
 
-  function makeCaseCard(itemId) {
+  function makeCaseCard(itemId, content) {
     const meta = caseMeta(itemId);
-    const projectCover = CASE_REGISTRY[itemId]
-      ? `case-studies/${meta.study.replace('cases/', '')}.jpg`
-      : `case-studies/study-${itemId}.jpg`;
+    const studyFolder = resolveStudyFolder(itemId, content);
+    const folderSlug = studyFolder.replace(/^cases\//, '');
+    const projectCover = `case-studies/${folderSlug}.jpg`;
     const heroCover = heroCaseCardCover(itemId);
 
     return {
@@ -117,22 +133,24 @@
       previewImage: heroCover,
       fieldPrefix: `projects.case.${itemId}.`,
       fields: [
-        img(heroCover, 'Hero carousel cover', '1200 × 900 px — homepage hero tab'),
-        img(projectCover, 'Projects section cover', '1200 × 900 px — projects stack'),
+        text(`projects.case.${itemId}.studyFolder`, 'Images folder slug', folderSlug),
         text(`projects.case.${itemId}.name`, 'Project name'),
-        textarea(`projects.case.${itemId}.about`, 'About'),
+        textarea(`projects.case.${itemId}.about`, 'About (homepage card)'),
         cats(`projects.case.${itemId}.categories`, 'Categories (pick up to 2)'),
         text(`projects.case.${itemId}.link`, 'Case study link', `case-study.html?case=${itemId}`),
-        color(`projects.case.${itemId}.theme`, 'Theme color (applies to case study page)')
+        color(`projects.case.${itemId}.theme`, 'Theme color (case study page)'),
+        img(heroCover, 'Hero carousel cover', '1200 × 900 px — homepage hero tab'),
+        img(projectCover, 'Projects section cover', '1200 × 900 px — projects stack')
       ],
       nested: {
-        label: 'Case study page',
-        fields: studyBaseFields(itemId, meta.study),
+        label: 'Case study page content',
+        hint: 'Problem, outcome, research, reflection, hero, design system, and key screens.',
+        fields: studyBaseFields(itemId, studyFolder),
         screens: {
           listKey: `__list.projects.case.${itemId}.screens`,
           defaultIds: ['01', '02', '03', '04', '05'],
           label: 'Key screens',
-          makeFields: screenId => makeScreenFields(itemId, meta.study, screenId)
+          makeFields: screenId => makeScreenFields(itemId, studyFolder, screenId)
         }
       }
     };
