@@ -1,0 +1,60 @@
+---
+// Before/after slider. Drag, click or use arrow keys. Plays a small hint when it first scrolls in.
+interface Props { before: string; after: string; beforeSrc?: string; afterSrc?: string; caption?: string; ratio?: string }
+const { before, after, beforeSrc, afterSrc, caption, ratio = '16 / 9' } = Astro.props;
+---
+<figure class="cmpw" data-reveal>
+  <div class="cmp" style={`aspect-ratio:${ratio}`} data-compare tabindex="0" role="slider" aria-label={`Compare ${before} and ${after}`} aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+    <div class="side after">
+      {afterSrc ? <img src={afterSrc} alt={after} loading="lazy" /> : <div class="ph"><span class="mono-tag c-subtle">{after}</span><span class="meta c-subtle">Screens coming</span></div>}
+    </div>
+    <div class="side before">
+      {beforeSrc ? <img src={beforeSrc} alt={before} loading="lazy" /> : <div class="ph"><span class="mono-tag c-subtle">{before}</span><span class="meta c-subtle">Screens coming</span></div>}
+    </div>
+    <span class="tag t-before mono-tag">{before}</span>
+    <span class="tag t-after mono-tag">{after}</span>
+    <div class="handle" aria-hidden="true"><span class="knob"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m9 18-6-6 6-6M15 6l6 6-6 6"/></svg></span></div>
+  </div>
+  {caption && <figcaption class="meta c-subtle">{caption}</figcaption>}
+</figure>
+<style>
+  .cmpw { display:flex; flex-direction:column; gap:12px; }
+  .cmp { --x:50%; position:relative; overflow:hidden; border:1px solid var(--border-default); background:var(--bg-alt); cursor:ew-resize; touch-action:pan-y; user-select:none; }
+  .side { position:absolute; inset:0; }
+  .side img { width:100%; height:100%; object-fit:cover; }
+  .before { clip-path:inset(0 calc(100% - var(--x)) 0 0); }
+  .before .ph { background:var(--bg-stage); }
+  .ph { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; }
+  .after .ph { background:var(--bg-alt); }
+  .tag { position:absolute; top:16px; padding:4px 8px; background:var(--bg-page); border:1px solid var(--border-default); color:var(--text-secondary); transition:opacity var(--dur-2); }
+  .t-before { left:16px; } .t-after { right:16px; }
+  .handle { position:absolute; top:0; bottom:0; left:var(--x); width:1px; background:var(--spectrum-x); background:linear-gradient(#F30058,#FFA41C,#19F2FF,#3084FF); transform:translateX(-.5px); }
+  .knob { position:absolute; top:50%; left:50%; width:36px; height:36px; translate:-50% -50%; display:grid; place-items:center; border-radius:50%; background:var(--bg-page); border:1px solid var(--border-strong); color:var(--text-primary); transition:transform var(--dur-2) var(--ease-dec); }
+  .cmp:hover .knob, .cmp.drag .knob { transform:scale(1.12); }
+  .cmp:focus-visible { outline:1px solid var(--border-active); outline-offset:3px; }
+</style>
+<script>
+  import { play } from '../lib/sensory';
+  document.querySelectorAll<HTMLElement>('[data-compare]').forEach(el => {
+    let x = 50, drag = false, lastTick = 50;
+    const set = (v: number, tick = true) => {
+      x = Math.max(0, Math.min(100, v)); el.style.setProperty('--x', `${x}%`); el.setAttribute('aria-valuenow', String(Math.round(x)));
+      if (tick && Math.abs(x - lastTick) > 8) { play('tick'); lastTick = x; }
+    };
+    const fromEvent = (e: PointerEvent) => { const r = el.getBoundingClientRect(); set(((e.clientX - r.left) / r.width) * 100); };
+    el.addEventListener('pointerdown', e => { drag = true; el.classList.add('drag'); el.setPointerCapture(e.pointerId); fromEvent(e); });
+    el.addEventListener('pointermove', e => { if (drag) fromEvent(e); });
+    el.addEventListener('pointerup', () => { drag = false; el.classList.remove('drag'); });
+    el.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') set(x - 5); if (e.key === 'ArrowRight') set(x + 5); });
+    // Hint: sweep once when it first appears
+    const fig = el.closest('figure')!;
+    const io = new IntersectionObserver(([en]) => {
+      if (!en.isIntersecting || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      io.disconnect();
+      const t0 = performance.now();
+      const run = (t: number) => { if (drag) return; const p = Math.min(1, (t - t0) / 1600); set(50 + Math.sin(p * Math.PI * 2) * 18 * (1 - p), false); if (p < 1) requestAnimationFrame(run); };
+      setTimeout(() => requestAnimationFrame(run), 500);
+    }, { threshold: 0.6 });
+    io.observe(fig);
+  });
+</script>

@@ -1,0 +1,189 @@
+---
+// Case study template: problem → version 1 → what broke → redesign → result.
+// Rive article rhythm: centred header, 640 reading column, wide media, side progress list.
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import CoverPh from '../../components/CoverPh.astro';
+import Compare from '../../components/Compare.astro';
+import { stories } from '../../data/stories';
+import { projects } from '../../data/projects';
+
+export function getStaticPaths() {
+  return stories.map(s => ({ params: { slug: s.slug } }));
+}
+const { slug } = Astro.params;
+const story = stories.find(s => s.slug === slug)!;
+const others = stories.filter(s => s.slug !== slug).slice(0, 2);
+const proj = projects.find(p => p.slug === slug);
+---
+<Base title={`${story.title.replace('\n', ' ')} · Ibraheem Oladele`} description={story.subtitle}>
+  <div class="progress" aria-hidden="true"><span id="read-prog"></span></div>
+
+  <!-- Header -->
+  <header class="cs-head sec">
+    <div class="sec-in hd">
+      <a href="/work" class="back eyebrow c-muted" data-reveal><Icon name="arrow-left" size={12} /> All work</a>
+      <span class="label c-accent" data-reveal style="--d:80ms">{story.label}</span>
+      <h1 class="display-l c-heading" data-split>{story.title.split('\n').map((l, i) => <>{i > 0 && <br />}{l}</>)}</h1>
+      <p class="subtitle-s c-secondary" data-reveal style="--d:250ms">{story.subtitle}</p>
+      <dl class="facts" data-stagger="70">
+        {story.facts.map(([k, v]) => <div data-reveal><dt class="eyebrow c-subtle">{k}</dt><dd class="small c-primary">{v}</dd></div>)}
+      </dl>
+    </div>
+  </header>
+
+  <!-- Hero media -->
+  <section class="wide" data-reveal="scale">
+    <CoverPh label={`Cover · ${proj?.name ?? story.slug}`} ratio="21 / 9" src={proj?.cover} />
+  </section>
+
+  <!-- The arc: v1 → learn → v2 → ship -->
+  <section class="sec-in arc" data-stagger="120">
+    {story.arc.map((a, i) => (
+      <div class="arc-step" data-reveal>
+        <span class="arc-line"><span></span></span>
+        <span class="label c-accent">{a.v}</span>
+        <span class="small c-secondary">{a.t}</span>
+      </div>
+    ))}
+  </section>
+
+  <!-- Story -->
+  <div class="story sec-in">
+    <aside class="toc">
+      <span class="eyebrow c-subtle">The story</span>
+      <ol>{story.chapters.map(c => <li><a href={`#${c.id}`} data-toc={c.id}><span class="dot"></span>{c.step}</a></li>)}</ol>
+    </aside>
+
+    <div class="chapters">
+      {story.chapters.map(c => (
+        <section class="ch" id={c.id}>
+          <div class="col" data-stagger="70">
+            <span class="eyebrow c-muted" data-reveal>{c.kicker}</span>
+            <h2 class="h2s c-heading" data-reveal>{c.title}</h2>
+            {c.body.map(p => <p class="article c-secondary" data-reveal>{p}</p>)}
+            {c.list && <ul class="list" data-reveal>{c.list.map(l => <li class="article c-secondary">{l}</li>)}</ul>}
+            {c.table && (
+              <table class="tbl" data-reveal>
+                <thead><tr>{c.table.head.map(h => <th class="eyebrow c-subtle">{h}</th>)}</tr></thead>
+                <tbody>{c.table.rows.map(r => <tr>{r.map((v, i) => <td class:list={['small', i ? 'c-secondary' : 'c-primary']}>{v}</td>)}</tr>)}</tbody>
+              </table>
+            )}
+            {c.note && <div class="note spectrum" data-reveal="blur"><p class="small c-primary">{c.note}</p></div>}
+            {c.todo && <p class="todo meta" data-reveal>{c.todo}</p>}
+          </div>
+          {c.media && (
+            <div class="media">
+              {c.media.kind === 'compare' && <Compare before={c.media.before} after={c.media.after} beforeSrc={c.media.beforeSrc} afterSrc={c.media.afterSrc} caption={c.media.caption} />}
+              {c.media.kind === 'cover' && <figure data-reveal><CoverPh label={c.media.label} ratio={c.media.ratio ?? '16 / 9'} src={c.media.src} />{c.media.caption && <figcaption class="meta c-subtle">{c.media.caption}</figcaption>}</figure>}
+              {c.media.kind === 'pair' && <div class="pair" data-stagger="120">{c.media.items.map(m => <div data-reveal><CoverPh label={m.label} ratio="4 / 3" src={m.src} /></div>)}</div>}
+            </div>
+          )}
+        </section>
+      ))}
+    </div>
+  </div>
+
+  <!-- Results -->
+  <section class="sec bt">
+    <div class="sec-in">
+      <span class="eyebrow c-muted" data-reveal>Results</span>
+      <div class="res" data-stagger="120">
+        {story.results.map(r => (
+          <div class="r" data-reveal>
+            <span class="num" data-count={r.count} data-suffix={r.suffix ?? ''}>{r.n}</span>
+            <span class="bar"></span>
+            <span class="small c-muted">{r.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Work with me + next -->
+  <section class="sec bg-alt">
+    <div class="sec-in next">
+      <div class="shead">
+        <div class="shead-l"><span class="eyebrow c-muted" data-reveal>Work with me</span><h2 class="h2 c-heading" data-split>Have a product<br />like this?</h2></div>
+        <div class="shead-r" data-reveal><p class="lede c-secondary">I design it, build it and stay to measure it. Send me what you have, even if it is a rough first version.</p>
+          <div class="btns"><a href="/contact" class="btn btn-solid" data-magnetic>Get in touch <Icon name="arrow-right" size={14} /></a><a href="/cv" class="btn btn-outline">Get my CV</a></div></div>
+      </div>
+      <div class="more" data-stagger="120">
+        {others.map(o => (
+          <a href={`/work/${o.slug}`} class="mcard" data-reveal data-spot>
+            <CoverPh label={`Cover · ${projects.find(p => p.slug === o.slug)?.name ?? o.slug}`} h={260} />
+            <span class="eyebrow c-subtle">{o.label}</span>
+            <span class="card-title c-heading">{o.title.replace('\n', ' ')}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .progress { position:fixed; left:0; right:0; top:0; height:2px; z-index:60; pointer-events:none; }
+  .progress span { display:block; height:100%; background:var(--spectrum-x); transform-origin:left; transform:scaleX(var(--p,0)); }
+  .cs-head { padding-bottom:64px; }
+  .hd { display:flex; flex-direction:column; align-items:center; text-align:center; gap:20px; max-width:880px; }
+  .back { display:inline-flex; align-items:center; gap:6px; margin-bottom:24px; transition:color var(--dur-2); } .back:hover { color:var(--text-primary); }
+  .subtitle-s { font:400 18px/29px var(--f-body); max-width:640px; }
+  .facts { display:grid; grid-template-columns:repeat(4, 1fr); width:100%; margin-top:24px; border-top:1px solid var(--border-default); }
+  .facts > div { display:flex; flex-direction:column; gap:6px; padding:16px 12px; text-align:left; }
+  .facts dd { margin:0; }
+  .wide { max-width:1200px; margin:0 auto; padding:0 var(--px); box-sizing:content-box; }
+  .arc { display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; padding:56px var(--px) 0; box-sizing:content-box; }
+  .arc-step { display:flex; flex-direction:column; gap:10px; }
+  .arc-line { height:2px; background:var(--border-divider); position:relative; overflow:hidden; }
+  .arc-line span { position:absolute; inset:0; background:var(--spectrum-x); transform:scaleX(0); transform-origin:left; transition:transform 900ms var(--ease-dec) calc(var(--d,0ms) + 200ms); }
+  .arc-step.in .arc-line span { transform:none; }
+  .story { display:flex; gap:80px; padding:var(--sy) var(--px); box-sizing:content-box; }
+  .toc { width:200px; flex:none; position:sticky; top:104px; align-self:flex-start; display:flex; flex-direction:column; gap:16px; }
+  .toc ol { display:flex; flex-direction:column; border-left:1px solid var(--border-default); }
+  .toc a { position:relative; display:flex; align-items:center; gap:10px; padding:8px 0 8px 16px; font:500 13px/18px var(--f-body); color:var(--text-subtle); transition:color var(--dur-2), padding var(--dur-3) var(--ease-dec); }
+  .toc a:hover { color:var(--text-secondary); padding-left:20px; }
+  .toc a.on { color:var(--text-primary); }
+  .toc a::before { content:''; position:absolute; left:-1px; top:0; bottom:0; width:1px; background:var(--border-active); transform:scaleY(0); transition:transform var(--dur-3) var(--ease-dec); }
+  .toc a.on::before { transform:none; }
+  .toc .dot { display:none; }
+  .chapters { flex:1; min-width:0; display:flex; flex-direction:column; gap:120px; }
+  .ch { display:flex; flex-direction:column; gap:40px; scroll-margin-top:100px; }
+  .col { max-width:640px; display:flex; flex-direction:column; gap:20px; }
+  .list { display:flex; flex-direction:column; gap:10px; }
+  .list li { position:relative; padding-left:20px; }
+  .list li::before { content:''; position:absolute; left:0; top:12px; width:8px; height:1px; background:var(--accent-label); }
+  .tbl { width:100%; border-collapse:collapse; }
+  .tbl th { text-align:left; padding:10px 0; border-bottom:1px solid var(--border-strong); }
+  .tbl td { padding:14px 16px 14px 0; border-bottom:1px solid var(--border-default); vertical-align:top; }
+  .tbl td:first-child { width:140px; }
+  .note { padding:16px 20px; }
+  .todo { color:var(--accent-label); border:1px dashed var(--border-strong); padding:10px 14px; align-self:flex-start; }
+  .media figure { display:flex; flex-direction:column; gap:12px; }
+  .pair { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .res { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:32px; margin-top:32px; }
+  .r { display:flex; flex-direction:column; gap:12px; }
+  .num { font:900 48px/52px var(--f-display); color:var(--text-heading); letter-spacing:-.02em; }
+  .r .bar { height:2px; background:var(--border-strong); position:relative; overflow:hidden; }
+  .r .bar::after { content:''; position:absolute; inset:0; background:var(--text-primary); transform:scaleX(0); transform-origin:left; transition:transform 1200ms var(--ease-dec) calc(var(--d,0ms) + 200ms); }
+  .r.in .bar::after { transform:none; }
+  .more { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:56px; }
+  .mcard { display:flex; flex-direction:column; gap:12px; }
+  .mcard :global(.cover-ph > *) { transition:transform 900ms var(--ease-dec); }
+  .mcard:hover :global(.cover-ph) { border-color:var(--border-strong); }
+  .mcard:hover :global(.cover-ph > *) { transform:scale(1.03); }
+  @media (max-width:1023px){
+    .story { flex-direction:column; gap:40px; } .toc { display:none; }
+    .facts { grid-template-columns:1fr 1fr; } .arc { grid-template-columns:1fr 1fr; } .more, .pair { grid-template-columns:1fr; }
+    .chapters { gap:80px; }
+  }
+</style>
+
+<script>
+  // Reading progress and the side list follow the chapter you are reading.
+  const bar = document.getElementById('read-prog')!;
+  const onScroll = () => { const h = document.documentElement.scrollHeight - innerHeight; bar.style.setProperty('--p', String(h > 0 ? scrollY / h : 0)); };
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  const links = new Map([...document.querySelectorAll<HTMLElement>('[data-toc]')].map(a => [a.dataset.toc!, a]));
+  const io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; links.forEach(a => a.classList.remove('on')); links.get(e.target.id)?.classList.add('on'); }), { rootMargin: '-40% 0px -55% 0px' });
+  document.querySelectorAll('.ch').forEach(c => io.observe(c));
+</script>

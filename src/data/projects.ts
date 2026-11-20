@@ -39,7 +39,18 @@ export const projects: Project[] = [
     kind: 'own',
     tags: ['product', 'mascots', 'own'],
     color: '--project-mylo',
-    published: false,
+    published: true,
+  },
+  {
+    slug: 'goalden',
+    name: 'Goalden',
+    short: 'A goal app that breaks the year into today. Version 2 is built around coach characters.',
+    role: 'Brand, web, app',
+    useCase: 'Goal planning',
+    kind: 'own',
+    tags: ['product', 'mascots', 'brand', 'own'],
+    color: '--project-mylo',
+    published: true,
   },
   {
     slug: 'wintech-templates',
@@ -66,4 +77,5 @@ export const projects: Project[] = [
   },
 ];
 
+export const caseHref = (p: Project) => p.published ? `/work/${p.slug}` : '/work';
 export const heroReel = projects.filter(p => ['virelle', 'mylo', 'wintech-templates'].includes(p.slug));

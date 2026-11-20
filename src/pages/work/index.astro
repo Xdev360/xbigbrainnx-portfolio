@@ -1,0 +1,59 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import CoverPh from '../../components/CoverPh.astro';
+import { projects, caseHref } from '../../data/projects';
+const tabs = [['all','All'],['product','Product design'],['team-tools','Team tools'],['brand','Brand and graphics'],['mascots','Mascots'],['own','Own products']];
+---
+<Base title="Work · Ibraheem Oladele">
+  <section class="sec">
+    <div class="sec-in">
+      <div class="hd">
+        <span class="label c-accent" data-reveal>Work</span>
+        <h1 class="display-l c-heading" data-split>Problems I solved,<br />start to finish</h1>
+        <p class="lede c-secondary" data-reveal style="--d:200ms;max-width:560px">Each story shows the first version, what broke, what I changed and what happened after.</p>
+      </div>
+      <div class="tabs" role="tablist" data-reveal style="--d:300ms">
+        {tabs.map(([k, l], i) => <button role="tab" class:list={['tab label', { on: i === 0 }]} data-f={k} data-sfx="tick">{l}</button>)}
+      </div>
+      <div class="grid" data-stagger="90">
+        {projects.map((p, i) => (
+          <a href={caseHref(p)} class:list={['card', { big: i === 0 }]} data-tags={p.tags.join(' ')} data-reveal data-spot>
+            <CoverPh label={`Cover · ${p.name}`} ratio={i === 0 ? '21 / 9' : '16 / 10'} src={p.cover} />
+            <div class="cap">
+              <span class="eyebrow c-primary ttl">{p.name}<Icon name="arrow-up-right" size={14} class="go" /></span>
+              <span class="caption c-muted">{p.short}</span>
+              <span class="meta c-subtle">{p.published ? 'Read the story' : 'Story coming'}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .hd { display:flex; flex-direction:column; gap:20px; }
+  .tabs { display:flex; gap:24px; flex-wrap:wrap; margin:56px 0 40px; border-bottom:1px solid var(--border-default); }
+  .tab { background:none; border:0; padding:0 0 14px; color:var(--text-subtle); cursor:pointer; font-size:12px; position:relative; transition:color var(--dur-2); }
+  .tab::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:1px; background:var(--border-active); transform:scaleX(0); transition:transform var(--dur-3) var(--ease-dec); }
+  .tab:hover { color:var(--text-secondary); } .tab.on { color:var(--text-primary); } .tab.on::after { transform:none; }
+  .grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:56px 16px; }
+  .card { display:flex; flex-direction:column; transition:opacity var(--dur-3), filter var(--dur-3); }
+  .card.big { grid-column:1 / -1; }
+  .card.dim { opacity:.15; filter:grayscale(1); pointer-events:none; }
+  .cap { display:flex; flex-direction:column; gap:8px; padding-top:16px; }
+  .card :global(.cover-ph > *) { transition:transform 900ms var(--ease-dec); }
+  .card:hover :global(.cover-ph) { border-color:var(--border-strong); }
+  .card:hover :global(.cover-ph > *) { transform:scale(1.03); }
+  .ttl { display:inline-flex; align-items:center; gap:6px; }
+  .ttl :global(.go) { opacity:0; transform:translate(-4px, 4px); transition:opacity var(--dur-2), transform var(--dur-3) var(--ease-dec); }
+  .card:hover .ttl :global(.go) { opacity:1; transform:none; }
+  @media (max-width:1023px){ .grid { grid-template-columns:minmax(0,1fr); } }
+</style>
+<script>
+  const tabs = [...document.querySelectorAll<HTMLElement>('[data-f]')];
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-tags]')];
+  const apply = (f: string) => { tabs.forEach(t => t.classList.toggle('on', t.dataset.f === f)); cards.forEach(c => c.classList.toggle('dim', f !== 'all' && !c.dataset.tags!.split(' ').includes(f))); };
+  tabs.forEach(t => t.addEventListener('click', () => apply(t.dataset.f!)));
+  const q = new URLSearchParams(location.search).get('f'); if (q) apply(q);
+</script>

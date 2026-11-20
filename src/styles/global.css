@@ -118,7 +118,68 @@ ol,ul { padding:0; list-style:none; }
 .spectrum { border:1px solid transparent; background:linear-gradient(var(--bg-surface),var(--bg-surface)) padding-box, var(--spectrum) border-box; animation:spin 8s linear infinite; }
 @keyframes spin { to { --spin:360deg; } }
 
-[data-reveal] { opacity:0; transform:translateY(16px); transition:opacity 500ms var(--ease-em), transform 500ms var(--ease-em); }
-[data-reveal].in { opacity:1; transform:none; }
 @media (prefers-reduced-motion:reduce){ *,*::before,*::after { animation:none!important; transition:none!important; } [data-reveal]{opacity:1;transform:none;} }
 .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+/* ================= MOTION ================= */
+/* Material 3 tokens: emphasized decelerate for things arriving, standard for state changes. */
+:root { --dur-1:150ms; --dur-2:250ms; --dur-3:400ms; --dur-4:700ms; --ease-dec:cubic-bezier(.05,.7,.1,1); --ease-acc:cubic-bezier(.3,0,.8,.15); }
+
+/* Reveal: fade + rise. Variants: data-reveal="fade|scale|left|blur" */
+.motion [data-reveal] { opacity:0; transform:translateY(24px); transition:opacity var(--dur-4) var(--ease-dec) var(--d,0ms), transform var(--dur-4) var(--ease-dec) var(--d,0ms), filter var(--dur-4) var(--ease-dec) var(--d,0ms); }
+.motion [data-reveal="fade"] { transform:none; }
+.motion [data-reveal="scale"] { transform:scale(.96); }
+.motion [data-reveal="left"] { transform:translateX(-24px); }
+.motion [data-reveal="blur"] { transform:translateY(12px); filter:blur(8px); }
+.motion [data-reveal].in { opacity:1; transform:none; filter:none; }
+
+/* Masked line reveal for headlines */
+[data-split] .ln { display:block; overflow:hidden; padding-bottom:.06em; margin-bottom:-.06em; }
+[data-split] .ln-in { display:block; }
+.motion [data-split] .ln-in { transform:translateY(105%); transition:transform 900ms var(--ease-dec) calc(var(--i) * 90ms + var(--d,0ms)); }
+.motion [data-split].in .ln-in { transform:none; }
+
+/* Type-in code */
+.motion [data-type] .tl { opacity:0; transition:opacity 200ms linear calc(var(--i) * 70ms + 200ms); }
+.motion [data-type].in .tl { opacity:1; }
+
+/* Spectrum lines draw on: <path pathLength="1" data-draw> */
+.motion [data-draw] path, .motion path[data-draw] { stroke-dasharray:1; stroke-dashoffset:1; transition:stroke-dashoffset 1400ms var(--ease-dec) var(--d,0ms); }
+.motion [data-draw].in path, .motion path[data-draw].in { stroke-dashoffset:0; }
+
+/* Parallax */
+[data-parallax] { translate:0 var(--py,0); will-change:translate; }
+
+/* Nav hide / show */
+.nav { transition:transform var(--dur-3) var(--ease-dec), background var(--dur-2) var(--ease); }
+.nav.hide { transform:translateY(-100%); }
+
+/* Hover: underlined links grow their line from the left */
+.u { text-decoration:none; background:linear-gradient(currentColor,currentColor) 0 100% / 100% 1px no-repeat; padding-bottom:1px; transition:background-size var(--dur-3) var(--ease-dec), color var(--dur-1); }
+.u:hover { background-size:0 1px; background-position:100% 100%; animation:uline var(--dur-4) var(--ease-dec) forwards; }
+@keyframes uline { 0% { background-size:100% 1px; background-position:100% 100%; } 45% { background-size:0 1px; background-position:100% 100%; } 46% { background-position:0 100%; } 100% { background-size:100% 1px; background-position:0 100%; } }
+
+/* Buttons: press, arrow nudge, solid fill sweep on outline */
+.btn { position:relative; overflow:hidden; isolation:isolate; transition:transform var(--dur-1) var(--ease), border-color var(--dur-2) var(--ease), color var(--dur-2) var(--ease); }
+.btn:active { transform:scale(.97); }
+.btn-outline::before { content:''; position:absolute; inset:0; z-index:-1; background:var(--btn-solid-bg); transform:translateY(101%); transition:transform var(--dur-3) var(--ease-dec); }
+.btn-outline:hover { color:var(--btn-solid-text); border-color:var(--btn-solid-bg); }
+.btn-outline:hover::before { transform:none; }
+.btn-solid:hover { opacity:1; }
+.btn-solid::after { content:''; position:absolute; inset:0; background:linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--btn-solid-text) 14%, transparent) 50%, transparent 70%); transform:translateX(-100%); }
+.btn-solid:hover::after { transform:translateX(100%); transition:transform 700ms var(--ease-dec); }
+.btn .icon { transition:transform var(--dur-2) var(--ease-dec); }
+.btn:hover .icon { transform:translateX(2px); }
+
+/* Spotlight border on cards (data-spot) */
+[data-spot] { position:relative; }
+[data-spot]::after { content:''; position:absolute; inset:0; pointer-events:none; border:1px solid transparent; opacity:0; transition:opacity var(--dur-2);
+  background:radial-gradient(220px circle at var(--mx,50%) var(--my,50%), var(--border-active), transparent 70%) border-box;
+  -webkit-mask:linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; }
+[data-spot]:hover::after { opacity:.55; }
+
+/* Page enter */
+.motion main { animation:page-in 600ms var(--ease-dec) both; }
+@keyframes page-in { from { opacity:0; } to { opacity:1; } }
+
+@media (prefers-reduced-motion:reduce){ *,*::before,*::after { animation:none!important; transition:none!important; } }

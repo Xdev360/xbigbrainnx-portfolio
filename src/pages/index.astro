@@ -5,7 +5,7 @@ import Icon from '../components/Icon.astro';
 import Logo from '../components/Logo.astro';
 import CoverPh from '../components/CoverPh.astro';
 import WinPh from '../components/WinPh.astro';
-import { projects, heroReel } from '../data/projects';
+import { projects, heroReel, caseHref } from '../data/projects';
 
 const steps = [
   { n:'01', t:'Start with the brief', d:'A first call with the founder and the people who use it. I write the real problem in one line before any screen.',
@@ -64,30 +64,30 @@ const devices = [
 
     <div class="hero-in">
       <div class="copy">
-        <div class="timer"><span class="prog" id="hero-prog"></span></div>
-        <span class="eyebrow c-muted" style="margin-top:28px">Product design, built in code</span>
-        <h1 class="display-xl c-primary" style="margin-top:20px">Products people<br />come back to</h1>
-        <p class="body c-secondary" style="margin-top:20px">I design the app customers use and the tools the team runs it on.<br />Then I build both in code, motion and sound included.</p>
-        <a href="/work" class="btn btn-solid" style="margin-top:32px;align-self:flex-start" data-sfx="click">See my work</a>
-        <p class="small" style="margin-top:20px"><span class="c-muted">Hiring?</span> <button class="copy-link small c-secondary u" data-copy="xbigbrainnx@gmail.com">Copy my email</button></p>
-        <hr class="rule" style="margin-top:40px" />
-        <span class="eyebrow c-subtle" style="margin-top:20px">Designed and built with</span>
-        <div class="logos" style="margin-top:14px">
-          {(['Figma','Claude','Rive','Lottie','Astro','Supabase','Vercel'] as const).map(n => <Logo name={n} size={20} />)}
+        <div class="timer" data-reveal="fade"><span class="prog" id="hero-prog"></span></div>
+        <span class="eyebrow c-muted" style="margin-top:28px;--d:100ms" data-reveal>Product design, built in code</span>
+        <h1 class="display-xl c-primary" style="margin-top:20px" data-split>Products people<br />come back to</h1>
+        <p class="body c-secondary" style="margin-top:20px;--d:350ms" data-reveal>I design the app customers use and the tools the team runs it on.<br />Then I build both in code, motion and sound included.</p>
+        <a href="/work" class="btn btn-solid" style="margin-top:32px;align-self:flex-start;--d:450ms" data-sfx="click" data-reveal data-magnetic>See my work <Icon name="arrow-right" size={14} /></a>
+        <p class="small" style="margin-top:20px;--d:520ms" data-reveal><span class="c-muted">Hiring?</span> <button class="copy-link small c-secondary u" data-copy="xbigbrainnx@gmail.com">Copy my email</button></p>
+        <hr class="rule grow" style="margin-top:40px;--d:600ms" data-reveal="fade" />
+        <span class="eyebrow c-subtle" style="margin-top:20px;--d:650ms" data-reveal>Designed and built with</span>
+        <div class="logos" style="margin-top:14px" data-stagger="50">
+          {(['Figma','Claude','Rive','Lottie','Astro','Supabase','Vercel'] as const).map((n, i) => <span data-reveal="scale" style={`--d:${700 + i * 50}ms`} class="lg"><Logo name={n} size={20} /></span>)}
         </div>
       </div>
 
-      <aside class="np" aria-live="polite">
-        <div class="segs">{heroReel.map((p, i) => <button class="seg" data-go={i} aria-label={p.name}><span></span></button>)}</div>
+      <aside class="np" aria-live="polite" data-reveal="fade" style="--d:500ms">
+        <div class="np-line"></div>
         <div class="np-items">
           {heroReel.map((p, i) => (
             <div class:list={['np-item', { on: i === 0 }]}>
               <div class="counter"><span class="eyebrow c-primary">{String(i + 1).padStart(2,'0')} / {String(heroReel.length).padStart(2,'0')}</span><span class="eyebrow c-muted">Now playing</span></div>
-              <h2 class="np-title">{p.name}</h2>
+              <h2 class="np-title"><span>{p.name}</span></h2>
               <p class="small c-muted" style="margin-top:12px">{p.short}</p>
               <div class="np-row" style="margin-top:16px"><span class="eyebrow c-subtle">Role</span><span class="small c-secondary">{p.role}</span></div>
               <div class="np-row"><span class="eyebrow c-subtle">Use case</span><span class="small c-secondary u">{p.useCase}</span></div>
-              <a href={`/work/${p.slug}`} class="btn btn-s btn-outline" style="margin-top:20px;align-self:flex-start" data-sfx="click">Read the story</a>
+              <a href={caseHref(p)} class="btn btn-s btn-outline" style="margin-top:20px;align-self:flex-start" data-sfx="click">Read the story</a>
             </div>
           ))}
         </div>
@@ -99,33 +99,33 @@ const devices = [
   <section class="sec bg-alt" id="how-i-work">
     <div class="sec-in hiw">
       <div class="sticky">
-        <span class="eyebrow c-muted">How I work</span>
-        <h2 class="h2s c-heading" style="margin-top:16px">Talk to the people.<br />Then build it by hand.</h2>
+        <span class="eyebrow c-muted" data-reveal>How I work</span>
+        <h2 class="h2s c-heading" style="margin-top:16px" data-split>Talk to the people.<br />Then build it by hand.</h2>
         <p class="body c-secondary" style="margin-top:20px;max-width:412px">I start with the people who use the product, design it in Figma, and build it in code. The team reviews every round from a link, no Figma account needed.</p>
         <p class="small c-subtle" style="margin-top:12px;max-width:412px">Client projects and my own products. Based in Lagos, working remote worldwide.</p>
         <div class="btns" style="margin-top:28px">
           <button class="btn btn-s btn-solid" data-copy="xbigbrainnx@gmail.com">Copy my email</button>
           <a href="/work/virelle" class="btn btn-s btn-outline">See a case study</a>
         </div>
-        <ol class="steplist" style="margin-top:40px">
+        <ol class="steplist" style="margin-top:40px"><span class="ind" aria-hidden="true"></span>
           {steps.map((s, i) => <li><a href={`#step-${s.n}`} data-step={s.n} class:list={{ on: i === 0 }}><span class="eyebrow num">{s.n}</span><span class="nm">{s.t}</span></a></li>)}
         </ol>
       </div>
 
       <div class="steps">
         {steps.map(s => (
-          <article class="step" id={`step-${s.n}`}>
-            <span class="eyebrow c-subtle">{s.n}</span>
-            <h3 class="h3 c-heading" style="margin-top:12px">{s.t}</h3>
-            <p class="lede c-muted" style="margin-top:12px;max-width:600px">{s.d}</p>
+          <article class="step" id={`step-${s.n}`} data-stagger="80">
+            <span class="eyebrow c-subtle" data-reveal>{s.n}</span>
+            <h3 class="h3 c-heading" style="margin-top:12px" data-reveal>{s.t}</h3>
+            <p class="lede c-muted" style="margin-top:12px;max-width:600px" data-reveal>{s.d}</p>
             {s.wins && (
-              <div class="wins" style="margin-top:24px">
-                {s.wins.map(w => <WinPh title={w.title} path={w.path} note={w.note} style={`position:absolute;${pos(w.x,w.y,w.w,w.h)}`} />)}
+              <div class="wins" style="margin-top:24px" data-reveal>
+                {s.wins.map((w, k) => <div class="wwrap" style={`position:absolute;${pos(w.x,w.y,w.w,w.h)}`} data-parallax={k ? "0.06" : "0"}><WinPh title={w.title} path={w.path} note={w.note} style="width:100%;height:100%" /></div>)}
               </div>
             )}
-            {s.cover && <CoverPh label={s.cover} h={320} class="mt24" />}
+            {s.cover && <div data-reveal style="margin-top:24px"><CoverPh label={s.cover} h={320} /></div>}
             {s.note && (
-              <div class="notebox spectrum" style="margin-top:24px">
+              <div class="notebox spectrum" style="margin-top:24px" data-reveal="blur">
                 <p class="nb-text">{s.note}</p>
                 <button class="btn btn-s btn-outline nb-copy" data-copy={s.note} style="gap:6px"><Icon name="copy" size={12} />Copy</button>
               </div>
@@ -140,21 +140,21 @@ const devices = [
   <section class="sec">
     <div class="sec-in">
       <div class="shead">
-        <div class="shead-l"><span class="eyebrow c-muted">Selected work</span><h2 class="h2 c-heading">Products I designed<br />and built</h2></div>
-        <div class="shead-r">
+        <div class="shead-l"><span class="eyebrow c-muted" data-reveal>Selected work</span><h2 class="h2 c-heading" data-split>Products I designed<br />and built</h2></div>
+        <div class="shead-r" data-reveal style="--d:150ms">
           <p class="lede c-secondary">Each one has a side customers use and a side the team runs it on. Some are for clients, some are my own products. Open any of them for the full story.</p>
           <div class="btns"><a href="/work" class="btn btn-s btn-outline">All case studies</a><a href="/cv" class="btn btn-s btn-outline">Get my CV</a><a href="/writing" class="btn btn-s btn-outline">Writing</a></div>
         </div>
       </div>
-      <a href={`/work/${featured.slug}`} class="work" style="margin-top:56px" data-sfx="click">
+      <a href={caseHref(featured)} class="work" style="margin-top:56px" data-sfx="click" data-reveal data-spot>
         <CoverPh label={`Cover · ${featured.name}`} h={620} src={featured.cover} class="big" />
-        <div class="cap"><span class="eyebrow c-primary">{featured.name}</span><span class="caption c-muted" style="max-width:400px">A wellness store with an AI product finder, and the CRM three staff run it on.</span></div>
+        <div class="cap"><span class="eyebrow c-primary ttl">{featured.name}<Icon name="arrow-up-right" size={14} class="go" /></span><span class="caption c-muted" style="max-width:400px">A wellness store with an AI product finder, and the CRM three staff run it on.</span></div>
       </a>
-      <div class="wgrid" style="margin-top:56px">
+      <div class="wgrid" style="margin-top:56px" data-stagger="110">
         {grid.map(p => (
-          <a href={`/work/${p.slug}`} class="work" data-sfx="click">
+          <a href={caseHref(p)} class="work" data-sfx="click" data-reveal data-spot>
             <CoverPh label={`Cover · ${p.name}`} h={280} src={p.cover} />
-            <div class="cap"><span class="eyebrow c-primary">{p.name}</span><span class="caption c-muted">{p.short}</span></div>
+            <div class="cap"><span class="eyebrow c-primary ttl">{p.name}<Icon name="arrow-up-right" size={14} class="go" /></span><span class="caption c-muted">{p.short}</span></div>
           </a>
         ))}
       </div>
@@ -166,25 +166,25 @@ const devices = [
     <div class="sec-in">
       <div class="shead">
         <div class="shead-l" style="gap:20px;max-width:520px">
-          <span class="eyebrow c-muted">Design engineering</span>
-          <h2 class="h2 c-heading">I build what<br />I design</h2>
+          <span class="eyebrow c-muted" data-reveal>Design engineering</span>
+          <h2 class="h2 c-heading" data-split>I build what<br />I design</h2>
           <p class="lede c-secondary" style="max-width:480px">The colors, type and spacing in my Figma file are the same values in the code. What you approve is what goes live.</p>
           <div class="btns"><a href="/work/virelle#build" class="btn btn-s btn-outline">See the code</a><a href="#how-i-work" class="btn btn-s btn-outline">How I work</a></div>
         </div>
-        <div class="shead-r points">
-          <div class="pt"><span class="eyebrow c-primary">One source of truth</span><span class="body c-secondary">Light and dark, named once in Figma and used by the code.</span></div>
-          <div class="pt"><span class="eyebrow c-primary">Components, not copies</span><span class="body c-secondary">Every button and card is built once and used everywhere.</span></div>
-          <div class="pt"><span class="eyebrow c-primary">Checked on real phones</span><span class="body c-secondary">Every screen is tested on the devices people actually use.</span></div>
+        <div class="shead-r points" data-stagger="90">
+          <div class="pt" data-reveal><span class="eyebrow c-primary">One source of truth</span><span class="body c-secondary">Light and dark, named once in Figma and used by the code.</span></div>
+          <div class="pt" data-reveal><span class="eyebrow c-primary">Components, not copies</span><span class="body c-secondary">Every button and card is built once and used everywhere.</span></div>
+          <div class="pt" data-reveal><span class="eyebrow c-primary">Checked on real phones</span><span class="body c-secondary">Every screen is tested on the devices people actually use.</span></div>
         </div>
       </div>
       <div class="dg" data-w="1200" data-h="440" style="margin-top:56px">
         <div class="dg-in" style="width:1200px;height:440px">
-          <div class="codewin" style={pos(170,0,520,317)}>
+          <div class="codewin" style={pos(170,0,520,317)} data-reveal>
             <div class="cbar"><span class="small c-secondary">tokens.css</span><span class="mono-tag c-subtle">~/portfolio</span></div>
-            <div class="code"><pre class="mono c-subtle">{codeLines.map((_, i) => i + 1).join('\n')}</pre><pre class="mono c-secondary">{codeLines.join('\n')}</pre></div>
+            <div class="code"><pre class="mono c-subtle">{codeLines.map((_, i) => i + 1).join('\n')}</pre><pre class="mono c-secondary" data-type>{codeLines.join('\n')}</pre></div>
           </div>
-          <WinPh title="Live preview" path="localhost:4321" note="Custom visual: the page updating" style={`position:absolute;${pos(600,110,460,300)}`} />
-          <div class="watch" style={pos(862,370)}><span class="dot"></span><span class="mono-tag c-muted">Watching for changes</span></div>
+          <div style={`position:absolute;${pos(600,110,460,300)}--d:250ms`} data-reveal><div data-parallax="0.05" style="width:100%;height:100%"><WinPh title="Live preview" path="localhost:4321" note="Custom visual: the page updating" style="width:100%;height:100%" /></div></div>
+          <div class="watch" style={pos(862,370) + "--d:600ms"} data-reveal="scale"><span class="dot"></span><span class="mono-tag c-muted">Watching for changes</span></div>
         </div>
       </div>
     </div>
@@ -195,21 +195,21 @@ const devices = [
     <div class="sec-in">
       <div class="shead">
         <div class="shead-l" style="gap:20px;max-width:520px">
-          <span class="eyebrow c-muted">Figma to production</span>
-          <h2 class="h2 c-heading">From a Figma file<br />to a live product</h2>
+          <span class="eyebrow c-muted" data-reveal>Figma to production</span>
+          <h2 class="h2 c-heading" data-split>From a Figma file<br />to a live product</h2>
           <p class="lede c-secondary" style="max-width:480px">Bring me your screens, or let me design them. I turn them into a working product with real data, motion and both themes.</p>
           <div class="btns"><a href="/work/virelle" class="btn btn-s btn-outline">See Virelle</a><a href="/contact" class="btn btn-s btn-outline">Book a call</a></div>
         </div>
-        <div class="shead-r points">
-          <div class="pt"><span class="eyebrow c-primary">Every state, designed</span><span class="body c-secondary">Empty, loading, error and success, in light and dark.</span></div>
-          <div class="pt"><span class="eyebrow c-primary">Real components</span><span class="body c-secondary">The same parts in Figma and in the code.</span></div>
-          <div class="pt"><span class="eyebrow c-primary">One source of truth</span><span class="body c-secondary">Change it once, and the product changes everywhere.</span></div>
+        <div class="shead-r points" data-stagger="90">
+          <div class="pt" data-reveal><span class="eyebrow c-primary">Every state, designed</span><span class="body c-secondary">Empty, loading, error and success, in light and dark.</span></div>
+          <div class="pt" data-reveal><span class="eyebrow c-primary">Real components</span><span class="body c-secondary">The same parts in Figma and in the code.</span></div>
+          <div class="pt" data-reveal><span class="eyebrow c-primary">One source of truth</span><span class="body c-secondary">Change it once, and the product changes everywhere.</span></div>
         </div>
       </div>
       <div class="dg" data-w="1200" data-h="420" style="margin-top:56px">
         <div class="dg-in" style="width:1200px;height:420px">
           <span class="eyebrow c-subtle abs" style={pos(0,0)}>Before</span><span class="title c-heading abs" style={pos(62,-2)}>Screens in Figma</span>
-          <div class="box" style={pos(0,28,420,370)}>
+          <div class="box" style={pos(0,28,420,370)} data-reveal="left">
             <span class="mono-tag c-subtle abs" style={pos(16,24)}>Store · Product · Bag</span>
             {[16,148,280].map(x => (
               <div class="scr" style={pos(x,60,116,250)}>
@@ -218,15 +218,15 @@ const devices = [
               </div>
             ))}
           </div>
-          <span class="arrow" style={pos(430,224,50,2)}></span>
-          <div class="me" style={pos(490,150,220,190)}>
+          <span class="arrow grow" style={pos(430,224,50,2) + "--d:400ms"} data-reveal="fade"></span>
+          <div class="me" style={pos(490,150,220,190) + "--d:550ms"} data-reveal="scale">
             <span class="mono-tag c-subtle">Design + build</span>
             <span class="title c-heading">Turn this file into<br />the live store</span>
             {['Components','Data binding','Light and dark','Motion and sound'].map(t => <span class="mono-tag c-muted">·  {t}</span>)}
           </div>
-          <span class="arrow" style={pos(720,224,50,2)}></span>
+          <span class="arrow grow" style={pos(720,224,50,2) + "--d:750ms"} data-reveal="fade"></span>
           <span class="eyebrow c-subtle abs" style={pos(780,0)}>After</span><span class="title c-heading abs" style={pos(833,-2)}>The product that ships</span>
-          <div class="box" style={pos(780,28,420,370)}>
+          <div class="box after" style={pos(780,28,420,370) + "--d:900ms"} data-reveal>
             <span class="mono-tag c-muted abs" style={pos(16,170)}>Live components</span>
             <div class="phone" style={pos(135,40,150,300)}>
               <span class="pb" style={pos(20,30,110,60)}></span>
@@ -242,8 +242,8 @@ const devices = [
   <section class="sec bt">
     <div class="sec-in">
       <div class="shead">
-        <div class="shead-l"><span class="eyebrow c-muted">One product, every surface</span><h2 class="h2 c-heading">What I design<br />is what ships</h2></div>
-        <div class="shead-r">
+        <div class="shead-l"><span class="eyebrow c-muted" data-reveal>One product, every surface</span><h2 class="h2 c-heading" data-split>What I design<br />is what ships</h2></div>
+        <div class="shead-r" data-reveal style="--d:150ms">
           <p class="lede c-secondary">The store, the app, the team’s CRM, the box it ships in and the posts that sell it. One system across all of them, so nothing drifts.</p>
           <div class="btns"><a href="/work/virelle" class="btn btn-s btn-outline">See Virelle</a><a href="/work?f=brand" class="btn btn-s btn-outline">Brand work</a></div>
         </div>
@@ -252,26 +252,26 @@ const devices = [
         <div class="dg-in" style="width:1200px;height:420px">
           <svg class="abs" width="1200" height="420" viewBox="0 0 1200 420" fill="none" aria-hidden="true" style="left:0;top:0">
             <defs><linearGradient id="spec" x1="0" x2="1" y1="0" y2="0"><stop stop-color="#F30058"/><stop offset=".25" stop-color="#FF483C"/><stop offset=".45" stop-color="#FFA41C"/><stop offset=".6" stop-color="#71FF19"/><stop offset=".8" stop-color="#19F2FF"/><stop offset="1" stop-color="#3084FF"/></linearGradient></defs>
-            {lines.map(l => <path d={l.d} transform={`translate(${l.x} ${l.y})`} stroke="url(#spec)" stroke-width="1.5" />)}
+            {lines.map((l, i) => <g transform={`translate(${l.x} ${l.y})`}><path d={l.d} pathLength="1" stroke="url(#spec)" stroke-width="1.5" data-draw style={`--d:${300 + i * 120}ms`} /></g>)}
           </svg>
           {devices.map(d => (
             <>
-              <div class="dev" style={pos(d.x,d.y,d.w,d.h) + `border-radius:${d.r}px`}>{d.bars.map(([x,y,w]) => <span class="bar5" style={pos(x,y,w,5)}></span>)}</div>
+              <div class="dev" style={pos(d.x,d.y,d.w,d.h) + `border-radius:${d.r}px;--d:${devices.indexOf(d) * 90}ms`} data-reveal="scale" data-hover-sfx>{d.bars.map(([x,y,w]) => <span class="bar5" style={pos(x,y,w,5)}></span>)}</div>
               <span class="mono-tag c-subtle abs" style={pos(d.lx,d.ly)}>{d.n}</span>
             </>
           ))}
-          <div class="core" style={pos(499,176,203,68)}><span class="mono-tag c-primary">One system</span><span class="mono-tag c-subtle">colors · type · motion</span></div>
+          <div class="core" style={pos(499,176,203,68)} data-reveal="scale"><span class="mono-tag c-primary">One system</span><span class="mono-tag c-subtle">colors · type · motion</span></div>
         </div>
       </div>
-      <div class="caps3" style="margin-top:56px">
+      <div class="caps3" style="margin-top:56px" data-stagger="100">
         {[['One brand','The app, the box and the posts look like one company.'],['One system','Colors, type and parts are shared across every surface.'],['No drift','Change it once, and every surface gets the change.']].map(([t,d]) => (
-          <div class="c3"><span class="eyebrow c-primary">{t}</span><span class="caption c-muted" style="max-width:340px">{d}</span></div>
+          <div class="c3" data-reveal><span class="eyebrow c-primary">{t}</span><span class="caption c-muted" style="max-width:340px">{d}</span></div>
         ))}
       </div>
       <div style="margin-top:56px">
         <span class="eyebrow c-muted">Surfaces I design</span>
-        <div class="surf" style="margin-top:16px">
-          {surfIcons.map(([t, ic]) => <div class="sf"><span class="c-primary"><Icon name={ic} size={16} /></span><span class="eyebrow c-secondary">{t}</span></div>)}
+        <div class="surf" style="margin-top:16px" data-stagger="50">
+          {surfIcons.map(([t, ic]) => <div class="sf" data-reveal data-hover-sfx><span class="c-primary"><Icon name={ic} size={16} /></span><span class="eyebrow c-secondary">{t}</span></div>)}
         </div>
       </div>
     </div>
@@ -281,17 +281,17 @@ const devices = [
   <section class="sec bg-alt">
     <div class="sec-in">
       <div class="shead">
-        <div class="shead-l"><span class="eyebrow c-muted">Me or a template?</span><h2 class="h2 c-heading">Use the right<br />tool for the job</h2></div>
-        <div class="shead-r">
+        <div class="shead-l"><span class="eyebrow c-muted" data-reveal>Me or a template?</span><h2 class="h2 c-heading" data-split>Use the right<br />tool for the job</h2></div>
+        <div class="shead-r" data-reveal style="--d:150ms">
           <p class="lede c-secondary">A custom product pays off when people use it every day and a team runs it. For a simple one-page site, a Wintech Template is the honest call.</p>
           <div class="btns"><a href="https://wintechstudio.com" class="btn btn-s btn-outline">Wintech Templates</a></div>
         </div>
       </div>
       <table class="cmp" style="margin-top:56px">
         <thead><tr><th class="eyebrow c-subtle">Bring me in when</th><th class="eyebrow c-subtle">Me</th><th class="eyebrow c-subtle">Template</th></tr></thead>
-        <tbody>
+        <tbody data-stagger="70">
           {compare.map(([t, me]) => (
-            <tr><td class="body c-secondary">{t}</td>
+            <tr data-reveal="left"><td class="body c-secondary">{t}</td>
               <td class:list={['body', me ? 'c-primary' : 'c-subtle']}>{me ? '✓' : '–'}</td>
               <td class:list={['body', me ? 'c-subtle' : 'c-primary']}>{me ? '–' : '✓'}</td></tr>
           ))}
@@ -304,11 +304,11 @@ const devices = [
   <section class="sec">
     <div class="sec-in">
       <div class="shead">
-        <div class="shead-l"><span class="eyebrow c-muted">Why teams work with me</span><h2 class="h2 c-heading">Ship faster, with<br />fewer people</h2></div>
-        <div class="shead-r"><p class="lede c-secondary">One person holds the design, the code and the motion. Fewer handoffs means less time lost, and the product matches what you signed off.</p></div>
+        <div class="shead-l"><span class="eyebrow c-muted" data-reveal>Why teams work with me</span><h2 class="h2 c-heading" data-split>Ship faster, with<br />fewer people</h2></div>
+        <div class="shead-r" data-reveal style="--d:150ms"><p class="lede c-secondary">One person holds the design, the code and the motion. Fewer handoffs means less time lost, and the product matches what you signed off.</p></div>
       </div>
-      <div class="why" style="margin-top:56px">
-        <div class="wcell">
+      <div class="why" style="margin-top:56px" data-stagger="120">
+        <div class="wcell" data-reveal>
           <div class="dg panel" data-w="584" data-h="290"><div class="dg-in" style="width:584px;height:290px">
             <span class="small c-muted abs" style={pos(60,52)}>Usual way</span>
             <span class="chip fill" style={pos(60,80)}>Design</span><span class="hl" style={pos(150,97,60,1)}></span>
@@ -316,12 +316,12 @@ const devices = [
             <span class="chip" style={pos(380,80)}>Rebuild ×3</span>
             <span class="small c-muted abs" style={pos(60,160)}>With me</span>
             <span class="chip" style={pos(60,188)}>Figma file</span>
-            <span class="arrow" style={pos(166,204,250,2)}></span><span class="dot8" style={pos(410,201,8,8)}></span>
+            <span class="arrow grow" style={pos(166,204,250,2)} data-anim></span><span class="dot8 travel" style={pos(162,201,8,8)} data-anim></span>
             <span class="chip" style={pos(420,188)}>Ships</span>
           </div></div>
           <div class="cap"><span class="eyebrow c-primary">Less handoff</span><span class="caption c-muted" style="max-width:520px">Design and build sit with one person, so nothing gets lost or rebuilt between Figma and code.</span></div>
         </div>
-        <div class="wcell">
+        <div class="wcell" data-reveal>
           <div class="dg panel" data-w="584" data-h="290"><div class="dg-in" style="width:584px;height:290px">
             <div class="tool" style={pos(40,60,150,170)}><span class="small c-secondary abs" style={pos(10,8)}>Figma</span>
               {[[40,110],[52,90],[64,70]].map(([y,w]) => <span class="bar4" style={pos(12,y,w,4)}></span>)}</div>
@@ -330,18 +330,18 @@ const devices = [
           </div></div>
           <div class="cap"><span class="eyebrow c-primary">Designer speed, builder control</span><span class="caption c-muted" style="max-width:520px">I sketch fast in Figma, then shape the details in code: states, motion, sound and real data.</span></div>
         </div>
-        <div class="wcell">
+        <div class="wcell" data-reveal>
           <div class="dg panel" data-w="584" data-h="290"><div class="dg-in" style="width:584px;height:290px">
             {[[60,'30%','day 10, before','border-strong'],[230,'70%','day 10, after','text-primary'],[400,'3','staff roles, one CRM','border-strong']].map(([x,n,l,c]) => (
-              <><span class="stat abs" style={pos(x as number,110)}>{n}</span><span class="abs" style={pos(x as number,170,110,2)+`background:var(--${c})`}></span><span class="small c-muted abs" style={pos(x as number,184)}>{l}</span></>
+              <><span class="stat abs" style={pos(x as number,110)} data-count={String(parseInt(n as string))} data-suffix={(n as string).includes('%') ? '%' : ''}>{n}</span><span class="abs" style={pos(x as number,170,110,2)+`background:var(--${c})`}></span><span class="small c-muted abs" style={pos(x as number,184)}>{l}</span></>
             ))}
           </div></div>
           <div class="cap"><span class="eyebrow c-primary">Measured, not guessed</span><span class="caption c-muted" style="max-width:520px">I track return rate for customers and time per task for staff, and report what changed.</span></div>
         </div>
-        <div class="wcell">
+        <div class="wcell" data-reveal>
           <div class="dg panel" data-w="584" data-h="290"><div class="dg-in" style="width:584px;height:290px">
-            {[[40,'Motion'],[102,'Sound'],[164,'Touch']].map(([y,l]) => (
-              <><svg class="abs" style={pos(150,y as number,220,70)} viewBox="0 0 220 70" fill="none" aria-hidden="true"><path d="M218.913 0.5L159.77 69.5H1.08691L60.2305 0.5H218.913Z" fill="var(--bg-page)" stroke="var(--border-strong)"/></svg>
+            {[[40,'Motion'],[102,'Sound'],[164,'Touch']].map(([y,l], n) => (
+              <><svg class="abs sense" style={pos(150,y as number,220,70) + `--n:${n - 1}`} viewBox="0 0 220 70" fill="none" aria-hidden="true"><path d="M218.913 0.5L159.77 69.5H1.08691L60.2305 0.5H218.913Z" fill="var(--bg-page)" stroke="var(--border-strong)"/></svg>
                 <span class="small c-secondary abs" style={pos(400,(y as number)+26)}>{l}</span></>
             ))}
           </div></div>
@@ -355,10 +355,10 @@ const devices = [
   <section class="sec bt">
     <div class="sec-in">
       <div class="shead">
-        <div class="shead-l"><span class="eyebrow c-muted">In production</span><h2 class="h2 c-heading">Products I’ve helped<br />ship</h2></div>
-        <div class="shead-r"><p class="lede c-secondary">Client work and my own products, live and in use.{testimonials.length > 0 && ' Here is what the people I work with say.'}</p></div>
+        <div class="shead-l"><span class="eyebrow c-muted" data-reveal>In production</span><h2 class="h2 c-heading" data-split>Products I’ve helped<br />ship</h2></div>
+        <div class="shead-r" data-reveal style="--d:150ms"><p class="lede c-secondary">Client work and my own products, live and in use.{testimonials.length > 0 && ' Here is what the people I work with say.'}</p></div>
       </div>
-      <div class="marks" style="margin-top:56px">{['Virelle Wellness Hub','Mylo','Wintech Studio','Tobel Pearls','BlackGold Studio'].map(m => <span>{m}</span>)}</div>
+      <div class="marks" style="margin-top:56px" data-stagger="70">{['Virelle Wellness Hub','Mylo','Goalden','Wintech Studio','Tobel Pearls','BlackGold Studio'].map(m => <span data-reveal>{m}</span>)}</div>
       {testimonials.length > 0 && (
         <div class="tms" style="margin-top:56px">{testimonials.map(q => (
           <figure class="tm"><figcaption class="person"><span class="av"></span><span><span class="eyebrow c-primary">{q.name}</span><span class="small c-subtle">{q.role}</span></span></figcaption><blockquote class="body c-muted">{q.quote}</blockquote></figure>
@@ -371,14 +371,14 @@ const devices = [
   <section class="sec bg-alt" id="newsletter">
     <div class="sec-in nl">
       <div class="nl-l">
-        <span class="eyebrow c-muted">Newsletter</span>
-        <h2 class="h2 c-heading">Join The<br />Brain Room</h2>
+        <span class="eyebrow c-muted" data-reveal>Newsletter</span>
+        <h2 class="h2 c-heading" data-split>Join The<br />Brain Room</h2>
         <p class="body c-secondary">Notes on design, building and products people come back to.<br />About once a month.</p>
       </div>
-      <form class="nl-form" action="#" method="post" data-todo="newsletter provider">
+      <form class="nl-form" data-reveal style="--d:200ms" action="#" method="post" data-todo="newsletter provider">
         <label class="sr" for="nl-email">Email</label>
         <input id="nl-email" name="email" type="email" placeholder="you@email.com" required class="small" />
-        <button class="btn btn-solid" data-sfx="success">Subscribe</button>
+        <button class="btn btn-solid" data-sfx="success" data-magnetic>Subscribe</button>
       </form>
     </div>
   </section>
@@ -515,6 +515,56 @@ const devices = [
   .nl-form input { width:320px; height:46px; padding:12px 14px; background:var(--bg-page); color:var(--text-primary); border:1px solid var(--border-strong); border-radius:4px; }
   .nl-form input::placeholder { color:var(--text-subtle); }
   @media (max-width:1023px){ .nl { flex-direction:column; align-items:flex-start; } .nl-l { width:100%; } .nl-form { width:100%; } .nl-form input { flex:1; width:auto; } }
+  /* ---- motion details ---- */
+  .np-line { height:1px; background:var(--border-divider); }
+  .frame { transform:scale(1.04); transition:opacity 900ms var(--ease), transform 7000ms linear; }
+  .frame.on { transform:scale(1); }
+  .np-title { overflow:hidden; }
+  .np-title span { display:block; transform:translateY(100%); transition:transform 600ms var(--ease-dec) 120ms; }
+  .np-item.on .np-title span { transform:none; }
+  .lg { display:inline-flex; transition:transform var(--dur-2) var(--ease-dec); }
+  .lg:hover { transform:translateY(-3px); }
+  .motion .rule.grow { transform-origin:left; transform:scaleX(0); transition:transform 900ms var(--ease-dec) var(--d,0ms); opacity:1; }
+  .motion .rule.grow.in { transform:none; }
+  .steplist { position:relative; }
+  .ind { position:absolute; left:0; height:1px; width:100%; background:var(--border-active); top:var(--iy,42px); transition:top 500ms var(--ease-dec); z-index:1; }
+  .steplist a.on { border-bottom-color:var(--border-default); }
+  .steplist a { transition:padding-left var(--dur-3) var(--ease-dec); }
+  .steplist a:hover { padding-left:6px; }
+  .steplist .num, .steplist .nm { transition:color var(--dur-2); }
+  .work :global(.cover-ph) { transition:border-color var(--dur-2); }
+  .work :global(.cover-ph > *) { transition:transform 900ms var(--ease-dec); }
+  .work:hover :global(.cover-ph > *) { transform:scale(1.03); }
+  .ttl { display:inline-flex; align-items:center; gap:6px; }
+  .ttl :global(.go) { opacity:0; transform:translate(-4px, 4px); transition:opacity var(--dur-2), transform var(--dur-3) var(--ease-dec); }
+  .work:hover .ttl :global(.go) { opacity:1; transform:none; }
+  .motion .grow { transform-origin:left; transform:scaleX(0); transition:transform 1000ms var(--ease-dec) var(--d,0ms); }
+  .motion .grow.in { transform:none; }
+  .motion .travel { opacity:0; }
+  .motion .travel.in { opacity:1; animation:travel 1600ms var(--ease-dec) 200ms both, pulse 2.4s ease-in-out 2s infinite; }
+  @keyframes travel { from { transform:translateX(0); } to { transform:translateX(248px); } }
+  @keyframes pulse { 50% { box-shadow:0 0 0 4px color-mix(in srgb, var(--text-primary) 15%, transparent); } }
+  .motion .travel.in { transform:translateX(248px); }
+  .chip { transition:border-color var(--dur-2), transform var(--dur-3) var(--ease-dec); }
+  .chip:hover { border-color:var(--border-active); transform:translateY(-2px); }
+  .sense { transition:transform 600ms var(--ease-dec); }
+  .wcell:hover .sense { transform:translate(calc(var(--n) * -14px), calc(var(--n) * 10px)); }
+  .dev { transition:border-color var(--dur-2), transform var(--dur-3) var(--ease-dec); }
+  .dev:hover { border-color:var(--border-active); transform:translateY(-4px); }
+  .core { animation:breathe 4s ease-in-out infinite; }
+  @keyframes breathe { 50% { border-color:var(--border-strong); } }
+  .sf :global(.icon) { transition:transform var(--dur-3) var(--ease-dec); }
+  .sf:hover :global(.icon) { transform:translateY(-3px) scale(1.1); }
+  .sf { transition:border-color var(--dur-2); } .sf:hover { border-top-color:var(--border-active); }
+  .cmp tbody tr { transition:background var(--dur-2); } .cmp tbody tr:hover { background:var(--bg-page); }
+  .marks span { transition:color var(--dur-2); } .marks span:hover { color:var(--text-primary); }
+  .after .phone > * { overflow:hidden; position:absolute; }
+  .motion .after.in .pr { animation:fillin 900ms var(--ease-dec) both; }
+  .motion .after.in .pr:nth-of-type(3) { animation-delay:150ms; } .motion .after.in .pr:nth-of-type(4) { animation-delay:300ms; }
+  @keyframes fillin { from { transform:scaleX(.2); transform-origin:left; opacity:.3; } to { transform:none; opacity:1; } }
+  .wwrap { transition:transform var(--dur-3) var(--ease-dec); }
+  .wins:hover .wwrap:last-child { transform:translate(8px, 8px); }
+  .notebox { transition:transform var(--dur-3) var(--ease-dec); } .notebox:hover { transform:translateY(-2px); }
 </style>
 
 <script>
@@ -530,7 +580,7 @@ const devices = [
   // Hero reel: left timer line + right segments drive frames and Now Playing.
   const frames = [...document.querySelectorAll<HTMLElement>('.reel .frame')];
   const items = [...document.querySelectorAll<HTMLElement>('.np-item')];
-  const segs = [...document.querySelectorAll<HTMLElement>('.seg span')];
+  const segs: HTMLElement[] = [];
   const prog = document.getElementById('hero-prog')!;
   const DUR = 7000, reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let i = 0, t0 = performance.now();
@@ -548,8 +598,7 @@ const devices = [
     }
     requestAnimationFrame(tick);
   };
-  document.querySelectorAll<HTMLElement>('[data-go]').forEach(b => b.addEventListener('click', () => { show(Number(b.dataset.go)); play('tick'); }));
-  show(0); requestAnimationFrame(tick);
+    show(0); requestAnimationFrame(tick);
 
   // Copy buttons
   document.querySelectorAll<HTMLElement>('[data-copy]').forEach(b => b.addEventListener('click', async () => {
@@ -559,7 +608,16 @@ const devices = [
 
   // How I work: the step in the middle of the screen lights up in the list.
   const links = new Map([...document.querySelectorAll<HTMLElement>('[data-step]')].map(a => [a.dataset.step!, a]));
-  const so = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return;
-    links.forEach(a => a.classList.remove('on')); links.get(e.target.id.replace('step-', ''))?.classList.add('on'); }), { rootMargin: '-45% 0px -50% 0px' });
-  document.querySelectorAll('.step').forEach(s => so.observe(s));
+  const stepsEls = [...document.querySelectorAll<HTMLElement>('.step')];
+  const ind = document.querySelector<HTMLElement>('.ind');
+  let cur = '';
+  const pickStep = () => {
+    let id = stepsEls[0]?.id ?? '';
+    for (const st of stepsEls) if (st.getBoundingClientRect().top < innerHeight * 0.5) id = st.id;
+    if (id === cur) return; cur = id;
+    links.forEach(a => a.classList.remove('on'));
+    const a = links.get(id.replace('step-', ''));
+    if (a) { a.classList.add('on'); ind?.style.setProperty('--iy', `${a.offsetTop + a.offsetHeight - 1}px`); }
+  };
+  addEventListener('scroll', pickStep, { passive: true }); pickStep();
 </script>
