@@ -76,7 +76,6 @@ ol,ul { padding:0; list-style:none; }
 
 .c-primary { color:var(--text-primary); } .c-heading { color:var(--text-heading); } .c-secondary { color:var(--text-secondary); }
 .c-muted { color:var(--text-muted); } .c-subtle { color:var(--text-subtle); } .c-accent { color:var(--accent-label); }
-.u { text-decoration:underline; text-underline-offset:3px; text-decoration-thickness:1px; }
 
 @media (max-width:767px){
   .display-xl { font-size:34px; line-height:36px; }
@@ -155,9 +154,8 @@ ol,ul { padding:0; list-style:none; }
 .nav.hide { transform:translateY(-100%); }
 
 /* Hover: underlined links grow their line from the left */
-.u { text-decoration:none; background:linear-gradient(currentColor,currentColor) 0 100% / 100% 1px no-repeat; padding-bottom:1px; transition:background-size var(--dur-3) var(--ease-dec), color var(--dur-1); }
-.u:hover { background-size:0 1px; background-position:100% 100%; animation:uline var(--dur-4) var(--ease-dec) forwards; }
-@keyframes uline { 0% { background-size:100% 1px; background-position:100% 100%; } 45% { background-size:0 1px; background-position:100% 100%; } 46% { background-position:0 100%; } 100% { background-size:100% 1px; background-position:0 100%; } }
+.u { text-decoration:none; background:linear-gradient(currentColor,currentColor) 0 100% / 0 1px no-repeat; padding-bottom:1px; transition:background-size var(--dur-3) var(--ease-dec), color var(--dur-1); }
+.u:hover, .u:focus-visible { background-size:100% 1px; }
 
 /* Buttons: press, arrow nudge, solid fill sweep on outline */
 .btn { position:relative; overflow:hidden; isolation:isolate; transition:transform var(--dur-1) var(--ease), border-color var(--dur-2) var(--ease), color var(--dur-2) var(--ease); }

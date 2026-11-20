@@ -1,0 +1,41 @@
+---
+// "What we tried": each attempt, why we tried it, and what happened next. A line fills as you read.
+interface Props { items: { t: string; why: string; then: string; src?: string }[] }
+const { items } = Astro.props;
+---
+<ol class="tries" data-tries>
+  <span class="rail" aria-hidden="true"><span></span></span>
+  {items.map((it, i) => (
+    <li class="try" data-reveal>
+      <span class="mark" aria-hidden="true"></span>
+      <div class="head"><span class="label c-accent">Try {String(i + 1).padStart(2, '0')}</span><h4 class="h3 c-heading">{it.t}</h4></div>
+      <div class="cols">
+        <div><span class="eyebrow c-subtle">Why we tried it</span><p class="small c-secondary">{it.why}</p></div>
+        <div><span class="eyebrow c-subtle">What happened</span><p class="small c-secondary">{it.then}</p></div>
+      </div>
+    </li>
+  ))}
+</ol>
+<style>
+  .tries { position:relative; display:flex; flex-direction:column; gap:40px; padding-left:36px; }
+  .rail { position:absolute; left:5px; top:6px; bottom:6px; width:1px; background:var(--border-default); }
+  .rail span { position:absolute; inset:0; background:linear-gradient(#F30058, #FFA41C, #19F2FF, #3084FF); transform-origin:top; transform:scaleY(var(--p,0)); }
+  .try { position:relative; display:flex; flex-direction:column; gap:14px; }
+  .mark { position:absolute; left:-36px; top:2px; width:11px; height:11px; transform:rotate(45deg); background:var(--bg-page); border:1px solid var(--border-strong); transition:background var(--dur-3), border-color var(--dur-3); }
+  .try.lit .mark { background:var(--accent-label); border-color:var(--accent-label); }
+  .head { display:flex; flex-direction:column; gap:8px; }
+  .cols { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .cols > div { display:flex; flex-direction:column; gap:6px; padding-top:12px; border-top:1px solid var(--border-default); }
+  @media (max-width:767px){ .cols { grid-template-columns:1fr; } }
+</style>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-tries]').forEach(root => {
+    const rail = root.querySelector<HTMLElement>('.rail span')!, items = [...root.querySelectorAll<HTMLElement>('.try')];
+    const on = () => {
+      const r = root.getBoundingClientRect(), mid = innerHeight * .55;
+      rail.style.setProperty('--p', String(Math.min(1, Math.max(0, (mid - r.top) / r.height))));
+      items.forEach(it => it.classList.toggle('lit', it.getBoundingClientRect().top < mid));
+    };
+    addEventListener('scroll', on, { passive: true }); on();
+  });
+</script>

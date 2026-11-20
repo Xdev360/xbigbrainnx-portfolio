@@ -1,0 +1,107 @@
+---
+// Mylo's build-up. A tall section with a sticky stage. As you scroll, a gem flies into Mylo
+// and the next layer (colour, emotion, outfit, accessories) appears on top of the sketch.
+// Drop the real layers in as PNG/WebP with transparent backgrounds: stages[i].src
+interface Props { stages: { gem: string; t: string; d: string; src?: string }[] }
+const { stages } = Astro.props;
+---
+<div class="build" data-build style={`--n:${stages.length}`}>
+  <div class="stick">
+    <ol class="steps">
+      {stages.map((s, i) => (
+        <li data-i={i}><span class="gem-ic"></span><span class="eyebrow">{s.gem}</span></li>
+      ))}
+    </ol>
+
+    <div class="stage">
+      <div class="ring" aria-hidden="true"></div>
+      {stages.map((s, i) => (
+        <div class="layer" data-i={i}>
+          {s.src ? <img src={s.src} alt={`Mylo, ${s.t}`} /> :
+            <div class="ph"><span class="mono-tag c-subtle">Mylo · {s.gem}</span><span class="meta c-subtle">Layer from Figma</span></div>}
+        </div>
+      ))}
+      <div class="gem" aria-hidden="true"><span class="gem-shape"></span><span class="gem-label mono-tag"></span></div>
+      <div class="burst" aria-hidden="true">{Array.from({ length: 8 }).map((_, k) => <span style={`--a:${k * 45}deg`}></span>)}</div>
+    </div>
+
+    <div class="copy">
+      {stages.map((s, i) => (
+        <div class="txt" data-i={i}>
+          <span class="label c-accent">{String(i + 1).padStart(2, '0')} · {s.gem}</span>
+          <h3 class="h3 c-heading">{s.t}</h3>
+          <p class="small c-muted">{s.d}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+
+<style>
+  .build { height:calc(var(--n) * 90vh); position:relative; }
+  .stick { position:sticky; top:64px; height:calc(100vh - 64px); display:grid; grid-template-columns:180px 1fr 280px; align-items:center; gap:40px; }
+  .steps { display:flex; flex-direction:column; gap:14px; }
+  .steps li { display:flex; align-items:center; gap:10px; color:var(--text-subtle); transition:color var(--dur-3); }
+  .steps li.on { color:var(--text-primary); }
+  .gem-ic { width:10px; height:10px; transform:rotate(45deg); border:1px solid currentColor; transition:background var(--dur-3); }
+  .steps li.done .gem-ic { background:var(--accent-label); border-color:var(--accent-label); }
+  .stage { position:relative; aspect-ratio:1; max-height:70vh; margin:auto; width:100%; border:1px solid var(--border-default); background:var(--bg-alt); overflow:hidden; }
+  .ring { position:absolute; inset:18%; border-radius:50%; border:1px dashed var(--border-strong); animation:spin-slow 30s linear infinite; }
+  @keyframes spin-slow { to { transform:rotate(360deg); } }
+  .layer { position:absolute; inset:0; display:grid; place-items:center; opacity:0; transform:scale(.92); transition:opacity 600ms var(--ease-dec), transform 700ms var(--ease-dec); }
+  .layer img { width:80%; height:80%; object-fit:contain; }
+  .layer.on { opacity:1; transform:none; }
+  .layer.past { opacity:1; transform:none; }
+  .ph { display:flex; flex-direction:column; align-items:center; gap:6px; padding:16px 20px; background:var(--bg-page); border:1px solid var(--border-default); }
+  .layer.past .ph { opacity:0; }  /* placeholders don't stack; real PNG layers do */
+  .gem { position:absolute; left:50%; top:50%; display:flex; flex-direction:column; align-items:center; gap:8px; pointer-events:none; opacity:0; }
+  .gem-shape { width:28px; height:28px; transform:rotate(45deg); background:linear-gradient(135deg, #F30058, #FFA41C 40%, #19F2FF 75%, #3084FF); }
+  .gem-label { color:var(--text-primary); padding:2px 6px; background:var(--bg-page); border:1px solid var(--border-strong); }
+  .gem.fly { animation:fly 900ms var(--ease-dec) forwards; }
+  @keyframes fly { 0% { opacity:0; transform:translate(-260%, 180%) scale(.6); } 25% { opacity:1; } 80% { opacity:1; transform:translate(-50%, -50%) scale(1); } 100% { opacity:0; transform:translate(-50%, -50%) scale(.2); } }
+  .burst { position:absolute; left:50%; top:50%; }
+  .burst span { position:absolute; width:2px; height:14px; background:var(--accent-label); opacity:0; transform:rotate(var(--a)) translateY(-40px); }
+  .burst.go span { animation:burst 600ms var(--ease-dec) 700ms; }
+  @keyframes burst { 0% { opacity:1; transform:rotate(var(--a)) translateY(-30px) scaleY(1); } 100% { opacity:0; transform:rotate(var(--a)) translateY(-110px) scaleY(.3); } }
+  .copy { position:relative; height:200px; }
+  .txt { position:absolute; inset:0; display:flex; flex-direction:column; gap:12px; opacity:0; transform:translateY(16px); transition:opacity var(--dur-3), transform var(--dur-3) var(--ease-dec); }
+  .txt.on { opacity:1; transform:none; }
+  @media (max-width:1023px){
+    .build { height:calc(var(--n) * 80vh); }
+    .stick { grid-template-columns:1fr; grid-template-rows:auto 1fr auto; gap:16px; padding:16px 0; align-items:start; }
+    .steps { flex-direction:row; flex-wrap:wrap; gap:12px; }
+    .stage { max-height:48vh; aspect-ratio:1; width:auto; height:48vh; }
+    .copy { height:140px; }
+  }
+  @media (prefers-reduced-motion:reduce){ .build { height:auto; } .stick { position:static; height:auto; } }
+</style>
+
+<script>
+  import { play, buzz } from '../../lib/sensory';
+  document.querySelectorAll<HTMLElement>('[data-build]').forEach(root => {
+    const layers = [...root.querySelectorAll<HTMLElement>('.layer')];
+    const steps = [...root.querySelectorAll<HTMLElement>('.steps li')];
+    const txts = [...root.querySelectorAll<HTMLElement>('.txt')];
+    const gem = root.querySelector<HTMLElement>('.gem')!, label = gem.querySelector<HTMLElement>('.gem-label')!;
+    const burst = root.querySelector<HTMLElement>('.burst')!;
+    const n = layers.length; let cur = -1;
+    const set = (i: number) => {
+      if (i === cur) return;
+      const forward = i > cur; cur = i;
+      layers.forEach((l, k) => { l.classList.toggle('on', k === i); l.classList.toggle('past', k < i); });
+      steps.forEach((s, k) => { s.classList.toggle('on', k === i); s.classList.toggle('done', k <= i); });
+      txts.forEach((t, k) => t.classList.toggle('on', k === i));
+      if (forward && i > 0) {
+        label.textContent = steps[i].textContent!.trim();
+        gem.classList.remove('fly'); burst.classList.remove('go'); void gem.offsetWidth;
+        gem.classList.add('fly'); burst.classList.add('go'); play('pop'); buzz(10);
+      }
+    };
+    const onScroll = () => {
+      const r = root.getBoundingClientRect();
+      const p = Math.min(0.999, Math.max(0, -r.top / (r.height - innerHeight)));
+      set(Math.floor(p * n));
+    };
+    addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  });
+</script>

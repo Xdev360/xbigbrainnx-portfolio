@@ -1,0 +1,64 @@
+---
+import Icon from '../Icon.astro';
+// Checkout flow: four phones, a line that fills as it scrolls in, and small live demos
+// (the map pin drops, delivery options pick the cheapest two, the pay button confirms).
+interface Props { steps: { t: string; d: string; src?: string; demo?: 'bag' | 'map' | 'delivery' | 'pay' }[]; caption?: string }
+const { steps, caption } = Astro.props;
+---
+<figure class="flow" data-reveal data-stagger="160">
+  <div class="track" aria-hidden="true"><span></span></div>
+  <div class="row">
+    {steps.map((s, i) => (
+      <div class="st" data-reveal data-reveal-child>
+        <span class="num label c-accent">{String(i + 1).padStart(2, '0')}</span>
+        <div class="phone">
+          {s.src ? <img src={s.src} alt={s.t} /> : (
+            <div class:list={['demo', s.demo]}>
+              {s.demo === 'bag' && <><span class="b-row"></span><span class="b-row"></span><span class="b-row short"></span><span class="b-total"></span></>}
+              {s.demo === 'map' && <><svg class="mapgrid" viewBox="0 0 120 160" aria-hidden="true"><path d="M0 40h120M0 90h120M0 130h120M30 0v160M75 0v160M100 0v160M0 10l120 70" stroke="var(--border-strong)" stroke-width="1" fill="none"/></svg><span class="pin"></span><span class="pulse"></span><span class="addr mono-tag">Pin dropped</span></>}
+              {s.demo === 'delivery' && <><span class="opt">Rider A</span><span class="opt pick">Rider B</span><span class="opt pick">Rider C</span><span class="opt dim">Rider D</span></>}
+              {s.demo === 'pay' && <><span class="b-total"></span><span class="paybtn mono-tag">Pay</span><span class="tick"><Icon name="check" size={20} /></span></>}
+            </div>
+          )}
+        </div>
+        <span class="eyebrow c-primary">{s.t}</span>
+        <p class="small c-muted">{s.d}</p>
+      </div>
+    ))}
+  </div>
+  {caption && <figcaption class="meta c-subtle">{caption}</figcaption>}
+</figure>
+<style>
+  .flow { position:relative; display:flex; flex-direction:column; gap:16px; }
+  .track { position:absolute; left:0; right:0; top:28px; height:1px; background:var(--border-default); }
+  .track span { position:absolute; inset:0; background:var(--spectrum-x); transform:scaleX(0); transform-origin:left; transition:transform 2000ms var(--ease-dec) 300ms; }
+  .flow.in .track span { transform:none; }
+  .row { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:24px; }
+  .st { display:flex; flex-direction:column; gap:12px; }
+  .num { background:var(--bg-page); align-self:flex-start; padding-right:8px; position:relative; height:56px; display:flex; align-items:center; }
+  .phone { aspect-ratio:9/16; border:1px solid var(--border-strong); border-radius:18px; background:var(--bg-alt); overflow:hidden; position:relative; transition:transform var(--dur-3) var(--ease-dec), border-color var(--dur-2); }
+  .st:hover .phone { transform:translateY(-6px); border-color:var(--border-active); }
+  .phone img { width:100%; height:100%; object-fit:cover; }
+  .demo { position:absolute; inset:14px; display:flex; flex-direction:column; gap:8px; }
+  .b-row { height:26px; border:1px solid var(--border-default); background:var(--bg-page); } .b-row.short { width:60%; }
+  .b-total { height:10px; width:50%; background:var(--border-strong); margin-top:auto; }
+  .map { inset:0; }
+  .mapgrid { position:absolute; inset:0; width:100%; height:100%; }
+  .pin { position:absolute; left:50%; top:46%; width:14px; height:14px; border-radius:50% 50% 50% 0; background:var(--accent-label); transform:translate(-50%, -100%) rotate(-45deg); }
+  .pulse { position:absolute; left:50%; top:46%; width:10px; height:4px; border-radius:50%; background:var(--accent-label); transform:translate(-50%, -50%); opacity:.4; }
+  .addr { position:absolute; left:10px; right:10px; bottom:12px; padding:6px; text-align:center; background:var(--bg-page); border:1px solid var(--border-default); color:var(--text-secondary); font-size:9px; }
+  .st.in .pin { animation:drop 800ms var(--ease-dec) 900ms both; }
+  .st.in .pulse { animation:ping 1.6s ease-out 1.6s infinite; }
+  .st.in .addr { animation:up 500ms var(--ease-dec) 1.4s both; }
+  @keyframes drop { from { transform:translate(-50%, -260%) rotate(-45deg); opacity:0; } to { transform:translate(-50%, -100%) rotate(-45deg); opacity:1; } }
+  @keyframes ping { from { transform:translate(-50%,-50%) scale(1); opacity:.5; } to { transform:translate(-50%,-50%) scale(5); opacity:0; } }
+  @keyframes up { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  .opt { padding:8px; border:1px solid var(--border-default); background:var(--bg-page); font:500 10px/12px var(--f-mono); color:var(--text-muted); transition:border-color 400ms, color 400ms, opacity 400ms; }
+  .st.in .opt.pick { border-color:var(--accent-label); color:var(--text-primary); transition-delay:1.2s; }
+  .st.in .opt.dim { opacity:.35; transition-delay:1.2s; }
+  .paybtn { margin-top:12px; padding:8px; text-align:center; background:var(--btn-solid-bg); color:var(--btn-solid-text); font-size:10px; }
+  .tick { position:absolute; left:50%; top:38%; translate:-50% -50%; width:44px; height:44px; display:grid; place-items:center; border-radius:50%; border:1px solid var(--accent-label); color:var(--accent-label); opacity:0; }
+  .st.in .tick { animation:pop 600ms var(--ease-dec) 1.6s both; }
+  @keyframes pop { from { opacity:0; transform:scale(.4); } to { opacity:1; transform:none; } }
+  @media (max-width:1023px){ .row { grid-template-columns:repeat(2, minmax(0,1fr)); } .track { display:none; } }
+</style>
