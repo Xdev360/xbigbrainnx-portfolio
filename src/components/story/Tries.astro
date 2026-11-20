@@ -25,14 +25,14 @@ const { items } = Astro.props;
   .mark { position:absolute; left:-36px; top:2px; width:11px; height:11px; transform:rotate(45deg); background:var(--bg-page); border:1px solid var(--border-strong); transition:background var(--dur-3), border-color var(--dur-3); }
   .try.lit .mark { background:var(--accent-label); border-color:var(--accent-label); }
   .head { display:flex; flex-direction:column; gap:8px; }
-  .try { display:grid; grid-template-columns:1fr 160px; grid-template-rows:auto 1fr; column-gap:40px; row-gap:16px; align-items:start; }
+  .try { display:grid; grid-template-columns:minmax(0,1fr) 170px; grid-template-rows:auto 1fr; column-gap:32px; row-gap:16px; align-items:start; max-width:700px; }
   .try > .head, .try > .cols { grid-column:1; }
-  .shot { grid-column:2; grid-row:1 / span 2; width:160px; border-radius:20px; border:1px solid var(--border-strong); transform:rotate(var(--r,2deg)) translateY(12px); opacity:.0; transition:transform 700ms var(--ease-dec), opacity 500ms; }
+  .shot { grid-column:2; grid-row:1 / span 2; width:170px; border-radius:20px; border:1px solid var(--border-strong); transform:rotate(var(--r,2deg)) translateY(12px); opacity:.0; transition:transform 700ms var(--ease-dec), opacity 500ms; }
   .try:nth-child(odd) .shot { --r:-2deg; }
   .try.lit .shot { opacity:1; transform:rotate(var(--r,2deg)); }
   .shot:hover { transform:rotate(0) scale(1.04); }
   @media (max-width:767px){ .try { grid-template-columns:1fr; } .shot { grid-column:1; grid-row:auto; width:160px; margin-top:12px; } }
-  .cols { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .cols { display:flex; flex-direction:column; gap:16px; max-width:460px; }
   .cols > div { display:flex; flex-direction:column; gap:6px; padding-top:12px; border-top:1px solid var(--border-default); }
   @media (max-width:767px){ .cols { grid-template-columns:1fr; } }
 </style>

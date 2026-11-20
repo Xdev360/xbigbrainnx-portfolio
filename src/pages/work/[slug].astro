@@ -20,6 +20,9 @@ const { slug } = Astro.params;
 const story = stories.find(s => s.slug === slug)!;
 const others = stories.filter(s => s.slug !== slug).slice(0, 2);
 const proj = projects.find(p => p.slug === slug);
+// Plain text with [label](/link) turned into inline links. Everything else is escaped.
+const md = (t: string) => t.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!))
+  .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a class="inl" href="$2">$1<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg></a>');
 ---
 <Base title={`${story.title.replace('\n', ' ')} · Ibraheem Oladele`} description={story.subtitle}>
   <div class="progress" aria-hidden="true"><span id="read-prog"></span></div>
@@ -66,7 +69,7 @@ const proj = projects.find(p => p.slug === slug);
           <div class="col" data-stagger="70">
             <span class="eyebrow c-muted" data-reveal>{c.kicker}</span>
             <h2 class="h2s c-heading" data-reveal>{c.title}</h2>
-            {c.body.map(p => <p class="article c-secondary" data-reveal>{p}</p>)}
+            {c.body.map(p => <p class="article c-secondary" data-reveal set:html={md(p)} />)}
             {c.list && <ul class="list" data-reveal>{c.list.map(l => <li class="article c-secondary">{l}</li>)}</ul>}
             {c.table && (
               <table class="tbl" data-reveal>
@@ -180,6 +183,10 @@ const proj = projects.find(p => p.slug === slug);
   .tbl td:first-child { width:140px; }
   .note { padding:16px 20px; }
   .todo { color:var(--accent-label); border:1px dashed var(--border-strong); padding:10px 14px; align-self:flex-start; }
+  .col :global(.inl) { color:var(--text-primary); display:inline-flex; align-items:center; gap:2px; border-bottom:1px solid var(--accent-label); transition:color var(--dur-2), border-color var(--dur-2); }
+  .col :global(.inl:hover) { color:var(--accent-label); }
+  .col :global(.inl svg) { transition:transform var(--dur-2) var(--ease-dec); }
+  .col :global(.inl:hover svg) { transform:translate(2px,-2px); }
   .more-d { max-width:640px; border-top:1px solid var(--border-default); border-bottom:1px solid var(--border-default); }
   .more-d summary { list-style:none; cursor:pointer; display:flex; justify-content:space-between; align-items:center; padding:16px 0; }
   .more-d summary::-webkit-details-marker { display:none; }

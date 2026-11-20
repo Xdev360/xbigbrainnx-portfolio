@@ -23,7 +23,8 @@ const { label, src, stops } = Astro.props;
   .stick { position:sticky; top:96px; display:flex; flex-direction:column; gap:20px; }
   .frame { position:relative; aspect-ratio:16/9; max-height:64vh; overflow:hidden; border:1px solid var(--border-default); background:var(--bg-alt); }
   .cam { position:absolute; inset:0; transform-origin:var(--ox,50%) var(--oy,50%); transform:scale(var(--s,1)); transition:transform 1100ms var(--ease-dec), transform-origin 1100ms var(--ease-dec); }
-  .cam img { width:100%; height:100%; object-fit:cover; }
+  .cam img { width:100%; height:100%; object-fit:contain; }
+  @media (max-width:767px){ .spot { display:none; } .ph .mono-tag { font-size:10px; } }
   .ph { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; }
   .spot { position:absolute; translate:-50% -50%; padding:4px 6px; border:1px dashed var(--border-strong); background:var(--bg-page); }
   .spot .mono-tag { font-size:6px; line-height:8px; color:var(--text-muted); }

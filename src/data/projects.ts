@@ -39,7 +39,6 @@ export const projects: Project[] = [
     kind: 'own',
     tags: ['product', 'mascots', 'own'],
     color: '--project-mylo',
-    cover: '/work/mylo/cover.webp',
     published: true,
   },
   {
@@ -51,6 +50,17 @@ export const projects: Project[] = [
     kind: 'own',
     tags: ['product', 'mascots', 'brand', 'own'],
     color: '--project-mylo',
+    published: true,
+  },
+  {
+    slug: 'chatgrow',
+    name: 'ChatGrow',
+    short: 'A hotel management system. I sorted the information so staff find what they need fast.',
+    role: 'Information architecture',
+    useCase: 'Hotel PMS',
+    kind: 'client',
+    tags: ['team-tools', 'product'],
+    color: '--project-wintech',
     published: true,
   },
   {

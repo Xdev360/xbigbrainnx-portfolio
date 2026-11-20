@@ -1,111 +1,183 @@
 ---
-// Mylo's build-up. A tall section with a sticky stage. As you scroll, a gem flies into Mylo
-// and the next layer (colour, emotion, outfit, accessories) appears on top of the sketch.
-// Drop the real layers in as PNG/WebP with transparent backgrounds: stages[i].src
-interface Props { stages: { gem: string; t: string; d: string; src?: string }[] }
+// Mylo's build-up, driven by scroll: sketch, then a gem adds colour, emotion, outfit and accessories.
+// Built from Mylo's real layers (cut from the MYLO Figma file), so the side panel can mix them:
+// pick a colour, a face, an outfit and something to wear.
+import Icon from '../Icon.astro';
+interface Props { stages: { gem: string; t: string; d: string }[] }
 const { stages } = Astro.props;
+const K = '/work/mylo/kit/';
+const colours = [['white', '#F4F4F4'], ['lilac', '#B3A1F5'], ['mint', '#7FD3AE'], ['peach', '#F5A98A']];
+const faces = [['love', 'Love'], ['cool', 'Cool'], ['excited', 'Excited']];
+const outfits = [['none', 'None'], ['sweater', 'Sweater'], ['jacket', 'Jacket'], ['tux', 'Tux']];
+const hats = [['none', 'None'], ['beanie', 'Beanie'], ['headphones', 'Headphones'], ['party', 'Party hat']];
 ---
 <div class="build" data-build style={`--n:${stages.length}`}>
   <div class="stick">
     <ol class="steps">
-      {stages.map((s, i) => (
-        <li data-i={i}><span class="gem-ic"></span><span class="eyebrow">{s.gem}</span></li>
-      ))}
+      {stages.map((s, i) => <li data-i={i}><span class="gem-ic"></span><span class="eyebrow">{s.gem}</span></li>)}
     </ol>
 
     <div class="stage">
       <div class="ring" aria-hidden="true"></div>
-      {stages.map((s, i) => (
-        <div class="layer" data-i={i}>
-          {s.src ? <img src={s.src} alt={`Mylo, ${s.t}`} /> :
-            <div class="ph"><span class="mono-tag c-subtle">Mylo · {s.gem}</span><span class="meta c-subtle">Layer from Figma</span></div>}
-        </div>
-      ))}
+      <div class="mylo" data-mylo>
+        <img class="lay sketch" src="/work/mylo/build-1-sketch.webp" alt="" />
+        <img class="lay body" data-l="body" src={`${K}body-white.webp`} alt="" />
+        <img class="lay face" data-l="face" src={`${K}face-love.webp`} alt="" />
+        <img class="lay outfit" data-l="outfit" src={`${K}outfit-sweater.webp`} alt="" />
+        <img class="lay hat" data-l="hat" src={`${K}hat-beanie.webp`} alt="" />
+      </div>
       <div class="gem" aria-hidden="true"><span class="gem-shape"></span><span class="gem-label mono-tag"></span></div>
       <div class="burst" aria-hidden="true">{Array.from({ length: 8 }).map((_, k) => <span style={`--a:${k * 45}deg`}></span>)}</div>
+      <span class="sr" aria-live="polite" data-live></span>
     </div>
 
-    <div class="copy">
-      {stages.map((s, i) => (
-        <div class="txt" data-i={i}>
-          <span class="label c-accent">{String(i + 1).padStart(2, '0')} · {s.gem}</span>
-          <h3 class="h3 c-heading">{s.t}</h3>
-          <p class="small c-muted">{s.d}</p>
-        </div>
-      ))}
+    <div class="side">
+      <div class="copy">
+        {stages.map((s, i) => (
+          <div class="txt" data-i={i}>
+            <span class="label c-accent">{String(i + 1).padStart(2, '0')} · {s.gem}</span>
+            <h3 class="h3 c-heading">{s.t}</h3>
+            <p class="small c-muted">{s.d}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="maker" data-maker>
+        <span class="eyebrow c-primary mk-title"><Icon name="sparkles" size={14} /> Make your own Mylo</span>
+        <div class="row"><span class="eyebrow c-subtle">Colour</span>
+          <div class="opts">{colours.map(([k, c], i) => <button class:list={['sw', { on: i === 0 }]} data-set="body" data-v={k} style={`--c:${c}`} aria-label={k}></button>)}</div></div>
+        <div class="row"><span class="eyebrow c-subtle">Face</span>
+          <div class="opts">{faces.map(([k, l], i) => <button class:list={['chip', { on: i === 0 }]} data-set="face" data-v={k}>{l}</button>)}</div></div>
+        <div class="row"><span class="eyebrow c-subtle">Outfit</span>
+          <div class="opts">{outfits.map(([k, l], i) => <button class:list={['chip', { on: i === 1 }]} data-set="outfit" data-v={k}>{l}</button>)}</div></div>
+        <div class="row"><span class="eyebrow c-subtle">Wear</span>
+          <div class="opts">{hats.map(([k, l], i) => <button class:list={['chip', { on: i === 1 }]} data-set="hat" data-v={k}>{l}</button>)}</div></div>
+      </div>
     </div>
   </div>
 </div>
 
 <style>
-  .build { height:calc(var(--n) * 90vh); position:relative; }
-  .stick { position:sticky; top:64px; height:calc(100vh - 64px); display:grid; grid-template-columns:180px 1fr 280px; align-items:center; gap:40px; }
+  .build { height:calc(var(--n) * 60vh + 40vh); position:relative; }
+  .stick { position:sticky; top:72px; height:calc(100vh - 88px); display:grid; grid-template-columns:150px minmax(0,1fr) 280px; align-items:center; gap:32px; }
   .steps { display:flex; flex-direction:column; gap:14px; }
-  .steps li { display:flex; align-items:center; gap:10px; color:var(--text-subtle); transition:color var(--dur-3); }
+  .steps li { display:flex; align-items:center; gap:10px; color:var(--text-subtle); transition:color 250ms; }
   .steps li.on { color:var(--text-primary); }
-  .gem-ic { width:10px; height:10px; transform:rotate(45deg); border:1px solid currentColor; transition:background var(--dur-3); }
+  .gem-ic { width:10px; height:10px; transform:rotate(45deg); border:1px solid currentColor; transition:background 250ms, border-color 250ms; }
   .steps li.done .gem-ic { background:var(--accent-label); border-color:var(--accent-label); }
-  .stage { position:relative; aspect-ratio:1; max-height:70vh; margin:auto; width:100%; border:1px solid var(--border-default); background:var(--bg-alt); overflow:hidden; }
-  .ring { position:absolute; inset:18%; border-radius:50%; border:1px dashed var(--border-strong); animation:spin-slow 30s linear infinite; }
+  .stage { position:relative; height:min(100%, 620px); aspect-ratio:5/6; justify-self:center; border:1px solid var(--border-default); background:var(--bg-alt); overflow:hidden; display:grid; place-items:center; }
+  .ring { position:absolute; inset:14%; border-radius:50%; border:1px dashed var(--border-strong); animation:spin-slow 40s linear infinite; }
   @keyframes spin-slow { to { transform:rotate(360deg); } }
-  .layer { position:absolute; inset:0; display:grid; place-items:center; opacity:0; transform:scale(.92); transition:opacity 600ms var(--ease-dec), transform 700ms var(--ease-dec); }
-  .layer img { width:80%; height:80%; object-fit:contain; }
-  .layer.on { opacity:1; transform:none; }
-  .layer.past { opacity:0; transform:scale(1.02); }
-  .layer.on img { animation:breathe 2.4s ease-in-out 900ms infinite; transform-origin:50% 90%; }
+  .mylo { position:relative; height:88%; aspect-ratio:500/780; transform-origin:50% 92%; animation:breathe 2.4s ease-in-out infinite; }
   @keyframes breathe { 50% { transform:scale(1.03); } }
-  .layer.on.hop img { animation:hop 450ms cubic-bezier(.3,1.6,.5,1), breathe 2.4s ease-in-out 900ms infinite; }
-  @keyframes hop { 0% { transform:scale(1); } 40% { transform:scale(.92, .96); } 100% { transform:scale(1); } }
-  .ph { display:flex; flex-direction:column; align-items:center; gap:6px; padding:16px 20px; background:var(--bg-page); border:1px solid var(--border-default); }
-  .gem { position:absolute; left:50%; top:50%; display:flex; flex-direction:column; align-items:center; gap:8px; pointer-events:none; opacity:0; }
-  .gem-shape { width:28px; height:28px; transform:rotate(45deg); background:linear-gradient(135deg, #F30058, #FFA41C 40%, #19F2FF 75%, #3084FF); }
+  .mylo.hop { animation:hop 350ms cubic-bezier(.3,1.6,.5,1), breathe 2.4s ease-in-out 350ms infinite; }
+  @keyframes hop { 40% { transform:scale(.94, .97); } 100% { transform:scale(1); } }
+  .lay { position:absolute; left:0; width:100%; top:0; height:100%; object-fit:contain; opacity:0; transform:translateY(-8px) scale(.98); transition:opacity 280ms ease, transform 380ms var(--ease-dec); pointer-events:none; }
+  .lay.sketch { top:23.08%; height:76.92%; object-fit:fill; }
+  .lay.show { opacity:1; transform:none; }
+  .gem { position:absolute; left:50%; top:50%; display:flex; flex-direction:column; align-items:center; gap:8px; pointer-events:none; opacity:0; z-index:3; }
+  .gem-shape { width:24px; height:24px; transform:rotate(45deg); background:linear-gradient(135deg, #F30058, #FFA41C 40%, #19F2FF 75%, #3084FF); }
   .gem-label { color:var(--text-primary); padding:2px 6px; background:var(--bg-page); border:1px solid var(--border-strong); }
-  .gem.fly { animation:fly 900ms var(--ease-dec) forwards; }
-  @keyframes fly { 0% { opacity:0; transform:translate(-260%, 180%) scale(.6); } 25% { opacity:1; } 80% { opacity:1; transform:translate(-50%, -50%) scale(1); } 100% { opacity:0; transform:translate(-50%, -50%) scale(.2); } }
-  .burst { position:absolute; left:50%; top:50%; }
-  .burst span { position:absolute; width:2px; height:14px; background:var(--accent-label); opacity:0; transform:rotate(var(--a)) translateY(-40px); }
-  .burst.go span { animation:burst 600ms var(--ease-dec) 700ms; }
-  @keyframes burst { 0% { opacity:1; transform:rotate(var(--a)) translateY(-30px) scaleY(1); } 100% { opacity:0; transform:rotate(var(--a)) translateY(-110px) scaleY(.3); } }
-  .copy { position:relative; height:200px; }
-  .txt { position:absolute; inset:0; display:flex; flex-direction:column; gap:12px; opacity:0; transform:translateY(16px); transition:opacity var(--dur-3), transform var(--dur-3) var(--ease-dec); }
+  .gem.fly { animation:fly 560ms var(--ease-dec) forwards; }
+  @keyframes fly { 0% { opacity:0; transform:translate(-240%, 160%) scale(.6); } 30% { opacity:1; } 75% { opacity:1; transform:translate(-50%, -50%) scale(1); } 100% { opacity:0; transform:translate(-50%, -50%) scale(.2); } }
+  .burst { position:absolute; left:50%; top:50%; z-index:3; }
+  .burst span { position:absolute; width:2px; height:12px; background:var(--accent-label); opacity:0; transform:rotate(var(--a)) translateY(-40px); }
+  .burst.go span { animation:burst 500ms var(--ease-dec) 420ms; }
+  @keyframes burst { 0% { opacity:1; transform:rotate(var(--a)) translateY(-30px); } 100% { opacity:0; transform:rotate(var(--a)) translateY(-100px) scaleY(.3); } }
+  .side { display:flex; flex-direction:column; gap:28px; }
+  .copy { position:relative; height:150px; }
+  .txt { position:absolute; inset:0; display:flex; flex-direction:column; gap:10px; opacity:0; transform:translateY(12px); transition:opacity 250ms, transform 300ms var(--ease-dec); }
   .txt.on { opacity:1; transform:none; }
+  .maker { display:flex; flex-direction:column; gap:14px; padding:16px; border:1px solid var(--border-default); background:var(--bg-alt); opacity:.45; transition:opacity 300ms, border-color 300ms; }
+  .maker.ready, .maker:hover, .maker:focus-within { opacity:1; }
+  .maker.ready { border-color:var(--border-strong); }
+  .mk-title { display:inline-flex; align-items:center; gap:8px; }
+  .row { display:flex; flex-direction:column; gap:8px; }
+  .opts { display:flex; flex-wrap:wrap; gap:6px; }
+  .sw { width:26px; height:26px; border-radius:50%; background:var(--c); border:2px solid var(--bg-alt); outline:1px solid var(--border-strong); cursor:pointer; transition:transform 200ms var(--ease-dec), outline-color 200ms; }
+  .sw:hover { transform:scale(1.1); } .sw.on { outline:2px solid var(--text-primary); }
+  .chip { padding:5px 9px; border:1px solid var(--border-default); background:var(--bg-page); color:var(--text-muted); font:500 11px/14px var(--f-mono); cursor:pointer; transition:border-color 200ms, color 200ms; }
+  .chip:hover { color:var(--text-primary); } .chip.on { border-color:var(--text-primary); color:var(--text-primary); }
   @media (max-width:1023px){
-    .build { height:calc(var(--n) * 80vh); }
-    .stick { grid-template-columns:1fr; grid-template-rows:auto 1fr auto; gap:16px; padding:16px 0; align-items:start; }
-    .steps { flex-direction:row; flex-wrap:wrap; gap:12px; }
-    .stage { max-height:48vh; aspect-ratio:1; width:auto; height:48vh; }
-    .copy { height:140px; }
+    .build { height:calc(var(--n) * 55vh + 60vh); }
+    .stick { top:64px; height:calc(100svh - 64px); grid-template-columns:1fr; grid-template-rows:auto minmax(0,1fr) auto; gap:12px; padding:12px 0; align-items:stretch; }
+    .steps { flex-direction:row; flex-wrap:wrap; gap:6px 12px; }
+    .steps .eyebrow { font-size:10px; }
+    .stage { height:100%; width:auto; max-width:100%; }
+    .copy { height:96px; }
+    .txt .h3 { font-size:18px; line-height:24px; }
+    .maker { padding:10px; gap:8px; } .row { flex-direction:row; align-items:center; gap:10px; } .row > .eyebrow { width:52px; flex:none; font-size:10px; }
+    .chip { padding:4px 7px; font-size:10px; } .sw { width:22px; height:22px; }
+    .side { gap:10px; }
   }
-  @media (prefers-reduced-motion:reduce){ .build { height:auto; } .stick { position:static; height:auto; } }
+  @media (prefers-reduced-motion:reduce){ .build { height:auto; } .stick { position:static; height:auto; } .lay { transition:none; } }
 </style>
 
 <script>
   import { play, buzz } from '../../lib/sensory';
   document.querySelectorAll<HTMLElement>('[data-build]').forEach(root => {
-    const layers = [...root.querySelectorAll<HTMLElement>('.layer')];
+    const mylo = root.querySelector<HTMLElement>('[data-mylo]')!;
+    const L = (k: string) => mylo.querySelector<HTMLImageElement>(`.${k}`)!;
     const steps = [...root.querySelectorAll<HTMLElement>('.steps li')];
     const txts = [...root.querySelectorAll<HTMLElement>('.txt')];
     const gem = root.querySelector<HTMLElement>('.gem')!, label = gem.querySelector<HTMLElement>('.gem-label')!;
     const burst = root.querySelector<HTMLElement>('.burst')!;
-    const n = layers.length; let cur = -1;
+    const maker = root.querySelector<HTMLElement>('[data-maker]')!;
+    const live = root.querySelector<HTMLElement>('[data-live]')!;
+    const K = '/work/mylo/kit/';
+    const n = steps.length; let cur = -1;
+    const pick: Record<string, string> = { body: 'white', face: 'love', outfit: 'sweater', hat: 'beanie' };
+
+    // Preload every layer so swaps are instant
+    ['white','lilac','mint','peach'].forEach(c => { new Image().src = `${K}body-${c}.webp`; });
+    ['love','cool','excited'].forEach(f => { new Image().src = `${K}face-${f}.webp`; });
+    ['sweater','jacket','tux'].forEach(o => { new Image().src = `${K}outfit-${o}.webp`; });
+    ['beanie','headphones','party'].forEach(h => { new Image().src = `${K}hat-${h}.webp`; });
+
+    const hop = () => { mylo.classList.remove('hop'); void mylo.offsetWidth; mylo.classList.add('hop'); };
+    // Which layers show at each stage: 0 sketch, 1 colour, 2 emotion, 3 outfit, 4 accessories
+    const render = (stage: number) => {
+      L('sketch').classList.toggle('show', stage === 0);
+      L('body').classList.toggle('show', stage >= 1);
+      L('face').classList.toggle('show', stage >= 2);
+      L('outfit').classList.toggle('show', stage >= 3 && pick.outfit !== 'none');
+      L('hat').classList.toggle('show', stage >= 4 && pick.hat !== 'none');
+    };
     const set = (i: number) => {
       if (i === cur) return;
       const forward = i > cur; cur = i;
-      layers.forEach((l, k) => { l.classList.toggle('on', k === i); l.classList.toggle('past', k < i); });
+      render(i);
       steps.forEach((s, k) => { s.classList.toggle('on', k === i); s.classList.toggle('done', k <= i); });
       txts.forEach((t, k) => t.classList.toggle('on', k === i));
+      maker.classList.toggle('ready', i === n - 1);
       if (forward && i > 0) {
         label.textContent = steps[i].textContent!.trim();
         gem.classList.remove('fly'); burst.classList.remove('go'); void gem.offsetWidth;
-        gem.classList.add('fly'); burst.classList.add('go'); play('pop'); buzz(10);
-        const L = layers[i]; L.classList.remove('hop'); setTimeout(() => { void L.offsetWidth; L.classList.add('hop'); }, 700);
+        gem.classList.add('fly'); burst.classList.add('go'); play('pop'); buzz(8);
+        setTimeout(hop, 420);
       }
     };
+    let ticking = false;
     const onScroll = () => {
-      const r = root.getBoundingClientRect();
-      const p = Math.min(0.999, Math.max(0, -r.top / (r.height - innerHeight)));
-      set(Math.floor(p * n));
+      if (ticking) return; ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        const r = root.getBoundingClientRect();
+        const p = Math.min(0.999, Math.max(0, -r.top / Math.max(1, r.height - innerHeight)));
+        set(Math.floor(p * n));
+      });
     };
     addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+    // The maker: swap layers live. Picking anything jumps Mylo to fully built.
+    root.querySelectorAll<HTMLButtonElement>('[data-set]').forEach(b => b.addEventListener('click', () => {
+      const k = b.dataset.set!, v = b.dataset.v!;
+      pick[k] = v;
+      root.querySelectorAll<HTMLElement>(`[data-set="${k}"]`).forEach(x => x.classList.toggle('on', x === b));
+      if (v !== 'none') L(k).src = `${K}${k}-${v}.webp`;
+      if (cur < n - 1) { cur = n - 1; steps.forEach(s => s.classList.add('done')); }
+      render(n - 1); hop(); play('click'); buzz(6);
+      live.textContent = `Mylo ${k}: ${b.textContent || v}`;
+    }));
   });
 </script>

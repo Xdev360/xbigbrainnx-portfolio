@@ -109,14 +109,14 @@ export const stories: Story[] = [
     slug: 'mylo',
     label: 'Case study · Own product',
     title: 'We couldn\'t stick with our\nown app. So we fixed it',
-    subtitle: 'Mylo is a goal app for two or more people who keep each other accountable. Before anyone outside used it, my partners and I had to want to open it every day. At first, we didn\'t.',
+    subtitle: 'Mylo is a productivity app for two or more people who keep each other accountable. Before anyone outside used it, my partners and I had to want to open it every day. At first, we didn\'t.',
     facts: [['Role', 'Founder, product, mascot'], ['Platform', 'Mobile app'], ['Type', 'Own product'], ['Result', 'Day-10 retention 30% to 70%']],
     arc: [{ v: 'V1', t: 'Too plain' }, { v: 'Tries', t: 'Game, streaks, freeze' }, { v: 'V2', t: 'Story, levels, friends' }, { v: 'Mylo', t: 'A character to come back to' }],
     chapters: [
       {
-        id: 'why', step: 'Why Mylo', kicker: '01 · Why Mylo exists', title: 'Goalden was solo. Solo is easy to cheat',
-        body: ['Mylo came from what Goalden taught me. Goalden is a good product, but it\'s a solo app, and when you\'re alone it\'s easy to cheat yourself. Nobody sees you skip.',
-               'Mylo is for two or more people. Your friends can see your goals, and you can see theirs. Someone is holding you to it.'],
+        id: 'idea', step: 'The idea', kicker: '01 · The idea', title: 'Goals stick when someone is holding you to them',
+        body: ['Mylo is a productivity app for two or more people. You set your goals, your friends can see them, and you keep each other going.',
+               'On your own it\'s easy to skip and nobody notices. When your people can see you, you show up.'],
       },
       {
         id: 'v1', step: 'Version 1', kicker: '02 · Version 1', title: 'Our rule: it has to work for us first',
@@ -143,18 +143,18 @@ export const stories: Story[] = [
       },
       {
         id: 'mylo', step: 'Meet Mylo', kicker: '05 · Meet Mylo', title: 'How Mylo became Mylo',
-        body: ['The base face wasn\'t enough. Mylo needed a personality you\'d miss. It started as a sketch, then got colour, emotions, outfits and accessories. Scroll to watch it happen.'],
+        body: ['The base face wasn\'t enough. Mylo needed a personality you\'d miss. It started as a sketch, then got colour, emotions, outfits and accessories. Scroll to watch it happen, then make your own.'],
         media: { kind: 'build', stages: [
-          { gem: 'Sketch', t: 'A plain sketch', d: 'Where every character starts. Shape first, nothing else.', src: '/work/mylo/build-1-sketch.webp' },
-          { gem: 'Colour', t: 'Colour', d: 'The colour gem fills Mylo in. Soft, warm and friendly, never loud.', src: '/work/mylo/build-2-colour.webp' },
-          { gem: 'Emotion', t: 'Emotions', d: 'Now Mylo can feel things. 12 faces: happy when you check in, sleepy at night, proud when you finish.', src: '/work/mylo/build-3-emotion.webp' },
-          { gem: 'Outfit', t: 'Outfits', d: '16 outfits you unlock as you level up. You pick what your Mylo wears.', src: '/work/mylo/build-4-outfit.webp' },
-          { gem: 'Accessories', t: 'Accessories', d: 'Beanies, headphones, crowns, shades. The extras that make your Mylo yours.', src: '/work/mylo/build-5-accessories.webp' },
+          { gem: 'Sketch', t: 'A plain sketch', d: 'Where every character starts. Shape first, nothing else.' },
+          { gem: 'Colour', t: 'Colour', d: 'The colour gem fills Mylo in. White by default, and you can pick another colour.' },
+          { gem: 'Emotion', t: 'Emotions', d: 'Now Mylo can feel things. 12 faces: happy when you check in, sleepy at night, proud when you finish.' },
+          { gem: 'Outfit', t: 'Outfits', d: '16 outfits you unlock as you level up. You pick what your Mylo wears.' },
+          { gem: 'Accessories', t: 'Accessories', d: 'Beanies, headphones, party hats. The extras that make your Mylo yours. Try them on the right.' },
         ] },
       },
       {
         id: 'friends', step: 'Friends and proof', kicker: '06 · Friends and proof', title: 'Do the goal first. Then chat. Then play',
-        body: ['We added reactions and chat so you can talk to your friends. An app you use alone is hard to come back to.',
+        body: ['We added reactions and chat so you can talk to your friends. I\'d already learned this with [Goalden](/work/goalden), my solo goal app: when it\'s just you, it\'s easy to cheat yourself. An app you use alone is hard to come back to.',
                'Then a new problem: what if people just chat instead of doing their goals? So you complete your goal before you can chat, and before you can play the games.',
                'And how do you know someone really did the goal, and didn\'t just tick the box? Now you check in with a photo, the way you\'d share a streak on Snapchat. Your friends see it. Real accountability, real transparency.'],
         list: ['Complete your goal to unlock chat and games', 'Check in with a photo, so friends can see it\'s real', 'See your friends\' goals and react to them'],
@@ -172,7 +172,7 @@ export const stories: Story[] = [
       },
     ],
     results: [{ n: '30%', count: 30, suffix: '%', label: 'Day 10, before' }, { n: '70%', count: 70, suffix: '%', label: 'Day 10, after' }],
-    related: { slug: 'goalden', line: 'Mylo started with what Goalden taught me. Read Goalden' },
+    related: { slug: 'goalden', line: 'Also read Goalden, a goal app that breaks your year into today' },
   },
 
   /* ============================ GOALDEN ============================ */
@@ -213,12 +213,64 @@ export const stories: Story[] = [
         id: 'lesson', step: 'What it taught me', kicker: '05 · What it taught me', title: 'Productivity apps are where retention gets tested',
         body: ['Productivity apps are the hardest thing I\'ve designed, because they live or die on retention. If people don\'t come back, nothing else matters.',
                'People call me Big Brain, and that\'s where my head goes: what does the brain find rewarding? I take one or two ideas from neuroscience and Atomic Habits at a time and build them in so they don\'t feel like friction. Goalden taught me that, and I use it on everything now.',
-               'It also showed me Goalden\'s gap. It\'s solo, and alone it\'s easy to cheat yourself. That gap is why I built Mylo.'],
+               'It also showed me Goalden\'s gap. It\'s solo, and alone it\'s easy to cheat yourself. That gap is why I built [Mylo](/work/mylo).'],
         todo: 'Add version 2 tester numbers when ready.',
       },
     ],
     results: [{ n: '100', count: 100, label: 'Testers on version 1' }, { n: '8', count: 8, label: 'Coaches in version 2' }],
-    related: { slug: 'mylo', line: 'Goalden\'s gap is why Mylo exists. Read Mylo' },
+    related: { slug: 'mylo', line: 'Also read Mylo, the goal app you do with friends' },
+  },
+
+  /* ============================ CHATGROW ============================ */
+  {
+    slug: 'chatgrow',
+    label: 'Case study · Volunteer',
+    title: 'Sorting a hotel\'s\ninformation so staff can find it',
+    subtitle: 'ChatGrow is a hotel management system: reservations, rooms, the restaurant, payments and the channels that sell the rooms. I volunteered to help the designer with the hard part, the information.',
+    facts: [['Role', 'Information architecture, UI'], ['Product', 'Hotel management system'], ['Type', 'Volunteer'], ['Scope', 'Front desk to finance']],
+    arc: [{ v: 'Mess', t: 'Too much, in one place' }, { v: 'Map', t: 'How a hotel works' }, { v: 'Group', t: 'Five clear areas' }, { v: 'States', t: 'Every case covered' }],
+    chapters: [
+      {
+        id: 'problem', step: 'The problem', kicker: '01 · The problem', title: 'A hotel runs on more data than one screen can hold',
+        body: ['A designer I know was building ChatGrow and I offered to help. The screens were there, but a hotel creates a lot of information at once: who\'s arriving, which rooms are clean, what the kitchen is cooking, who still owes money, and what Booking.com just sent over.',
+               'My part was to sort it. How that information gets collected, where it lives and how it shows up, so the person at the front desk finds what they need in a few seconds.'],
+        media: { kind: 'cover', label: 'ChatGrow · Front desk', src: '/work/chatgrow/front-desk.webp', ratio: '1400 / 915', caption: 'The front desk: arrivals, departures, today\'s bookings and what needs attention.' },
+      },
+      {
+        id: 'map', step: 'How a hotel works', kicker: '02 · Map it first', title: 'Follow the guest, then follow the money',
+        body: ['Before touching layouts I mapped how a hotel actually runs. A guest books, arrives, gets a room, orders food, gets charged and checks out. Every step creates data, and different staff need different parts of it.',
+               'So the menu follows that path instead of the database. Reservations and operations first, then sales and outlets, then finance, with rates, channels and settings kept for the people who manage them.'],
+        list: ['Reservations and operations: front desk, reservations, guests, rooms, groups, add-ons', 'Rates and distribution: rates and plans, channel manager', 'Sales and outlets: outlet, inventory, menu, orders, fulfilment', 'Finance: overview, transactions, reports', 'Administration: settings, users and roles'],
+        media: { kind: 'zoom', label: 'ChatGrow · Channel manager', src: '/work/chatgrow/channels.webp', stops: [
+          { x: 50, y: 50, scale: 1, title: 'One system, five areas', text: 'Every screen sits under one of five groups in the side menu.' },
+          { x: 7, y: 45, scale: 2.4, title: 'Grouped by job', text: 'The menu is grouped by who does the work, not by how the data is stored.' },
+          { x: 50, y: 22, scale: 2.2, title: 'Problems first', text: 'Sync health, inbound bookings and rate parity sit at the top, so issues get seen.' },
+          { x: 75, y: 64, scale: 2.4, title: 'A clear next step', text: 'A failed connection says what broke and gives one button to fix it.' },
+        ] },
+      },
+      {
+        id: 'connect', step: 'Connected modules', kicker: '03 · Connect it', title: 'One action updates every place that needs it',
+        body: ['The brief asked for every module to be connected, so nothing gets typed twice. A booking fills the room calendar. A restaurant order from a QR code lands in the kitchen and gets charged to the guest\'s room bill.',
+               'The room calendar shows a whole month, so staff can pick a free room and dates straight from it.'],
+        media: { kind: 'cover', label: 'ChatGrow · Room calendar', src: '/work/chatgrow/calendar.webp', ratio: '1400 / 915', caption: 'Month view. Pick a free room and date range straight from the calendar.' },
+      },
+      {
+        id: 'qr', step: 'QR ordering', kicker: '04 · The guest side', title: 'Order from the table, charge it to the room',
+        body: ['Guests scan a QR code at the table, order from their phone and choose to pay by card or charge it to their room. The order goes straight to the kitchen, and the guest can watch it move from received to served.'],
+        media: { kind: 'cover', label: 'ChatGrow · QR ordering', src: '/work/chatgrow/qr-ordering.webp', ratio: '1400 / 910', caption: 'Menu, order and live status, all from the guest\'s phone.' },
+      },
+      {
+        id: 'states', step: 'Every state', kicker: '05 · Every state', title: 'Plan for when things go wrong',
+        body: ['Real systems spend a lot of time in odd states. I designed them too: empty, loading, error, saved and no permission. If a front desk worker opens settings they can\'t change, the screen tells them why and how to ask for access, instead of a blank page.',
+               'Everything matched the existing UI exactly, same type sizes and the same system, so my screens sit next to the designer\'s without a seam.'],
+        media: { kind: 'cover', label: 'ChatGrow · No permission state', src: '/work/chatgrow/no-permission.webp', ratio: '1400 / 915', caption: 'No permission: what happened, why, and what to do next.' },
+      },
+      {
+        id: 'result', step: 'What I took away', kicker: '06 · What I took away', title: 'Good information design is mostly sorting',
+        body: ['Most of the work here didn\'t show up as pretty screens. It was deciding what belongs together, what comes first and what each person actually needs to see. It\'s the same thinking I use on every product, just with a lot more data.'],
+      },
+    ],
+    results: [{ n: '5', count: 5, label: 'Areas in the menu' }, { n: '5', count: 5, label: 'States per screen' }],
   },
 ];
 

@@ -434,7 +434,7 @@ const devices = [
   .notebox { position:relative; min-height:100px; padding:16px 120px 16px 16px; }
   .nb-text { font:400 14px/21px var(--f-body); color:var(--text-primary); max-width:480px; }
   .nb-copy { position:absolute; right:14px; top:14px; }
-  @media (max-width:1279px){ .hiw { gap:64px; } .sticky { width:360px; } .steps { flex:1; width:auto; } .wins { height:auto; display:flex; flex-direction:column; gap:16px; } .wins :global(.win-ph) { position:relative!important; left:auto!important; top:auto!important; width:100%!important; } }
+  @media (max-width:1279px){ .hiw { gap:64px; } .sticky { width:360px; } .steps { flex:1; width:auto; } .wins { height:auto; display:flex; flex-direction:column; gap:16px; } .wwrap { position:relative!important; left:auto!important; top:auto!important; width:100%!important; height:240px!important; translate:none!important; } }
   @media (max-width:1023px){ .hiw { flex-direction:column; } .sticky { position:static; width:100%; } .notebox { padding-right:16px; padding-bottom:56px; } .nb-copy { top:auto; bottom:14px; } }
 
   /* Selected work */
@@ -449,8 +449,10 @@ const devices = [
   .pt { display:flex; flex-direction:column; gap:8px; padding:20px 0 24px; border-top:1px solid var(--border-default); }
 
   /* Scaled diagrams: drawn at Figma size, scaled to fit */
-  .dg { position:relative; width:100%; min-width:0; overflow:hidden; }
-  .dg-in { position:relative; transform-origin:0 0; transform:scale(var(--k,1)); }
+  .dg { position:relative; width:100%; min-width:0; overflow-x:auto; overflow-y:hidden; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .dg::-webkit-scrollbar { display:none; }
+  .dg-in { position:relative; zoom:var(--k,1); }
+  .dg.swipe::after { content:'Swipe'; position:sticky; left:calc(100% - 64px); bottom:8px; display:inline-block; padding:3px 8px; font:500 10px/14px var(--f-mono); letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); background:var(--bg-page); border:1px solid var(--border-default); }
   .codewin { background:var(--bg-code); border:1px solid var(--border-divider); border-radius:10px; overflow:hidden; }
   .cbar { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid var(--border-default); }
   .code { display:flex; gap:16px; padding:16px 16px 18px; }
@@ -572,8 +574,11 @@ const devices = [
 
   // Scale Figma-size diagrams to the available width.
   const fit = () => document.querySelectorAll<HTMLElement>('.dg').forEach(d => {
-    const w = Number(d.dataset.w), h = Number(d.dataset.h), k = Math.min(1, d.clientWidth / w);
-    d.style.setProperty('--k', String(k)); d.style.height = `${h * k}px`;
+    // Scale to fit, but never below a readable size. On phones, the rest scrolls sideways.
+    const w = Number(d.dataset.w), avail = d.clientWidth, min = d.classList.contains('panel') ? 0.78 : 0.62;
+    const k = Math.min(1, Math.max(min, avail / w));
+    d.style.setProperty('--k', String(k));
+    d.classList.toggle('swipe', k * w > avail + 2);
   });
   fit(); addEventListener('resize', fit);
 
