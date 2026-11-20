@@ -14,6 +14,7 @@ export type Project = {
   live?: string;
   cover?: string;         // 16:10, /work/<slug>/cover.webp
   scene?: string;         // hero scenery still, /work/<slug>/hero.webp (2880x1800, template in Figma: 14 · Hero backgrounds)
+  rive?: string;          // hero scene as a Rive file, /work/<slug>/hero.riv (artboard 1440x900, same safe zones)
   reel?: string;          // hero motion on top of the still, /work/<slug>/hero.mp4 (muted, 6 to 8s loop)
   published: boolean;     // has a full case study page
 };
@@ -49,6 +50,7 @@ export const projects: Project[] = [
     short: 'A goal app for people who do better together. Day-10 retention 30% to 70% after the mascot.',
     role: 'Product + mascot',
     useCase: 'Mobile app',
+    rive: '/work/mylo/hero.riv',
     kind: 'own',
     tags: ['product', 'mascots', 'own'],
     color: '--project-mylo',
