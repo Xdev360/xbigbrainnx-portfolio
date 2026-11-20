@@ -1,0 +1,216 @@
+---
+// Mylo Kingdom: the hero scene for Mylo. Pure HTML/CSS/JS, so no Rive watermark.
+// Stage is 1440 x 900 in hero coordinates (y counts from under the nav, like the reel).
+// Keep clear: headline (x 160-720, y 380+) and Now Playing (x 1020-1320, y 379+).
+//   Sky, centre-left: three real Mylo screens floating.
+//   Right: Mylo on a floating island. He walks, hops, gets excited, and every gem from the app changes his outfit.
+const K = '/work/mylo/kit/';
+const phones = [
+  { src: '/work/mylo/new-today.webp', label: 'Today', x: 470, y: 104, h: 262, r: -7, d: 0 },
+  { src: '/work/mylo/levels.webp', label: 'Your level', x: 604, y: 82, h: 290, r: 0, d: 1.3 },
+  { src: '/work/mylo/room-chat.webp', label: 'Room chat', x: 742, y: 104, h: 262, r: 7, d: 2.4 },
+];
+const stars = [[120, 120], [330, 92], [905, 96], [1010, 150], [1375, 112], [1260, 196], [560, 70], [80, 230]];
+---
+<div class="mk" data-mk>
+  <div class="mk-bg" data-depth="-6">
+    <picture>
+      <source media="(max-width:1023px)" srcset="/work/mylo/kingdom-1440.webp" />
+      <img src="/work/mylo/kingdom.webp" alt="" loading="eager" decoding="async" />
+    </picture>
+  </div>
+
+  <div class="mk-stage" data-stage>
+    {stars.map(([x, y], i) => <span class="star" style={`left:${x}px;top:${y}px;--i:${i}`}></span>)}
+
+    <div class="phones" data-depth="10">
+      {phones.map(p => (
+        <figure class="ph" style={`left:${p.x}px;top:${p.y}px;height:${p.h}px;--r:${p.r}deg;--d:${p.d}s`}>
+          <img src={p.src} alt={`Mylo · ${p.label}`} loading="lazy" decoding="async" />
+        </figure>
+      ))}
+    </div>
+
+    <div class="isl" data-depth="16">
+      <img class="isl-img" src="/work/mylo/island.webp" alt="" />
+      <div class="mylo" data-mylo>
+        <div class="m-move" data-move>
+          <div class="m-flip" data-flip>
+            <div class="m-body" data-body>
+              <img class="ly hat" data-l="hat" src={`${K}hat-beanie.webp`} alt="" />
+              <img class="ly outfit" data-l="outfit" src={`${K}outfit-sweater.webp`} alt="" />
+              <img class="ly face" data-l="face" src={`${K}face-love.webp`} alt="" />
+              <img class="ly body" src={`${K}body-white.webp`} alt="Mylo" />
+            </div>
+          </div>
+          <span class="shadow"></span>
+        </div>
+        <div class="spark" data-spark>{[0, 1, 2, 3, 4, 5].map(i => <i style={`--a:${i * 60}deg`}></i>)}</div>
+      </div>
+    </div>
+
+    <span class="gem" data-gem></span>
+  </div>
+</div>
+
+<style>
+  .mk { position:absolute; inset:0; overflow:hidden; }
+  .mk-bg { position:absolute; inset:-12px; }
+  :global(html:not([data-theme="light"])) .mk-bg img { filter:brightness(.78) saturate(.95); }
+  .mk-bg img { width:100%; height:100%; object-fit:cover; object-position:50% 0; animation:kb 26s ease-in-out infinite alternate; transform-origin:62% 42%; }
+  @keyframes kb { from { transform:scale(1); } to { transform:scale(1.06); } }
+
+  .mk-stage { position:absolute; top:0; left:50%; width:1440px; height:900px; transform:translateX(-50%); transform-origin:0 0; }
+  .mk-stage > *, .phones, .isl { position:absolute; }
+  .phones { inset:0; }
+
+  /* Stars twinkle */
+  .star { position:absolute; width:3px; height:3px; border-radius:50%; background:#fff; opacity:.3; animation:tw 3.6s ease-in-out infinite; animation-delay:calc(var(--i) * -.55s); }
+  @keyframes tw { 50% { opacity:1; transform:scale(1.5); } }
+
+  /* Phones float, each on its own beat */
+  .ph { position:absolute; margin:0; aspect-ratio:393/852; border-radius:22px; overflow:hidden; border:2px solid rgba(255,255,255,.55); background:#0E0E14; box-shadow:0 18px 40px rgba(20,10,60,.35); transform:rotate(var(--r)); animation:fl 6s ease-in-out infinite; animation-delay:calc(var(--d) * -1); }
+  .ph img { width:100%; height:100%; object-fit:cover; display:block; }
+  @keyframes fl { 0%,100% { translate:0 0; } 50% { translate:0 -10px; } }
+
+  /* Mylo's island, right side */
+  .isl { left:1035px; top:270px; width:300px; animation:fl 7s ease-in-out infinite; animation-delay:-2s; }
+  .isl-img { width:300px; display:block; }
+  .mylo { position:absolute; left:0; top:18px; width:0; height:0; }
+  .m-move { position:absolute; left:0; top:0; will-change:transform; }
+  .m-flip { position:absolute; left:0; bottom:0; transform-origin:0 100%; }
+  .m-body { position:relative; width:104px; height:162px; transform-origin:50% 100%; translate:-50% 15px; }
+  .ly { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
+  .ly.hat { z-index:4; } .ly.outfit { z-index:3; } .ly.face { z-index:2; } .ly.body { z-index:1; }
+  .shadow { position:absolute; left:-36px; top:-6px; width:72px; height:12px; border-radius:50%; background:rgba(30,20,60,.28); z-index:-1; }
+
+  .spark { position:absolute; left:0; top:-120px; pointer-events:none; }
+  .spark i { position:absolute; width:10px; height:10px; background:#FFD166; clip-path:polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); opacity:0; }
+  .spark.go i { animation:sp 900ms var(--ease-dec, ease-out) forwards; }
+  @keyframes sp { 0% { opacity:1; transform:rotate(var(--a)) translateY(-10px) scale(.6); } 100% { opacity:0; transform:rotate(var(--a)) translateY(-70px) scale(1.2); } }
+
+  .gem { position:absolute; left:0; top:0; width:18px; height:18px; border-radius:3px; background:linear-gradient(135deg, #F30058, #FFA41C 40%, #19F2FF 75%, #3084FF); opacity:0; pointer-events:none; }
+
+  @media (prefers-reduced-motion:reduce){ .mk-bg img, .ph, .isl, .star { animation:none; } }
+  :global(.frame:not(.on)) .mk * { animation-play-state:paused; }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-mk]').forEach(root => {
+    const stage = root.querySelector<HTMLElement>('[data-stage]')!;
+    const frame = root.closest<HTMLElement>('.frame');
+    const move = root.querySelector<HTMLElement>('[data-move]')!;
+    const flip = root.querySelector<HTMLElement>('[data-flip]')!;
+    const body = root.querySelector<HTMLElement>('[data-body]')!;
+    const spark = root.querySelector<HTMLElement>('[data-spark]')!;
+    const gem = root.querySelector<HTMLElement>('[data-gem]')!;
+    const L = (k: string) => root.querySelector<HTMLImageElement>(`[data-l="${k}"]`)!;
+    const K = '/work/mylo/kit/';
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const looks = [
+      { hat: 'beanie', outfit: 'sweater', face: 'love' },
+      { hat: 'headphones', outfit: 'jacket', face: 'cool' },
+      { hat: 'party', outfit: 'tux', face: 'excited' },
+    ];
+    // Preload every layer so swaps never flash
+    looks.forEach(l => Object.entries(l).forEach(([k, v]) => { new Image().src = `${K}${k}-${v}.webp`; }));
+    ['excited', 'love', 'cool'].forEach(f => { new Image().src = `${K}face-${f}.webp`; });
+
+    // Fit the 1440 stage: full size on desktop, zoomed to the middle-right on phones.
+    const fit = () => {
+      const w = root.clientWidth;
+      if (w >= 1024) { stage.style.transform = 'translateX(-50%)'; stage.style.left = '50%'; stage.style.top = '0'; return; }
+      const k = w / 900, cx = 900;
+      stage.style.left = '0'; stage.style.top = '56px';
+      stage.style.transform = `translateX(${w / 2 - cx * k}px) scale(${k})`;
+    };
+    fit(); addEventListener('resize', fit);
+
+    // Pointer parallax for depth (desktop only)
+    const layers = [...root.querySelectorAll<HTMLElement>('[data-depth]')];
+    addEventListener('pointermove', e => {
+      if (reduce || innerWidth < 1024) return;
+      const nx = e.clientX / innerWidth - .5, ny = e.clientY / innerHeight - .5;
+      layers.forEach(l => { const d = Number(l.dataset.depth); l.style.translate = `${nx * d}px ${ny * d}px`; });
+    }, { passive: true });
+
+    let look = 0;
+    const wear = (i: number, face?: string) => {
+      const l = looks[i];
+      L('hat').src = `${K}hat-${l.hat}.webp`; L('outfit').src = `${K}outfit-${l.outfit}.webp`;
+      L('face').src = `${K}face-${face ?? l.face}.webp`;
+    };
+    const burst = () => { spark.classList.remove('go'); void spark.offsetWidth; spark.classList.add('go'); };
+    if (reduce) { move.style.transform = 'translate(150px, 0)'; return; }
+
+    // 14s loop. x is the feet position on the island (0..300).
+    const T = 14000, X0 = 70, X1 = 230;
+    const ease = (t: number) => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    const clamp = (t: number) => Math.max(0, Math.min(1, t));
+    // Gem drops: from the Your level phone into Mylo's head, then he changes.
+    const drops = [6200, 11000, 13400];
+    let fired = new Set<number>(), excited = false, lastT = 0, start = performance.now(), paused = 0, wasOn = true;
+
+    const gemAt = (t: number) => {
+      for (const d of drops) {
+        const p = (t - (d - 700)) / 700;
+        if (p >= 0 && p <= 1) {
+          const stageRect = { x: 0, y: 0 };
+          const from = { x: 604 + 70, y: 82 + 120 };
+          const isl = { x: 1035, y: 270 + 18 };
+          const feet = isl.x + xAt(d);
+          const to = { x: feet - 9, y: isl.y - 150 };
+          const e = ease(p);
+          const x = from.x + (to.x - from.x) * e, y = from.y + (to.y - from.y) * e - Math.sin(p * Math.PI) * 120;
+          gem.style.opacity = p < .9 ? '1' : String((1 - p) * 10);
+          gem.style.transform = `translate(${x - stageRect.x}px, ${y}px) rotate(${p * 540}deg) scale(${1 - p * .4})`;
+          return;
+        }
+      }
+      gem.style.opacity = '0';
+    };
+    const xAt = (t: number) => {
+      if (t < 1500) return X0;
+      if (t < 4000) return X0 + (X1 - X0) * ease(clamp((t - 1500) / 2500));
+      if (t < 8000) return X1;
+      if (t < 10800) return X1 - (X1 - X0) * ease(clamp((t - 8000) / 2800));
+      return X0;
+    };
+    const walking = (t: number) => (t > 1500 && t < 4000) || (t > 8000 && t < 10800);
+    const facing = (t: number) => (t >= 7600 && t < 10800) ? -1 : 1;
+    const hopAt = (t: number) => {
+      // big hop at 4.0s and 10.8s, small hops after each gem
+      const hops = [[4000, 520, 42], [10800, 520, 42], [6200, 360, 18], [11000, 360, 18], [13400, 360, 18]];
+      for (const [s, dur, h] of hops) { const p = (t - s) / dur; if (p >= 0 && p <= 1) return { y: -Math.sin(p * Math.PI) * h, sq: p < .15 ? 1 - p * 0.8 : p > .85 ? 1 - (1 - p) * 0.8 : 1 }; }
+      return { y: 0, sq: 1 };
+    };
+
+    const tick = (now: number) => {
+      const on = !frame || frame.classList.contains('on');
+      if (!on) { if (wasOn) paused = now; wasOn = false; requestAnimationFrame(tick); return; }
+      if (!wasOn) { start = now; lastT = 0; fired.clear(); look = 0; wear(0); wasOn = true; }
+      const t = (now - start) % T;
+      if (t < lastT) { fired.clear(); look = 0; wear(0); }
+      lastT = t;
+
+      const x = xAt(t), w = walking(t), hop = hopAt(t);
+      const phase = t / 1000 * Math.PI * 4;
+      const bob = w ? -Math.abs(Math.sin(phase)) * 5 : 0;
+      const rot = w ? Math.sin(phase) * 5 : 0;
+      const breathe = 1 + Math.sin(t / 1000 * Math.PI * 1.2) * .018;
+      move.style.transform = `translate(${x}px, ${bob + hop.y}px)`;
+      flip.style.transform = `scaleX(${facing(t)})`;
+      body.style.transform = `rotate(${rot}deg) scale(${(2 - hop.sq) * 1}, ${breathe * hop.sq})`;
+
+      // Excited after the big hop
+      if (t > 4400 && t < 6000 && !excited) { excited = true; L('face').src = `${K}face-excited.webp`; burst(); }
+      if (t >= 6000 && excited) { excited = false; L('face').src = `${K}face-${looks[look].face}.webp`; }
+
+      gemAt(t);
+      drops.forEach((d, i) => { if (t >= d && !fired.has(d)) { fired.add(d); look = (i + 1) % looks.length; wear(look); burst(); } });
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+    addEventListener('intro-done', () => { start = performance.now(); lastT = 0; fired.clear(); look = 0; wear(0); }, { once: true });
+  });
+</script>

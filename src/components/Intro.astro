@@ -1,0 +1,70 @@
+---
+// Name intro on first visit (once per session). Follows Figma "09 · Intro":
+// 0ms blank page, letters arrive one by one with a twitch, 700ms nav fades in,
+// 1300ms the name drifts up and fades, 1900ms the hero plays.
+// Skipped for reduced motion. The `intro` class is set in <head> before paint so nothing flashes.
+const name = 'IBRAHEEM OLADELE';
+---
+<div class="intro" aria-hidden="true" data-intro>
+  <div class="intro-in">
+    <span class="nm" data-nm>{[...name].map(c => <span class:list={['ch', { sp: c === ' ' }]} data-c={c}>{c === ' ' ? ' ' : c}</span>)}</span>
+    <span class="rule"></span>
+  </div>
+</div>
+<style>
+  .intro { display:none; }
+  :global(html.intro) .intro { display:block; position:fixed; inset:0; z-index:45; background:var(--bg-page); pointer-events:none; transition:opacity 600ms var(--ease-dec); }
+  :global(html.intro .nav) { opacity:0; transition:opacity 500ms var(--ease-dec); }
+  :global(html.intro.intro-nav .nav) { opacity:1; }
+  :global(html.intro.intro-out) .intro { opacity:0; }
+  .intro-in { position:absolute; left:max(var(--px, 24px), calc(50vw - 720px + 160px)); top:clamp(160px, 26vh, 300px); display:flex; flex-direction:column; gap:28px; transition:transform 600ms var(--ease-dec), opacity 500ms; }
+  :global(html.intro.intro-out) .intro-in { transform:translateY(-24px); opacity:.0; }
+  .nm { font:800 18px/24px var(--f-display); letter-spacing:.42em; color:var(--text-primary); white-space:nowrap; display:inline-flex; }
+  .ch { display:inline-block; opacity:0; }
+  .ch.on { opacity:1; }
+  .ch.scr { opacity:.55; }
+  /* The twitch: a few frames of offset, a sliced jump and back, like Rive's intro */
+  .nm.tw { animation:twitch 260ms steps(1) 1; }
+  .ch.tw { animation:chtw 180ms steps(1) 1; }
+  @keyframes twitch {
+    0% { transform:translateX(0); clip-path:none; }
+    20% { transform:translateX(-3px); clip-path:inset(0 0 55% 0); }
+    40% { transform:translateX(4px); clip-path:inset(40% 0 0 0); }
+    60% { transform:translateX(-1px); clip-path:inset(20% 0 30% 0); }
+    80% { transform:translateX(2px); clip-path:none; }
+    100% { transform:none; clip-path:none; }
+  }
+  @keyframes chtw { 0% { transform:translateY(-2px); } 33% { transform:translate(2px, 1px); opacity:.4; } 66% { transform:translateX(-1px); } 100% { transform:none; } }
+  .rule { width:160px; height:1px; background:var(--border-divider); transform:scaleX(0); transform-origin:left; transition:transform 900ms var(--ease-dec); }
+  :global(html.intro.intro-nav) .rule { transform:scaleX(1); }
+  @media (max-width:767px){ .nm { font-size:13px; letter-spacing:.3em; } }
+</style>
+<script>
+  import { play } from '../lib/sensory';
+  const root = document.documentElement;
+  const nm = document.querySelector<HTMLElement>('[data-nm]');
+  if (root.classList.contains('intro') && nm) {
+    try { sessionStorage.setItem('intro-seen', '1'); } catch {}
+    const chars = [...nm.querySelectorAll<HTMLElement>('.ch')];
+    const glyphs = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#/+';
+    const rnd = () => glyphs[Math.floor(Math.random() * glyphs.length)];
+    const step = 620 / chars.length;
+    chars.forEach((ch, i) => {
+      const real = ch.dataset.c!;
+      if (real === ' ') { setTimeout(() => ch.classList.add('on'), i * step); return; }
+      // Each letter flickers through two random glyphs, then lands with a small twitch.
+      setTimeout(() => { ch.classList.add('scr'); ch.textContent = rnd(); }, i * step);
+      setTimeout(() => { ch.textContent = rnd(); }, i * step + 35);
+      setTimeout(() => { ch.textContent = real; ch.classList.remove('scr'); ch.classList.add('on', 'tw'); play('tick'); }, i * step + 70);
+    });
+    const twitch = () => { nm.classList.remove('tw'); void nm.offsetWidth; nm.classList.add('tw'); };
+    setTimeout(twitch, 760);
+    setTimeout(() => { chars[Math.floor(Math.random() * chars.length)]?.classList.remove('tw'); twitch(); }, 1080);
+    setTimeout(() => root.classList.add('intro-nav'), 700);
+    setTimeout(() => root.classList.add('intro-out'), 1300);
+    setTimeout(() => {
+      root.classList.remove('intro', 'intro-nav', 'intro-out');
+      window.dispatchEvent(new Event('intro-done'));
+    }, 1900);
+  }
+</script>

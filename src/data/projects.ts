@@ -50,7 +50,6 @@ export const projects: Project[] = [
     short: 'A goal app for people who do better together. Day-10 retention 30% to 70% after the mascot.',
     role: 'Product + mascot',
     useCase: 'Mobile app',
-    rive: '/work/mylo/hero.riv',
     kind: 'own',
     tags: ['product', 'mascots', 'own'],
     color: '--project-mylo',
@@ -104,4 +103,5 @@ export const projects: Project[] = [
 ];
 
 export const caseHref = (p: Project) => p.published ? `/work/${p.slug}` : '/work';
-export const heroReel = projects.filter(p => ['virelle-store', 'mylo', 'chatgrow'].includes(p.slug));
+// Hero order: Mylo first.
+export const heroReel = ['mylo', 'virelle-store', 'chatgrow'].map(sl => projects.find(p => p.slug === sl)!);

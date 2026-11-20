@@ -23,6 +23,8 @@ const {
   <script is:inline>
     // Set theme and sound before paint so there is no flash. Dark is the default.
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('motion');
+    // First visit to the home page this session: play the name intro.
+    try { if (location.pathname === '/' && !sessionStorage.getItem('intro-seen') && !matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('intro'); } catch {}
     try {
       const t = localStorage.getItem('theme'); if (t === 'light') document.documentElement.dataset.theme = 'light';
       if (localStorage.getItem('sound') === 'on') document.documentElement.dataset.sound = 'on';

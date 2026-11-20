@@ -5,6 +5,8 @@ import Icon from '../components/Icon.astro';
 import Logo from '../components/Logo.astro';
 import CoverPh from '../components/CoverPh.astro';
 import WinPh from '../components/WinPh.astro';
+import Intro from '../components/Intro.astro';
+import MyloKingdom from '../components/hero/MyloKingdom.astro';
 import { projects, heroReel, caseHref } from '../data/projects';
 
 const steps = [
@@ -51,15 +53,17 @@ const devices = [
 ];
 ---
 <Base>
+  <Intro />
   <!-- ============ HERO (1440x900 incl. nav) ============ -->
   <section class="hero" data-reel>
     <div class="reel" aria-hidden="true">
       {heroReel.map((p, i) => (
-        <div class:list={['frame', { on: i === 0 }]}>
+        <div class:list={['frame', { on: i === 0 }]} data-dur={p.slug === 'mylo' ? 14000 : 7000}>
+          {p.slug === 'mylo' && <MyloKingdom />}
           {p.scene && <img class="scene" src={p.scene} alt="" loading={i === 0 ? 'eager' : 'lazy'} />}
           {p.reel && <video src={p.reel} poster={p.scene} muted loop playsinline preload="none" />}
           {p.rive && <canvas class="rive-scene" data-rive={p.rive} width="2880" height="1800" aria-hidden="true"></canvas>}
-          {!p.scene && !p.reel && !p.rive && <span class="mono-tag c-subtle reel-label">Hero scene · 2880 × 1800 · /work/{p.slug}/hero.webp</span>}
+          {!p.scene && !p.reel && !p.rive && p.slug !== 'mylo' && <span class="mono-tag c-subtle reel-label">Hero scene · 2880 × 1800 · /work/{p.slug}/hero.webp</span>}
         </div>
       ))}
       <div class="fade"></div>
@@ -408,7 +412,8 @@ const devices = [
   @media (max-width:1023px){ .rive-scene { width:170vw; height:106.25vw; left:-52.7vw; top:56px; transform:none; } .hero-in { padding-top:300px !important; } }
   .frame video, .frame .scene { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 0; }
   .reel-label { position:absolute; left:1040px; top:150px; }
-  .fade { position:absolute; left:0; right:0; top:340px; bottom:0; background:linear-gradient(to bottom, transparent 0, var(--bg-page) 384px); }
+  /* Fade the scene into the page so the headline and Now Playing stay readable over any artwork */
+  .fade { position:absolute; left:0; right:0; top:290px; bottom:0; background:linear-gradient(to bottom, transparent 0, color-mix(in srgb, var(--bg-page) 70%, transparent) 120px, color-mix(in srgb, var(--bg-page) 92%, transparent) 240px, var(--bg-page) 380px); }
   .hero-in { position:relative; height:100%; max-width:1440px; margin:0 auto; }
   .copy { position:absolute; left:160px; top:316px; width:560px; display:flex; flex-direction:column; }
   .hline { height:1px; background:var(--text-secondary); opacity:.7; }
@@ -587,8 +592,6 @@ const devices = [
 
 <script>
   import { play } from '../lib/sensory';
-  import { Rive, Layout, Fit, Alignment, RuntimeLoader } from '@rive-app/canvas';
-  RuntimeLoader.setWasmUrl('/rive/rive.wasm');
 
   // Scale Figma-size diagrams to the available width.
   const fit = () => document.querySelectorAll<HTMLElement>('.dg').forEach(d => {
@@ -606,7 +609,9 @@ const devices = [
   const segs = [...document.querySelectorAll<HTMLElement>('.seg span')];
   const DUR = 7000, reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   // Rive hero scenes: one player per frame, only the frame on screen plays.
-  const rives = new Map<HTMLElement, Rive>();
+  const rives = new Map<HTMLElement, any>();
+  if (document.querySelector('canvas[data-rive]')) import('@rive-app/canvas').then(({ Rive, Layout, Fit, Alignment, RuntimeLoader }) => {
+  RuntimeLoader.setWasmUrl('/rive/rive.wasm');
   frames.forEach(f => {
     const c = f.querySelector<HTMLCanvasElement>('canvas[data-rive]'); if (!c) return;
     const r = new Rive({ src: c.dataset.rive!, canvas: c, autoplay: false, stateMachines: 'State Machine 1',
@@ -615,6 +620,7 @@ const devices = [
     rives.set(f, r);
   });
   addEventListener('resize', () => rives.forEach(r => r.resizeDrawingSurfaceToCanvas()));
+  });
   let i = 0, t0 = performance.now();
   const show = (n: number) => {
     i = (n + items.length) % items.length; t0 = performance.now();
@@ -628,7 +634,7 @@ const devices = [
   };
   const tick = (now: number) => {
     if (!document.hidden && !reduce) {
-      const p = Math.min(1, (now - t0) / DUR);
+      const p = Math.min(1, (now - t0) / (Number(frames[i]?.dataset.dur) || DUR));
       segs[i]?.style.setProperty('--p', String(p));
       if (p >= 1) show(i + 1);
     }
@@ -636,6 +642,7 @@ const devices = [
   };
     document.querySelectorAll<HTMLElement>('[data-go]').forEach(b => b.addEventListener('click', () => { show(Number(b.dataset.go)); play('tick'); }));
   show(0); requestAnimationFrame(tick);
+  addEventListener('intro-done', () => show(0), { once: true });
 
   // Copy buttons
   document.querySelectorAll<HTMLElement>('[data-copy]').forEach(b => b.addEventListener('click', async () => {
