@@ -1,0 +1,14 @@
+---
+// Lucide icons, inlined at build time. Never emoji.
+interface Props { name: string; size?: number; class?: string; label?: string }
+const { name, size = 16, class: cls = '', label } = Astro.props;
+const files = import.meta.glob('/node_modules/lucide-static/icons/*.svg', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+const raw = files[`/node_modules/lucide-static/icons/${name}.svg`] ?? '';
+const svg = raw
+  .replace(/<!--.*?-->/gs, '')
+  .replace(/width="24"/, `width="${size}"`)
+  .replace(/height="24"/, `height="${size}"`)
+  .replace(/stroke-width="2"/, 'stroke-width="1.5"')
+  .replace('<svg', `<svg class="icon ${cls}" ${label ? `role="img" aria-label="${label}"` : 'aria-hidden="true"'}`);
+---
+<Fragment set:html={svg} />

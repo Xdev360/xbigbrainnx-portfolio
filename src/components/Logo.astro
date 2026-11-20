@@ -1,0 +1,8 @@
+---
+import icons from '../data/icons.json';
+interface Props { name: keyof typeof icons.logos; size?: number }
+const { name, size = 20 } = Astro.props;
+const svg = (icons.logos[name] as string).replace('<svg', `<svg width="${size}" height="${size}" role="img" aria-label="${name}"`);
+---
+<span class="logo" title={name} set:html={svg} />
+<style>.logo { display:inline-flex; color:var(--logo-ink); }</style>

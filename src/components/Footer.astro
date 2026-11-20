@@ -1,0 +1,56 @@
+---
+// R/Footer: padding 88/120/64, gap 56, top border. Columns space-between, divider, wordmark + text left, social logos right.
+import icons from '../data/icons.json';
+const cols = [
+  ['Work', [['Virelle Wellness Hub','/work/virelle'],['Mylo','/work/mylo'],['Wintech Templates','/work/wintech-templates'],['Brand and graphics','/work?f=brand'],['All case studies','/work']]],
+  ['About', [['About me','/about'],['How I work','/#how-i-work'],['Experience','/about#experience'],['CV','/cv']]],
+  ['Writing', [['All posts','/writing'],['Case studies','/work'],['Process','/writing?f=process'],['The Brain Room','/#newsletter']]],
+  ['Playground', [['Games','/playground'],['Interactions','/playground#interactions'],['Sound and touch','/playground#sound']]],
+  ['Contact', [['Email me','mailto:xbigbrainnx@gmail.com'],['Book a call','/contact'],['Hire me','/contact']]],
+] as const;
+// TODO: Figma profile and Figma portfolio URLs from Oladele.
+const social = [
+  ['github','GitHub','https://github.com/Xdev360'],
+  ['figma','Figma profile','#'],
+  ['figma','Figma portfolio','#'],
+  ['behance','Behance','https://behance.net/xbigbrainnx'],
+  ['x','X','https://x.com/xbigbrainnx'],
+  ['linkedin','LinkedIn','https://linkedin.com/in/ibraheem-oladele-302254333'],
+] as const;
+const svg = (k: string) => { const d = (icons.social as any)[k]; return `<svg viewBox="${d.vb}" width="20" height="20" fill="currentColor" aria-hidden="true">${d.body}</svg>`; };
+---
+<footer class="ft">
+  <div class="cols">
+    {cols.map(([h, ls]) => (
+      <div class="col">
+        <span class="eyebrow c-subtle">{h}</span>
+        {ls.map(([l, href]) => <a class="lk u" href={href}>{l}</a>)}
+      </div>
+    ))}
+  </div>
+  <hr class="div" />
+  <div class="bottom">
+    <div class="brand">
+      <span class="word">Ibraheem Oladele</span>
+      <p class="small c-muted" style="max-width:400px">Product designer who builds. I design the app customers use, the tools the team runs it on and the brand that sells it, then build it in code.</p>
+      <p class="small c-subtle">© 2026 Ibraheem Oladele. Lagos, working remote worldwide.</p>
+    </div>
+    <div class="social">
+      {social.map(([k, label, href]) => <a href={href} aria-label={label} title={label} target="_blank" rel="noopener" set:html={svg(k)} />)}
+    </div>
+  </div>
+</footer>
+<style>
+  .ft { padding:88px var(--px) 64px; border-top:1px solid var(--border-default); background:var(--bg-page); }
+  .cols, .div, .bottom { max-width:1200px; margin-left:auto; margin-right:auto; }
+  .cols { display:flex; justify-content:space-between; gap:32px; }
+  .col { display:flex; flex-direction:column; gap:12px; }
+  .lk { font:400 14px/20px var(--f-body); color:var(--text-secondary); } .lk:hover { color:var(--text-primary); }
+  .div { border:0; border-top:1px solid var(--border-default); margin-top:56px; margin-bottom:56px; }
+  .bottom { display:flex; justify-content:space-between; align-items:flex-start; gap:32px; }
+  .brand { display:flex; flex-direction:column; gap:14px; }
+  .word { font:900 22px/26px var(--f-display); letter-spacing:.6em; text-transform:uppercase; color:var(--text-heading); }
+  .social { display:flex; align-items:center; gap:20px; color:var(--logo-ink); }
+  .social a:hover { opacity:.7; }
+  @media (max-width:767px){ .cols { display:grid; grid-template-columns:1fr 1fr; gap:32px 16px; } .bottom { flex-direction:column; } .word { font-size:16px; letter-spacing:.35em; } }
+</style>

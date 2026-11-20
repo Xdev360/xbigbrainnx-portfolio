@@ -1,0 +1,9 @@
+---
+// R/Window Placeholder: radius 10, 36px bar with title and path, note at 24/56.
+interface Props { title: string; path: string; note: string; style?: string; class?: string }
+const { title, path, note, style = '', class: cls = '' } = Astro.props;
+---
+<div class:list={['win-ph', cls]} style={style}>
+  <div class="bar"><span class="small c-secondary">{title}</span><span class="mono-tag c-subtle">{path}</span></div>
+  <span class="note meta c-subtle"><slot>{note}</slot></span>
+</div>

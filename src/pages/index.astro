@@ -1,0 +1,565 @@
+---
+// Home. Every number here comes from Figma frame "Home – Dark" (1440 wide).
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Logo from '../components/Logo.astro';
+import CoverPh from '../components/CoverPh.astro';
+import WinPh from '../components/WinPh.astro';
+import { projects, heroReel } from '../data/projects';
+
+const steps = [
+  { n:'01', t:'Start with the brief', d:'A first call with the founder and the people who use it. I write the real problem in one line before any screen.',
+    note:'Customers can’t tell real products from fakes, delivery dates are a guess, and nobody replies at night. Build one store they can trust, and one place for three staff to run it.' },
+  { n:'02', t:'Design it in Figma', d:'Flows first, then every screen and state, light and dark. Customer side and team side in the same file.',
+    wins:[{ title:'Figma · Virelle', path:'store + crm', note:'Custom visual: the Figma file', x:0, y:0, w:420, h:300 }, { title:'Review link', path:'shared with the team', note:'Custom visual: the review page', x:302, y:140, w:320, h:240 }] },
+  { n:'03', t:'Get notes from the team', d:'The team reviews from a link and sends notes in the group chat. Each round becomes a short list of changes.',
+    cover:'Visual · a review round', note:'Show the courier wallet balance to everyone, keep Lagos and Abuja as separate delivery queues, and let staff add walk-in orders by hand.' },
+  { n:'04', t:'Build it in code', d:'Same colors, type and spacing as the Figma file. I check every screen on real phones before it ships.',
+    wins:[{ title:'ProductCard.astro', path:'~/virelle', note:'Custom visual: the code', x:0, y:0, w:380, h:300 }, { title:'Preview', path:'localhost:4321', note:'Custom visual: the live preview', x:282, y:120, w:340, h:260 }] },
+  { n:'05', t:'Ship it, then measure', d:'Launch, then watch what changed: return rate for customers, time per task for the team.', cover:'Visual · launch and numbers' },
+];
+const featured = projects[0];
+const grid = projects.slice(1, 4);
+const codeLines = [':root {','  --bg-page: #FFFFFF;','  --text-primary: #000000;','  --border-default: #EBEBEB;','  --radius-button: 4px;','}','','[data-theme="dark"] {','  --bg-page: #000000;','  --text-primary: #FFFFFF;','  --border-default: #1A1A1A;','}'];
+const surfIcons = [['Web','globe'],['iOS and Android','smartphone'],['Admin and CRM','layout-dashboard'],['Email','mail'],['Brand identity','layers'],['Packaging','package'],['Social and ads','image'],['Motion','video']];
+const compare = [
+  ['Customers should come back, not just visit once', true],
+  ['A team runs orders, stock or bookings behind it', true],
+  ['It needs an app, a store and a back office that match', true],
+  ['You want motion, sound and touch that feel considered', true],
+  ['You need the brand, packaging and launch posts too', true],
+  ['It’s a simple site for a small business, live this week', false],
+] as const;
+const testimonials: { quote:string; name:string; role:string }[] = []; // real quotes only
+const pos = (x:number,y:number,w?:number,h?:number) => `left:${x}px;top:${y}px;${w?`width:${w}px;`:''}${h?`height:${h}px;`:''}`;
+// Surfaces diagram lines (spectrum), exported from Figma
+const lines = [
+  { x:702, y:209, w:379, h:2,   d:'M378.5 1C189.25 1 189.25 1 0 1' },
+  { x:702, y:209, w:159, h:112, d:'M158.5 111C79.25 111 79.25 1 0 1' },
+  { x:702, y:89,  w:129, h:122, d:'M128.5 1C64.25 1 64.25 121 0 121' },
+  { x:330, y:209, w:169, h:127, d:'M0 126C84.25 126 84.25 1 168.5 1' },
+  { x:370, y:84,  w:129, h:127, d:'M0 1C64.25 1 64.25 126 128.5 126' },
+  { x:114, y:209, w:385, h:2,   d:'M0 1C192.25 1 192.25 1 384.5 1' },
+];
+const devices = [
+  { n:'Mobile app',   x:40,  y:140, w:74,  h:140, r:14, bars:[[11,42,41],[11,54,31],[11,66,21]], lx:39,  ly:290 },
+  { n:'Store · web',  x:200, y:30,  w:170, h:110, r:8,  bars:[[26,33,94],[26,45,84],[26,57,74]], lx:243, ly:150 },
+  { n:'Social posts', x:220, y:280, w:110, h:110, r:6,  bars:[[17,33,61],[17,45,51],[17,57,41]], lx:229, ly:400 },
+  { n:'Team CRM',     x:830, y:20,  w:220, h:140, r:8,  bars:[[33,42,121],[33,54,111],[33,66,101]], lx:910, ly:170 },
+  { n:'Packaging',    x:860, y:270, w:120, h:100, r:4,  bars:[[18,30,66],[18,42,56],[18,54,46]], lx:886, ly:380 },
+  { n:'Email',        x:1080,y:170, w:110, h:80,  r:6,  bars:[[17,24,61],[17,36,51],[17,48,41]], lx:1116,ly:260 },
+];
+---
+<Base>
+  <!-- ============ HERO (1440x900 incl. nav) ============ -->
+  <section class="hero" data-reel>
+    <div class="reel" aria-hidden="true">
+      {heroReel.map((p, i) => (
+        <div class:list={['frame', { on: i === 0 }]}>
+          {p.reel ? <video src={p.reel} muted loop playsinline preload="none" /> : <span class="mono-tag c-subtle reel-label">Project reel · video slot</span>}
+        </div>
+      ))}
+      <div class="fade"></div>
+    </div>
+
+    <div class="hero-in">
+      <div class="copy">
+        <div class="timer"><span class="prog" id="hero-prog"></span></div>
+        <span class="eyebrow c-muted" style="margin-top:28px">Product design, built in code</span>
+        <h1 class="display-xl c-primary" style="margin-top:20px">Products people<br />come back to</h1>
+        <p class="body c-secondary" style="margin-top:20px">I design the app customers use and the tools the team runs it on.<br />Then I build both in code, motion and sound included.</p>
+        <a href="/work" class="btn btn-solid" style="margin-top:32px;align-self:flex-start" data-sfx="click">See my work</a>
+        <p class="small" style="margin-top:20px"><span class="c-muted">Hiring?</span> <button class="copy-link small c-secondary u" data-copy="xbigbrainnx@gmail.com">Copy my email</button></p>
+        <hr class="rule" style="margin-top:40px" />
+        <span class="eyebrow c-subtle" style="margin-top:20px">Designed and built with</span>
+        <div class="logos" style="margin-top:14px">
+          {(['Figma','Claude','Rive','Lottie','Astro','Supabase','Vercel'] as const).map(n => <Logo name={n} size={20} />)}
+        </div>
+      </div>
+
+      <aside class="np" aria-live="polite">
+        <div class="segs">{heroReel.map((p, i) => <button class="seg" data-go={i} aria-label={p.name}><span></span></button>)}</div>
+        <div class="np-items">
+          {heroReel.map((p, i) => (
+            <div class:list={['np-item', { on: i === 0 }]}>
+              <div class="counter"><span class="eyebrow c-primary">{String(i + 1).padStart(2,'0')} / {String(heroReel.length).padStart(2,'0')}</span><span class="eyebrow c-muted">Now playing</span></div>
+              <h2 class="np-title">{p.name}</h2>
+              <p class="small c-muted" style="margin-top:12px">{p.short}</p>
+              <div class="np-row" style="margin-top:16px"><span class="eyebrow c-subtle">Role</span><span class="small c-secondary">{p.role}</span></div>
+              <div class="np-row"><span class="eyebrow c-subtle">Use case</span><span class="small c-secondary u">{p.useCase}</span></div>
+              <a href={`/work/${p.slug}`} class="btn btn-s btn-outline" style="margin-top:20px;align-self:flex-start" data-sfx="click">Read the story</a>
+            </div>
+          ))}
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ HOW I WORK ============ -->
+  <section class="sec bg-alt" id="how-i-work">
+    <div class="sec-in hiw">
+      <div class="sticky">
+        <span class="eyebrow c-muted">How I work</span>
+        <h2 class="h2s c-heading" style="margin-top:16px">Talk to the people.<br />Then build it by hand.</h2>
+        <p class="body c-secondary" style="margin-top:20px;max-width:412px">I start with the people who use the product, design it in Figma, and build it in code. The team reviews every round from a link, no Figma account needed.</p>
+        <p class="small c-subtle" style="margin-top:12px;max-width:412px">Client projects and my own products. Based in Lagos, working remote worldwide.</p>
+        <div class="btns" style="margin-top:28px">
+          <button class="btn btn-s btn-solid" data-copy="xbigbrainnx@gmail.com">Copy my email</button>
+          <a href="/work/virelle" class="btn btn-s btn-outline">See a case study</a>
+        </div>
+        <ol class="steplist" style="margin-top:40px">
+          {steps.map((s, i) => <li><a href={`#step-${s.n}`} data-step={s.n} class:list={{ on: i === 0 }}><span class="eyebrow num">{s.n}</span><span class="nm">{s.t}</span></a></li>)}
+        </ol>
+      </div>
+
+      <div class="steps">
+        {steps.map(s => (
+          <article class="step" id={`step-${s.n}`}>
+            <span class="eyebrow c-subtle">{s.n}</span>
+            <h3 class="h3 c-heading" style="margin-top:12px">{s.t}</h3>
+            <p class="lede c-muted" style="margin-top:12px;max-width:600px">{s.d}</p>
+            {s.wins && (
+              <div class="wins" style="margin-top:24px">
+                {s.wins.map(w => <WinPh title={w.title} path={w.path} note={w.note} style={`position:absolute;${pos(w.x,w.y,w.w,w.h)}`} />)}
+              </div>
+            )}
+            {s.cover && <CoverPh label={s.cover} h={320} class="mt24" />}
+            {s.note && (
+              <div class="notebox spectrum" style="margin-top:24px">
+                <p class="nb-text">{s.note}</p>
+                <button class="btn btn-s btn-outline nb-copy" data-copy={s.note} style="gap:6px"><Icon name="copy" size={12} />Copy</button>
+              </div>
+            )}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SELECTED WORK ============ -->
+  <section class="sec">
+    <div class="sec-in">
+      <div class="shead">
+        <div class="shead-l"><span class="eyebrow c-muted">Selected work</span><h2 class="h2 c-heading">Products I designed<br />and built</h2></div>
+        <div class="shead-r">
+          <p class="lede c-secondary">Each one has a side customers use and a side the team runs it on. Some are for clients, some are my own products. Open any of them for the full story.</p>
+          <div class="btns"><a href="/work" class="btn btn-s btn-outline">All case studies</a><a href="/cv" class="btn btn-s btn-outline">Get my CV</a><a href="/writing" class="btn btn-s btn-outline">Writing</a></div>
+        </div>
+      </div>
+      <a href={`/work/${featured.slug}`} class="work" style="margin-top:56px" data-sfx="click">
+        <CoverPh label={`Cover · ${featured.name}`} h={620} src={featured.cover} class="big" />
+        <div class="cap"><span class="eyebrow c-primary">{featured.name}</span><span class="caption c-muted" style="max-width:400px">A wellness store with an AI product finder, and the CRM three staff run it on.</span></div>
+      </a>
+      <div class="wgrid" style="margin-top:56px">
+        {grid.map(p => (
+          <a href={`/work/${p.slug}`} class="work" data-sfx="click">
+            <CoverPh label={`Cover · ${p.name}`} h={280} src={p.cover} />
+            <div class="cap"><span class="eyebrow c-primary">{p.name}</span><span class="caption c-muted">{p.short}</span></div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BUILT IN CODE ============ -->
+  <section class="sec bt">
+    <div class="sec-in">
+      <div class="shead">
+        <div class="shead-l" style="gap:20px;max-width:520px">
+          <span class="eyebrow c-muted">Design engineering</span>
+          <h2 class="h2 c-heading">I build what<br />I design</h2>
+          <p class="lede c-secondary" style="max-width:480px">The colors, type and spacing in my Figma file are the same values in the code. What you approve is what goes live.</p>
+          <div class="btns"><a href="/work/virelle#build" class="btn btn-s btn-outline">See the code</a><a href="#how-i-work" class="btn btn-s btn-outline">How I work</a></div>
+        </div>
+        <div class="shead-r points">
+          <div class="pt"><span class="eyebrow c-primary">One source of truth</span><span class="body c-secondary">Light and dark, named once in Figma and used by the code.</span></div>
+          <div class="pt"><span class="eyebrow c-primary">Components, not copies</span><span class="body c-secondary">Every button and card is built once and used everywhere.</span></div>
+          <div class="pt"><span class="eyebrow c-primary">Checked on real phones</span><span class="body c-secondary">Every screen is tested on the devices people actually use.</span></div>
+        </div>
+      </div>
+      <div class="dg" data-w="1200" data-h="440" style="margin-top:56px">
+        <div class="dg-in" style="width:1200px;height:440px">
+          <div class="codewin" style={pos(170,0,520,317)}>
+            <div class="cbar"><span class="small c-secondary">tokens.css</span><span class="mono-tag c-subtle">~/portfolio</span></div>
+            <div class="code"><pre class="mono c-subtle">{codeLines.map((_, i) => i + 1).join('\n')}</pre><pre class="mono c-secondary">{codeLines.join('\n')}</pre></div>
+          </div>
+          <WinPh title="Live preview" path="localhost:4321" note="Custom visual: the page updating" style={`position:absolute;${pos(600,110,460,300)}`} />
+          <div class="watch" style={pos(862,370)}><span class="dot"></span><span class="mono-tag c-muted">Watching for changes</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FIGMA TO LIVE ============ -->
+  <section class="sec bt">
+    <div class="sec-in">
+      <div class="shead">
+        <div class="shead-l" style="gap:20px;max-width:520px">
+          <span class="eyebrow c-muted">Figma to production</span>
+          <h2 class="h2 c-heading">From a Figma file<br />to a live product</h2>
+          <p class="lede c-secondary" style="max-width:480px">Bring me your screens, or let me design them. I turn them into a working product with real data, motion and both themes.</p>
+          <div class="btns"><a href="/work/virelle" class="btn btn-s btn-outline">See Virelle</a><a href="/contact" class="btn btn-s btn-outline">Book a call</a></div>
+        </div>
+        <div class="shead-r points">
+          <div class="pt"><span class="eyebrow c-primary">Every state, designed</span><span class="body c-secondary">Empty, loading, error and success, in light and dark.</span></div>
+          <div class="pt"><span class="eyebrow c-primary">Real components</span><span class="body c-secondary">The same parts in Figma and in the code.</span></div>
+          <div class="pt"><span class="eyebrow c-primary">One source of truth</span><span class="body c-secondary">Change it once, and the product changes everywhere.</span></div>
+        </div>
+      </div>
+      <div class="dg" data-w="1200" data-h="420" style="margin-top:56px">
+        <div class="dg-in" style="width:1200px;height:420px">
+          <span class="eyebrow c-subtle abs" style={pos(0,0)}>Before</span><span class="title c-heading abs" style={pos(62,-2)}>Screens in Figma</span>
+          <div class="box" style={pos(0,28,420,370)}>
+            <span class="mono-tag c-subtle abs" style={pos(16,24)}>Store · Product · Bag</span>
+            {[16,148,280].map(x => (
+              <div class="scr" style={pos(x,60,116,250)}>
+                {[[24,84],[46,60],[68,84],[90,60],[112,84]].map(([y,w]) => <span class="bar6" style={pos(14,y,w,6)}></span>)}
+                <span class="cta" style={pos(14,210,88,22)}></span>
+              </div>
+            ))}
+          </div>
+          <span class="arrow" style={pos(430,224,50,2)}></span>
+          <div class="me" style={pos(490,150,220,190)}>
+            <span class="mono-tag c-subtle">Design + build</span>
+            <span class="title c-heading">Turn this file into<br />the live store</span>
+            {['Components','Data binding','Light and dark','Motion and sound'].map(t => <span class="mono-tag c-muted">·  {t}</span>)}
+          </div>
+          <span class="arrow" style={pos(720,224,50,2)}></span>
+          <span class="eyebrow c-subtle abs" style={pos(780,0)}>After</span><span class="title c-heading abs" style={pos(833,-2)}>The product that ships</span>
+          <div class="box" style={pos(780,28,420,370)}>
+            <span class="mono-tag c-muted abs" style={pos(16,170)}>Live components</span>
+            <div class="phone" style={pos(135,40,150,300)}>
+              <span class="pb" style={pos(20,30,110,60)}></span>
+              {[110,150,190].map(y => <span class="pr" style={pos(20,y,110,28)}></span>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EVERY SURFACE ============ -->
+  <section class="sec bt">
+    <div class="sec-in">
+      <div class="shead">
+        <div class="shead-l"><span class="eyebrow c-muted">One product, every surface</span><h2 class="h2 c-heading">What I design<br />is what ships</h2></div>
+        <div class="shead-r">
+          <p class="lede c-secondary">The store, the app, the team’s CRM, the box it ships in and the posts that sell it. One system across all of them, so nothing drifts.</p>
+          <div class="btns"><a href="/work/virelle" class="btn btn-s btn-outline">See Virelle</a><a href="/work?f=brand" class="btn btn-s btn-outline">Brand work</a></div>
+        </div>
+      </div>
+      <div class="dg" data-w="1200" data-h="420" style="margin-top:56px">
+        <div class="dg-in" style="width:1200px;height:420px">
+          <svg class="abs" width="1200" height="420" viewBox="0 0 1200 420" fill="none" aria-hidden="true" style="left:0;top:0">
+            <defs><linearGradient id="spec" x1="0" x2="1" y1="0" y2="0"><stop stop-color="#F30058"/><stop offset=".25" stop-color="#FF483C"/><stop offset=".45" stop-color="#FFA41C"/><stop offset=".6" stop-color="#71FF19"/><stop offset=".8" stop-color="#19F2FF"/><stop offset="1" stop-color="#3084FF"/></linearGradient></defs>
+            {lines.map(l => <path d={l.d} transform={`translate(${l.x} ${l.y})`} stroke="url(#spec)" stroke-width="1.5" />)}
+          </svg>
+          {devices.map(d => (
+            <>
+              <div class="dev" style={pos(d.x,d.y,d.w,d.h) + `border-radius:${d.r}px`}>{d.bars.map(([x,y,w]) => <span class="bar5" style={pos(x,y,w,5)}></span>)}</div>
+              <span class="mono-tag c-subtle abs" style={pos(d.lx,d.ly)}>{d.n}</span>
+            </>
+          ))}
+          <div class="core" style={pos(499,176,203,68)}><span class="mono-tag c-primary">One system</span><span class="mono-tag c-subtle">colors · type · motion</span></div>
+        </div>
+      </div>
+      <div class="caps3" style="margin-top:56px">
+        {[['One brand','The app, the box and the posts look like one company.'],['One system','Colors, type and parts are shared across every surface.'],['No drift','Change it once, and every surface gets the change.']].map(([t,d]) => (
+          <div class="c3"><span class="eyebrow c-primary">{t}</span><span class="caption c-muted" style="max-width:340px">{d}</span></div>
+        ))}
+      </div>
+      <div style="margin-top:56px">
+        <span class="eyebrow c-muted">Surfaces I design</span>
+        <div class="surf" style="margin-top:16px">
+          {surfIcons.map(([t, ic]) => <div class="sf"><span class="c-primary"><Icon name={ic} size={16} /></span><span class="eyebrow c-secondary">{t}</span></div>)}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ME OR A TEMPLATE ============ -->
+  <section class="sec bg-alt">
+    <div class="sec-in">
+      <div class="shead">
+        <div class="shead-l"><span class="eyebrow c-muted">Me or a template?</span><h2 class="h2 c-heading">Use the right<br />tool for the job</h2></div>
+        <div class="shead-r">
+          <p class="lede c-secondary">A custom product pays off when people use it every day and a team runs it. For a simple one-page site, a Wintech Template is the honest call.</p>
+          <div class="btns"><a href="https://wintechstudio.com" class="btn btn-s btn-outline">Wintech Templates</a></div>
+        </div>
+      </div>
+      <table class="cmp" style="margin-top:56px">
+        <thead><tr><th class="eyebrow c-subtle">Bring me in when</th><th class="eyebrow c-subtle">Me</th><th class="eyebrow c-subtle">Template</th></tr></thead>
+        <tbody>
+          {compare.map(([t, me]) => (
+            <tr><td class="body c-secondary">{t}</td>
+              <td class:list={['body', me ? 'c-primary' : 'c-subtle']}>{me ? '✓' : '–'}</td>
+              <td class:list={['body', me ? 'c-subtle' : 'c-primary']}>{me ? '–' : '✓'}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ WHY TEAMS ============ -->
+  <section class="sec">
+    <div class="sec-in">
+      <div class="shead">
+        <div class="shead-l"><span class="eyebrow c-muted">Why teams work with me</span><h2 class="h2 c-heading">Ship faster, with<br />fewer people</h2></div>
+        <div class="shead-r"><p class="lede c-secondary">One person holds the design, the code and the motion. Fewer handoffs means less time lost, and the product matches what you signed off.</p></div>
+      </div>
+      <div class="why" style="margin-top:56px">
+        <div class="wcell">
+          <div class="dg panel" data-w="584" data-h="290"><div class="dg-in" style="width:584px;height:290px">
+            <span class="small c-muted abs" style={pos(60,52)}>Usual way</span>
+            <span class="chip fill" style={pos(60,80)}>Design</span><span class="hl" style={pos(150,97,60,1)}></span>
+            <span class="chip" style={pos(220,80)}>Handoff</span><span class="hl" style={pos(320,97,60,1)}></span>
+            <span class="chip" style={pos(380,80)}>Rebuild ×3</span>
+            <span class="small c-muted abs" style={pos(60,160)}>With me</span>
+            <span class="chip" style={pos(60,188)}>Figma file</span>
+            <span class="arrow" style={pos(166,204,250,2)}></span><span class="dot8" style={pos(410,201,8,8)}></span>
+            <span class="chip" style={pos(420,188)}>Ships</span>
+          </div></div>
+          <div class="cap"><span class="eyebrow c-primary">Less handoff</span><span class="caption c-muted" style="max-width:520px">Design and build sit with one person, so nothing gets lost or rebuilt between Figma and code.</span></div>
+        </div>
+        <div class="wcell">
+          <div class="dg panel" data-w="584" data-h="290"><div class="dg-in" style="width:584px;height:290px">
+            <div class="tool" style={pos(40,60,150,170)}><span class="small c-secondary abs" style={pos(10,8)}>Figma</span>
+              {[[40,110],[52,90],[64,70]].map(([y,w]) => <span class="bar4" style={pos(12,y,w,4)}></span>)}</div>
+            <span class="hl" style={pos(190,145,40,1)}></span>
+            <div class="tool" style={pos(230,60,314,170)}><span class="small c-secondary abs" style={pos(10,8)}>Code</span></div>
+          </div></div>
+          <div class="cap"><span class="eyebrow c-primary">Designer speed, builder control</span><span class="caption c-muted" style="max-width:520px">I sketch fast in Figma, then shape the details in code: states, motion, sound and real data.</span></div>
+        </div>
+        <div class="wcell">
+          <div class="dg panel" data-w="584" data-h="290"><div class="dg-in" style="width:584px;height:290px">
+            {[[60,'30%','day 10, before','border-strong'],[230,'70%','day 10, after','text-primary'],[400,'3','staff roles, one CRM','border-strong']].map(([x,n,l,c]) => (
+              <><span class="stat abs" style={pos(x as number,110)}>{n}</span><span class="abs" style={pos(x as number,170,110,2)+`background:var(--${c})`}></span><span class="small c-muted abs" style={pos(x as number,184)}>{l}</span></>
+            ))}
+          </div></div>
+          <div class="cap"><span class="eyebrow c-primary">Measured, not guessed</span><span class="caption c-muted" style="max-width:520px">I track return rate for customers and time per task for staff, and report what changed.</span></div>
+        </div>
+        <div class="wcell">
+          <div class="dg panel" data-w="584" data-h="290"><div class="dg-in" style="width:584px;height:290px">
+            {[[40,'Motion'],[102,'Sound'],[164,'Touch']].map(([y,l]) => (
+              <><svg class="abs" style={pos(150,y as number,220,70)} viewBox="0 0 220 70" fill="none" aria-hidden="true"><path d="M218.913 0.5L159.77 69.5H1.08691L60.2305 0.5H218.913Z" fill="var(--bg-page)" stroke="var(--border-strong)"/></svg>
+                <span class="small c-secondary abs" style={pos(400,(y as number)+26)}>{l}</span></>
+            ))}
+          </div></div>
+          <div class="cap"><span class="eyebrow c-primary">Motion, sound and touch</span><span class="caption c-muted" style="max-width:520px">Small, quiet feedback that makes a product feel cared for. Sound stays off until you turn it on.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ IN PRODUCTION ============ -->
+  <section class="sec bt">
+    <div class="sec-in">
+      <div class="shead">
+        <div class="shead-l"><span class="eyebrow c-muted">In production</span><h2 class="h2 c-heading">Products I’ve helped<br />ship</h2></div>
+        <div class="shead-r"><p class="lede c-secondary">Client work and my own products, live and in use.{testimonials.length > 0 && ' Here is what the people I work with say.'}</p></div>
+      </div>
+      <div class="marks" style="margin-top:56px">{['Virelle Wellness Hub','Mylo','Wintech Studio','Tobel Pearls','BlackGold Studio'].map(m => <span>{m}</span>)}</div>
+      {testimonials.length > 0 && (
+        <div class="tms" style="margin-top:56px">{testimonials.map(q => (
+          <figure class="tm"><figcaption class="person"><span class="av"></span><span><span class="eyebrow c-primary">{q.name}</span><span class="small c-subtle">{q.role}</span></span></figcaption><blockquote class="body c-muted">{q.quote}</blockquote></figure>
+        ))}</div>
+      )}
+    </div>
+  </section>
+
+  <!-- ============ NEWSLETTER ============ -->
+  <section class="sec bg-alt" id="newsletter">
+    <div class="sec-in nl">
+      <div class="nl-l">
+        <span class="eyebrow c-muted">Newsletter</span>
+        <h2 class="h2 c-heading">Join The<br />Brain Room</h2>
+        <p class="body c-secondary">Notes on design, building and products people come back to.<br />About once a month.</p>
+      </div>
+      <form class="nl-form" action="#" method="post" data-todo="newsletter provider">
+        <label class="sr" for="nl-email">Email</label>
+        <input id="nl-email" name="email" type="email" placeholder="you@email.com" required class="small" />
+        <button class="btn btn-solid" data-sfx="success">Subscribe</button>
+      </form>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .abs, .dg-in > * { position:absolute; }
+  /* Hero */
+  .hero { position:relative; height:836px; overflow:hidden; }
+  .reel { position:absolute; inset:-64px 0 0 0; background:var(--bg-alt); }
+  .frame { position:absolute; inset:0; opacity:0; transition:opacity 800ms var(--ease); }
+  .frame.on { opacity:1; }
+  .frame video { width:100%; height:100%; object-fit:cover; }
+  .reel-label { position:absolute; left:1040px; top:150px; }
+  .fade { position:absolute; left:0; right:0; top:340px; bottom:0; background:linear-gradient(to bottom, transparent 0, var(--bg-page) 384px); }
+  .hero-in { position:relative; height:100%; max-width:1440px; margin:0 auto; }
+  .copy { position:absolute; left:160px; top:316px; width:560px; display:flex; flex-direction:column; }
+  .timer { height:2px; position:relative; }
+  .timer::before { content:''; position:absolute; left:0; right:0; top:0; height:1px; background:var(--border-divider); }
+  .prog { position:absolute; left:0; top:0; height:2px; width:100%; background:var(--text-secondary); transform:scaleX(0); transform-origin:left; }
+  .copy-link { background:none; border:0; padding:0; cursor:pointer; }
+  .rule { border:0; height:1px; background:var(--border-default); margin:0; }
+  .logos { display:flex; gap:20px; align-items:center; }
+  .np { position:absolute; left:1020px; top:315px; width:300px; }
+  .segs { display:flex; gap:4px; }
+  .seg { flex:1; height:2px; padding:0; border:0; background:var(--border-divider); position:relative; cursor:pointer; }
+  .seg::before { content:''; position:absolute; inset:-6px 0; }
+  .seg span { position:absolute; inset:0; background:var(--text-primary); transform:scaleX(var(--p,0)); transform-origin:left; }
+  .np-items { display:grid; margin-top:28px; }
+  .np-item { grid-area:1/1; display:flex; flex-direction:column; opacity:0; visibility:hidden; transform:translateY(6px); transition:opacity 400ms var(--ease-em), transform 400ms var(--ease-em), visibility 0s 400ms; }
+  .np-item.on { opacity:1; visibility:visible; transform:none; transition:opacity 400ms var(--ease-em), transform 400ms var(--ease-em); }
+  .counter { display:flex; gap:10px; }
+  .np-title { font:900 16px/20px var(--f-display); text-transform:uppercase; color:var(--text-heading); margin-top:12px; }
+  .np-row { display:flex; padding:3px 0; } .np-row > :first-child { width:96px; flex:none; padding-top:2px; }
+  @media (max-width:767px){ .copy p br { display:none; } }
+  @media (max-width:1439px){ .copy { left:var(--px); } .np { left:auto; right:var(--px); } }
+  @media (max-width:1023px){
+    .hero { height:auto; } .hero-in { padding:200px var(--px) 64px; display:flex; flex-direction:column; gap:56px; }
+    .copy, .np { position:relative; left:auto; right:auto; top:auto; width:100%; max-width:560px; }
+    .reel-label { left:var(--px); top:120px; } .fade { top:120px; }
+  }
+
+  /* How I work: 440 sticky column, gap 138, 622 steps column, steps gap 96 */
+  .hiw { display:flex; gap:138px; }
+  .sticky { width:440px; flex:none; position:sticky; top:104px; align-self:flex-start; display:flex; flex-direction:column; }
+  .steplist a { display:flex; align-items:center; gap:20px; padding:11px 0; border-bottom:1px solid var(--border-default); }
+  .steplist .num { color:var(--text-subtle); } .steplist .nm { font:500 13px/20px var(--f-body); color:var(--text-muted); }
+  .steplist a.on { border-bottom-color:var(--border-active); } .steplist a.on .num, .steplist a.on .nm { color:var(--text-primary); }
+  .steps { width:622px; display:flex; flex-direction:column; gap:96px; }
+  .step { display:flex; flex-direction:column; scroll-margin-top:120px; }
+  .wins { position:relative; height:380px; }
+  .mt24 { margin-top:24px; }
+  .notebox { position:relative; min-height:100px; padding:16px 120px 16px 16px; }
+  .nb-text { font:400 14px/21px var(--f-body); color:var(--text-primary); max-width:480px; }
+  .nb-copy { position:absolute; right:14px; top:14px; }
+  @media (max-width:1279px){ .hiw { gap:64px; } .sticky { width:360px; } .steps { flex:1; width:auto; } .wins { height:auto; display:flex; flex-direction:column; gap:16px; } .wins :global(.win-ph) { position:relative!important; left:auto!important; top:auto!important; width:100%!important; } }
+  @media (max-width:1023px){ .hiw { flex-direction:column; } .sticky { position:static; width:100%; } .notebox { padding-right:16px; padding-bottom:56px; } .nb-copy { top:auto; bottom:14px; } }
+
+  /* Selected work */
+  .work { display:flex; flex-direction:column; }
+  .cap { display:flex; flex-direction:column; gap:8px; padding-top:16px; }
+  .work:hover :global(.cover-ph) { border-color:var(--border-strong); }
+  .wgrid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+  @media (max-width:1023px){ .wgrid { grid-template-columns:1fr; } .work :global(.big) { height:auto!important; aspect-ratio:16/10; } }
+
+  /* Points list (right column) */
+  .points { gap:0; }
+  .pt { display:flex; flex-direction:column; gap:8px; padding:20px 0 24px; border-top:1px solid var(--border-default); }
+
+  /* Scaled diagrams: drawn at Figma size, scaled to fit */
+  .dg { position:relative; width:100%; min-width:0; overflow:hidden; }
+  .dg-in { position:relative; transform-origin:0 0; transform:scale(var(--k,1)); }
+  .codewin { background:var(--bg-code); border:1px solid var(--border-divider); border-radius:10px; overflow:hidden; }
+  .cbar { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid var(--border-default); }
+  .code { display:flex; gap:16px; padding:16px 16px 18px; }
+  .code pre { margin:0; white-space:pre; }
+  .watch { display:flex; align-items:center; gap:6px; padding:4px 8px; background:var(--bg-page); border:1px solid var(--border-default); border-radius:4px; }
+  .dot { width:6px; height:6px; border-radius:50%; background:var(--text-muted); animation:blink 1.6s ease-in-out infinite; }
+  @keyframes blink { 50% { opacity:.3; } }
+  .box { background:var(--bg-alt); border:1px solid var(--border-default); border-radius:10px; }
+  .box > * { position:absolute; }
+  .scr { background:var(--bg-page); border:1px solid var(--border-default); border-radius:8px; }
+  .scr > * { position:absolute; }
+  .bar6 { background:var(--border-strong); border-radius:3px; }
+  .cta { background:var(--text-secondary); border-radius:4px; }
+  .arrow { background:var(--spectrum-x); }
+  .me { display:flex; flex-direction:column; gap:8px; padding:14px; background:var(--bg-alt); border:1px solid var(--border-strong); border-radius:8px; }
+  .phone { background:var(--bg-page); border:1px solid var(--border-strong); border-radius:22px; }
+  .phone > * { position:absolute; border-radius:6px; }
+  .pb { background:var(--bg-alt); } .pr { background:var(--border-default); }
+  .dev { background:var(--bg-alt); border:1px solid var(--border-strong); }
+  .dev > * { position:absolute; }
+  .bar5 { background:var(--border-strong); border-radius:2px; }
+  .core { display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 16px; background:var(--bg-alt); border:1px solid var(--border-active); border-radius:6px; }
+
+  .caps3 { display:grid; grid-template-columns:repeat(3,1fr); gap:32px; }
+  .c3 { display:flex; flex-direction:column; gap:8px; padding-top:16px; border-top:1px solid var(--border-default); }
+  .surf { display:grid; grid-template-columns:repeat(8,1fr); gap:16px; }
+  .sf { display:flex; flex-direction:column; gap:10px; padding-top:14px; border-top:1px solid var(--border-default); }
+  @media (max-width:1023px){ .caps3 { grid-template-columns:1fr; } .surf { grid-template-columns:repeat(2,1fr); } }
+
+  /* Compare table */
+  .cmp { width:100%; border-collapse:collapse; }
+  .cmp th { text-align:left; padding:12px 0; border-bottom:1px solid var(--border-strong); }
+  .cmp td { padding:18px 0; border-bottom:1px solid var(--border-default); }
+  .cmp th:not(:first-child), .cmp td:not(:first-child) { width:90px; text-align:center; }
+
+  /* Why teams */
+  .why { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:56px 32px; }
+  .wcell { display:flex; flex-direction:column; min-width:0; }
+  .panel { background:var(--bg-alt); border:1px solid var(--border-default); }
+  .chip { padding:7px 14px; border:1px solid var(--border-strong); border-radius:4px; background:var(--bg-page); font:400 13px/19.5px var(--f-body); color:var(--text-secondary); white-space:nowrap; }
+  .chip.fill { background:var(--border-strong); color:var(--text-primary); }
+  .hl { background:var(--border-strong); }
+  .dot8 { border-radius:50%; background:var(--text-primary); }
+  .tool { background:var(--bg-page); border:1px solid var(--border-strong); border-radius:6px; }
+  .tool > * { position:absolute; }
+  .bar4 { background:var(--border-strong); }
+  .stat { font:900 40px/48px var(--f-display); color:var(--text-secondary); }
+  @media (max-width:1023px){ .why { grid-template-columns:minmax(0,1fr); } }
+
+  /* In production */
+  .marks { display:flex; flex-wrap:wrap; gap:16px 48px; }
+  .marks span { font:500 18px/20px var(--f-body); color:var(--text-subtle); }
+  .tms { display:grid; grid-template-columns:repeat(3,1fr); gap:32px; }
+  .tm { display:flex; flex-direction:column; gap:16px; padding-top:24px; border-top:1px solid var(--border-strong); }
+  .person { display:flex; align-items:center; gap:12px; } .person > span:last-child { display:flex; flex-direction:column; gap:2px; }
+  .av { width:28px; height:28px; background:var(--bg-alt); border:1px solid var(--border-strong); }
+
+  /* Newsletter */
+  .nl { display:flex; justify-content:space-between; align-items:center; gap:40px; }
+  .nl-l { width:520px; display:flex; flex-direction:column; gap:16px; }
+  .nl-form { display:flex; gap:8px; align-items:center; }
+  .nl-form input { width:320px; height:46px; padding:12px 14px; background:var(--bg-page); color:var(--text-primary); border:1px solid var(--border-strong); border-radius:4px; }
+  .nl-form input::placeholder { color:var(--text-subtle); }
+  @media (max-width:1023px){ .nl { flex-direction:column; align-items:flex-start; } .nl-l { width:100%; } .nl-form { width:100%; } .nl-form input { flex:1; width:auto; } }
+</style>
+
+<script>
+  import { play } from '../lib/sensory';
+
+  // Scale Figma-size diagrams to the available width.
+  const fit = () => document.querySelectorAll<HTMLElement>('.dg').forEach(d => {
+    const w = Number(d.dataset.w), h = Number(d.dataset.h), k = Math.min(1, d.clientWidth / w);
+    d.style.setProperty('--k', String(k)); d.style.height = `${h * k}px`;
+  });
+  fit(); addEventListener('resize', fit);
+
+  // Hero reel: left timer line + right segments drive frames and Now Playing.
+  const frames = [...document.querySelectorAll<HTMLElement>('.reel .frame')];
+  const items = [...document.querySelectorAll<HTMLElement>('.np-item')];
+  const segs = [...document.querySelectorAll<HTMLElement>('.seg span')];
+  const prog = document.getElementById('hero-prog')!;
+  const DUR = 7000, reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let i = 0, t0 = performance.now();
+  const show = (n: number) => {
+    i = (n + items.length) % items.length; t0 = performance.now();
+    frames.forEach((f, k) => { f.classList.toggle('on', k === i); const v = f.querySelector('video'); if (v) k === i ? v.play().catch(() => {}) : v.pause(); });
+    items.forEach((f, k) => f.classList.toggle('on', k === i));
+    segs.forEach((s, k) => s.style.setProperty('--p', k < i ? '1' : '0'));
+  };
+  const tick = (now: number) => {
+    if (!document.hidden && !reduce) {
+      const p = Math.min(1, (now - t0) / DUR);
+      segs[i]?.style.setProperty('--p', String(p)); prog.style.transform = `scaleX(${p})`;
+      if (p >= 1) show(i + 1);
+    }
+    requestAnimationFrame(tick);
+  };
+  document.querySelectorAll<HTMLElement>('[data-go]').forEach(b => b.addEventListener('click', () => { show(Number(b.dataset.go)); play('tick'); }));
+  show(0); requestAnimationFrame(tick);
+
+  // Copy buttons
+  document.querySelectorAll<HTMLElement>('[data-copy]').forEach(b => b.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(b.dataset.copy!); } catch {}
+    const old = b.innerHTML; b.textContent = 'Copied'; play('success'); setTimeout(() => (b.innerHTML = old), 1400);
+  }));
+
+  // How I work: the step in the middle of the screen lights up in the list.
+  const links = new Map([...document.querySelectorAll<HTMLElement>('[data-step]')].map(a => [a.dataset.step!, a]));
+  const so = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return;
+    links.forEach(a => a.classList.remove('on')); links.get(e.target.id.replace('step-', ''))?.classList.add('on'); }), { rootMargin: '-45% 0px -50% 0px' });
+  document.querySelectorAll('.step').forEach(s => so.observe(s));
+</script>

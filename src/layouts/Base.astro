@@ -1,0 +1,44 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+interface Props { title?: string; description?: string; footer?: boolean }
+const {
+  title = 'Ibraheem Oladele · Product designer who builds',
+  description = 'I design the app customers use, the tools the team runs it on and the brand that sells it, then build it in code.',
+  footer = true,
+} = Astro.props;
+---
+<!doctype html>
+<html lang="en" data-sound="off">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta name="theme-color" content="#000000" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <script is:inline>
+    // Set theme and sound before paint so there is no flash. Dark is the default.
+    try {
+      const t = localStorage.getItem('theme'); if (t === 'light') document.documentElement.dataset.theme = 'light';
+      if (localStorage.getItem('sound') === 'on') document.documentElement.dataset.sound = 'on';
+    } catch {}
+  </script>
+</head>
+<body>
+  <Nav />
+  <main id="main"><slot /></main>
+  {footer && <Footer />}
+  <script>
+    import { play } from '../lib/sensory';
+    // Reveal on scroll
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -10% 0px' });
+    document.querySelectorAll('[data-reveal]').forEach(el => io.observe(el));
+    // Any element with data-sfx plays that sound on click (only if sound is on)
+    document.addEventListener('click', e => { const el = (e.target as HTMLElement).closest('[data-sfx]') as HTMLElement | null; if (el) play(el.dataset.sfx as any); });
+  </script>
+</body>
+</html>

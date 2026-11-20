@@ -1,0 +1,80 @@
+---
+// R/Nav: 64 tall, padding 0 120, bottom border border/default.
+// Left 320 (logo), centred links gap 28, right 320 (sound, theme, CV, Get in touch) gap 20.
+import Icon from './Icon.astro';
+const path = Astro.url.pathname;
+const links = [
+  { href: '/work', label: 'Work', menu: true },
+  { href: '/about', label: 'About', menu: true },
+  { href: '/writing', label: 'Writing' },
+  { href: '/playground', label: 'Playground' },
+];
+const on = (h: string) => path === h || path.startsWith(h + '/');
+---
+<header class="nav">
+  <div class="left"><a href="/" class="logo" aria-label="Ibraheem Oladele, home">IO</a></div>
+
+  <nav class="links" aria-label="Main">
+    {links.map(l => (
+      <a href={l.href} class:list={['link eyebrow', { on: on(l.href) }]} data-sfx="tick">
+        {l.label}{l.menu && <Icon name="chevron-down" size={12} class="chev" />}
+      </a>
+    ))}
+  </nav>
+
+  <div class="right">
+    <button class="sound" id="sound-toggle" aria-pressed="false" aria-label="Turn sound on">
+      <span class="off"><Icon name="volume-x" size={14} /></span>
+      <span class="onn"><Icon name="volume-2" size={14} /></span>
+    </button>
+    <button class="theme" id="theme-toggle" aria-label="Switch light or dark">
+      <span class="seg light"><Icon name="sun" size={14} /></span>
+      <span class="seg dark"><Icon name="moon" size={14} /></span>
+    </button>
+    <a href="/cv" class="eyebrow cv" data-sfx="tick">CV</a>
+    <a href="/contact" class="btn btn-s btn-solid" data-sfx="click">Get in touch</a>
+    <button class="menu" id="menu-toggle" aria-expanded="false" aria-controls="mmenu" aria-label="Open menu"><Icon name="menu" size={18} /></button>
+  </div>
+</header>
+<div class="mmenu" id="mmenu" hidden>
+  {links.map(l => <a href={l.href} class="h2s">{l.label}</a>)}
+  <a href="/cv" class="h2s">CV</a>
+  <a href="/contact" class="btn btn-solid">Get in touch</a>
+</div>
+
+<style>
+  .nav { position:sticky; top:0; z-index:50; height:64px; padding:0 120px; display:flex; align-items:center; justify-content:space-between;
+         background:var(--bg-page); border-bottom:1px solid var(--border-default); }
+  .left, .right { width:320px; display:flex; align-items:center; }
+  .right { justify-content:flex-end; gap:20px; }
+  .logo { font:900 20px/24px var(--f-display); color:var(--text-primary); }
+  .links { display:flex; align-items:center; gap:28px; }
+  .link { display:flex; align-items:center; gap:4px; color:var(--text-secondary); transition:color 150ms var(--ease); }
+  .link:hover, .link.on { color:var(--text-primary); }
+  .link :global(.chev) { color:var(--text-muted); }
+  .sound { display:flex; padding:6px 7px; border:1px solid var(--border-default); border-radius:4px; background:none; color:var(--text-muted); cursor:pointer; }
+  .sound:hover { color:var(--text-primary); }
+  .onn { display:none; } :global(html[data-sound="on"]) .onn { display:block; } :global(html[data-sound="on"]) .off { display:none; }
+  .theme { display:flex; padding:4px; border:1px solid var(--border-default); border-radius:4px; background:none; cursor:pointer; }
+  .seg { display:flex; padding:3px 5px; border-radius:3px; color:var(--text-muted); }
+  :global(html:not([data-theme="light"])) .dark, :global(html[data-theme="light"]) .light { background:var(--bg-alt); color:var(--text-primary); }
+  .cv { color:var(--text-secondary); } .cv:hover { color:var(--text-primary); }
+  .menu { display:none; background:none; border:0; color:var(--text-primary); padding:4px; cursor:pointer; }
+  .mmenu { position:sticky; top:64px; z-index:49; display:flex; flex-direction:column; gap:20px; padding:24px var(--px) 32px; background:var(--bg-page); border-bottom:1px solid var(--border-default); }
+  .mmenu[hidden] { display:none; }
+  @media (max-width:1279px){ .nav { padding:0 var(--px); } .left, .right { width:auto; } }
+  @media (max-width:1023px){ .links, .cv, .right > .btn { display:none; } .menu { display:block; } .right { gap:12px; } }
+</style>
+
+<script>
+  import { setSound, soundOn, play } from '../lib/sensory';
+  const s = document.getElementById('sound-toggle')!;
+  const sync = () => { const v = soundOn(); s.setAttribute('aria-pressed', String(v)); s.setAttribute('aria-label', v ? 'Turn sound off' : 'Turn sound on'); };
+  sync(); s.addEventListener('click', () => { setSound(!soundOn()); sync(); });
+  document.getElementById('theme-toggle')!.addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = next; try { localStorage.setItem('theme', next); } catch {} play('toggle');
+  });
+  const mt = document.getElementById('menu-toggle')!, mm = document.getElementById('mmenu')!;
+  mt.addEventListener('click', () => { const open = mm.hidden; mm.hidden = !open; mt.setAttribute('aria-expanded', String(open)); play('click'); });
+</script>

@@ -1,0 +1,11 @@
+---
+// Media slot. Shows the image/video when a src is given, otherwise a quiet placeholder
+// with the exact ratio, so layout never shifts when real files arrive.
+interface Props { src?: string; video?: string; ratio?: string; label?: string; note?: string; alt?: string; class?: string }
+const { src, video, ratio = '16 / 10', label = 'Cover', note = 'Custom cover coming', alt = '', class: cls = '' } = Astro.props;
+---
+<div class:list={['slot', cls]} style={`aspect-ratio:${ratio}`}>
+  {video ? <video src={video} autoplay muted loop playsinline preload="metadata" /> :
+   src ? <img src={src} alt={alt} loading="lazy" decoding="async" /> :
+   <><span class="t-label">{label}</span><span class="t-small" style="color:var(--text-subtle)">{note}</span></>}
+</div>

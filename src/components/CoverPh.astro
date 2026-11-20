@@ -1,0 +1,11 @@
+---
+// R/Cover Placeholder. Shows real media when src/video is set.
+interface Props { label: string; note?: string; h?: number; ratio?: string; src?: string; video?: string; alt?: string; class?: string }
+const { label, note = 'Custom cover coming', h, ratio, src, video, alt = '', class: cls = '' } = Astro.props;
+const style = ratio ? `aspect-ratio:${ratio}` : h ? `height:${h}px` : '';
+---
+<div class:list={['cover-ph', cls]} style={style}>
+  {video ? <video src={video} autoplay muted loop playsinline preload="metadata" /> :
+   src ? <img src={src} alt={alt} loading="lazy" decoding="async" /> :
+   <><span class="mono-tag c-subtle">{label}</span><span class="meta c-subtle">{note}</span></>}
+</div>

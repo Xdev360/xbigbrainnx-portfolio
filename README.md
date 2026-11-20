@@ -1,88 +1,17 @@
-# xbigbrainnx — Portfolio
+# xbigbrainnx.xyz
 
-Personal portfolio for **Oladele Ibraheem (xbigbrainnx)** — designer, developer & brand strategist based in Lagos.
+Ibraheem Oladele's portfolio. Astro, static output, deployed on Vercel.
 
-Static site with a tiny build step for Supabase env vars. Deploy on Vercel, Netlify, etc.
+    npm install
+    npm run dev      # http://localhost:4321
+    npm run build    # outputs to dist/
 
-## Run locally
+## Where things go
+- `src/data/projects.ts`: one entry per project (name, line, role, use case, media paths).
+- `public/work/<slug>/`: covers (16:10, webp), hero reels (mp4, muted, 6 to 8s), case study images.
+- `public/rive/`: .riv files for the playground and section visuals.
+- `public/sound/`: UI sound sprite (sound is off by default).
+- `public/cv/Ibraheem-Oladele-CV.pdf`: the CV the site links to.
+- `src/styles/global.css`: tokens copied from the Figma "Site" variables. Change them in Figma first, then here.
 
-```bash
-cp .env.example .env   # first time only — then edit .env
-npm install
-npm run build
-python3 -m http.server 8080
-```
-
-Or: `npm run dev` (build + server in one command).
-
-## Structure
-
-```
-.
-├── index.html              # Home
-├── contact.html
-├── case-study.html
-├── life.html
-├── admin.html              # CMS admin portal
-├── css/
-│   ├── styles.css          # Site styling
-│   └── admin.css           # Admin portal styling
-├── js/
-│   ├── script.js
-│   ├── cms.js
-│   ├── admin.js
-│   ├── content-schema.js
-│   ├── supabase-sync.js
-│   └── config/
-│       └── supabase-config.js   # auto-generated — do not edit
-├── .env.example                 # template — copy to .env
-├── .env                         # your keys locally (gitignored)
-├── scripts/
-│   └── generate-config.js       # builds supabase-config.js from env
-├── package.json
-├── vercel.json
-├── supabase/
-│   ├── schema.sql          # Database setup
-│   ├── fix-writes.sql      # One-time save fix (if needed)
-│   └── SETUP.md
-└── README.md
-```
-
-## Supabase (optional cloud CMS)
-
-See `supabase/SETUP.md`.
-
-**Local:** copy `.env.example` → `.env`, fill in keys, then run `npm run build`.
-
-**Vercel:** add the same env var names in Project Settings → Environment Variables (see below).
-
-## Vercel environment variables
-
-In **Vercel → your project → Settings → Environment Variables**, add these for **Production**, **Preview**, and **Development**:
-
-| Name | Where to get it |
-|------|-----------------|
-| `PUBLIC_SUPABASE_URL` | Supabase → Project Settings → API → **Project URL** |
-| `PUBLIC_SUPABASE_ANON_KEY` | Supabase → Project Settings → API → **anon public** |
-| `SUPABASE_ADMIN_WRITE_KEY` | Same secret you put in `supabase/schema.sql` (e.g. `xbigx244340`) |
-| `PUBLIC_SUPABASE_STORAGE_BUCKET` | `portfolio-media` (unless you renamed the bucket) |
-
-Deploy settings (auto via `vercel.json`):
-
-- **Build command:** `npm run build`
-- **Output directory:** `.` (root)
-
-After adding env vars, redeploy. The build generates `js/config/supabase-config.js` on Vercel — you never commit secrets.
-
-## GitHub Pages (github.io) instead of Vercel
-
-Yes — you can use **https://xdev360.github.io/xbigbrainnx-portfolio/**
-
-GitHub Pages does not read `.env`. Add the **same four variable names** as **Repository Secrets** (Settings → Secrets and variables → Actions), enable Pages source **GitHub Actions**, then push to `main`.
-
-See `docs/GITHUB-PAGES.md` for step-by-step setup.
-
-## Notes
-
-- Fonts: Google Fonts (Bricolage Grotesque, DM Sans, Instrument Serif, JetBrains Mono).
-- Color tokens live in `:root` inside `css/styles.css`.
+The previous plain-HTML site is kept in `_old/` for reference.
