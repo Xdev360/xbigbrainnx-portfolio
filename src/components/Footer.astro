@@ -2,7 +2,7 @@
 // R/Footer: padding 88/120/64, gap 56, top border. Columns space-between, divider, wordmark + text left, social logos right.
 import icons from '../data/icons.json';
 const cols = [
-  ['Work', [['Virelle Wellness Hub','/work/virelle'],['Mylo','/work/mylo'],['Wintech Templates','/work/wintech-templates'],['Brand and graphics','/work?f=brand'],['All case studies','/work']]],
+  ['Work', [['Virelle Store','/work/virelle-store'],['Virelle CRM','/work/virelle-crm'],['Mylo','/work/mylo'],['Goalden','/work/goalden'],['ChatGrow','/work/chatgrow'],['All case studies','/work']]],
   ['About', [['About me','/about'],['How I work','/#how-i-work'],['Experience','/about#experience'],['CV','/cv']]],
   ['Writing', [['All posts','/writing'],['Case studies','/work'],['Process','/writing?f=process'],['The Brain Room','/#newsletter']]],
   ['Playground', [['Games','/playground'],['Interactions','/playground#interactions'],['Sound and touch','/playground#sound']]],
@@ -44,7 +44,7 @@ const svg = (k: string) => { const d = (icons.social as any)[k]; return `<svg vi
   .ft { padding:88px var(--px) 64px; border-top:1px solid var(--border-default); background:var(--bg-page); }
   .cols, .div, .bottom { max-width:1200px; margin-left:auto; margin-right:auto; }
   .cols { display:flex; justify-content:space-between; gap:32px; }
-  .col { display:flex; flex-direction:column; gap:12px; }
+  .col { display:flex; flex-direction:column; align-items:flex-start; gap:12px; }
   .lk { font:400 14px/20px var(--f-body); color:var(--text-secondary); } .lk:hover { color:var(--text-primary); }
   .div { border:0; border-top:1px solid var(--border-default); margin-top:56px; margin-bottom:56px; }
   .bottom { display:flex; justify-content:space-between; align-items:flex-start; gap:32px; }

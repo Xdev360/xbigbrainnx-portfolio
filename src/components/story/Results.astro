@@ -1,0 +1,97 @@
+---
+// Results: a headline, an optional before/after panel, then stat cards.
+// Before/after shows the change three ways: the number, a bar, and "out of every 10 people".
+// Each stat card gets a small visual: lit ticks for small counts, a bar for percentages.
+import type { Results as R } from '../../data/stories';
+interface Props { results: R }
+const { results: r } = Astro.props;
+const c = r.compare;
+---
+<section class="sec bt res-sec">
+  <div class="sec-in">
+    <div class="shead">
+      <div class="shead-l"><span class="eyebrow c-muted" data-reveal>Results</span><h2 class="h2 c-heading" data-split>{r.head}</h2></div>
+      {r.lede && <div class="shead-r" data-reveal><p class="lede c-secondary">{r.lede}</p></div>}
+    </div>
+
+    {c && (
+      <div class="cmp" data-reveal="fade" data-anim>
+        <div class="cmp-top">
+          <span class="eyebrow c-subtle">{c.label}</span>
+          <span class="delta mono-tag">+{c.after - c.before} points · {(c.after / c.before).toFixed(1)}x</span>
+        </div>
+        {[['before', c.beforeLabel, c.before], ['after', c.afterLabel, c.after]].map(([k, l, v]) => (
+          <div class:list={['row', k]}>
+            <span class="eyebrow c-muted rl">{l}</span>
+            <div class="bar"><span style={`--w:${v}%`}></span></div>
+            <span class="big" data-count={v} data-suffix="%">{v}%</span>
+            <div class="ppl" aria-label={`${Math.round(Number(v) / 10)} out of 10 people`}>
+              {[...Array(10).keys()].map(i => <i class={i < Math.round(Number(v) / 10) ? 'on' : undefined} style={`--i:${i}`}></i>)}
+              <span class="meta c-subtle">{Math.round(Number(v) / 10)} of every 10</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+
+    <div class="stats" data-stagger="120">
+      {r.stats.map(s => (
+        <div class="st" data-reveal data-anim data-spot>
+          <div class="vis" aria-hidden="true">
+            {s.count && s.count <= 16 && !s.suffix && [...Array(s.count).keys()].map(i => <i style={`--i:${i}`}></i>)}
+            {s.suffix === '%' && <span class="pbar"><span style={`--w:${s.count}%`}></span></span>}
+            {!s.suffix && !(s.count && s.count <= 16) && <span class="line"></span>}
+          </div>
+          <span class="num" data-count={s.count} data-suffix={s.suffix ?? ''}>{s.n}</span>
+          <span class="small c-primary">{s.label}</span>
+          {s.note && <p class="small c-muted note">{s.note}</p>}
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+<style>
+  .res-sec .sec-in { display:flex; flex-direction:column; gap:56px; }
+
+  /* Before / after */
+  .cmp { border:1px solid var(--border-default); background:var(--bg-alt); padding:32px; display:flex; flex-direction:column; gap:28px; }
+  .cmp-top { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
+  .delta { padding:6px 10px; border:1px solid var(--border-strong); color:var(--text-primary); }
+  .row { display:grid; grid-template-columns:90px minmax(0,1fr) 120px; grid-template-areas:'l bar big' '. ppl ppl'; column-gap:24px; row-gap:12px; align-items:center; }
+  .rl { grid-area:l; } .row .bar { grid-area:bar; } .big { grid-area:big; } .ppl { grid-area:ppl; }
+  .bar { height:10px; background:var(--bg-page); border:1px solid var(--border-default); position:relative; overflow:hidden; }
+  .bar span { position:absolute; left:0; top:0; bottom:0; width:var(--w); background:var(--text-muted); transform:scaleX(0); transform-origin:left; transition:transform 1400ms var(--ease-dec) 300ms; }
+  .after .bar span { background:var(--text-primary); transition-delay:700ms; }
+  .cmp.in .bar span { transform:none; }
+  .big { font:900 48px/1 var(--f-display); color:var(--text-muted); text-align:right; font-variant-numeric:tabular-nums; }
+  .after .big { color:var(--text-heading); }
+  .ppl { display:flex; align-items:center; gap:6px; }
+  .ppl i { width:14px; height:14px; border:1px solid var(--border-strong); transition:background 300ms, border-color 300ms; transition-delay:calc(900ms + var(--i) * 70ms); }
+  .after .ppl i { transition-delay:calc(1300ms + var(--i) * 70ms); }
+  .cmp.in .ppl i.on { background:var(--text-muted); border-color:var(--text-muted); }
+  .cmp.in .after .ppl i.on { background:var(--text-primary); border-color:var(--text-primary); }
+  .ppl .meta { margin-left:10px; }
+
+  /* Stat cards */
+  .stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:24px; }
+  .st { display:flex; flex-direction:column; gap:10px; padding:28px; border:1px solid var(--border-default); background:var(--bg-page); transition:border-color var(--dur-2), transform var(--dur-3) var(--ease-dec); }
+  .st:hover { border-color:var(--border-strong); transform:translateY(-4px); }
+  .vis { height:20px; display:flex; align-items:center; gap:4px; margin-bottom:8px; }
+  .vis i { width:8px; height:16px; border:1px solid var(--border-strong); transition:background 250ms, border-color 250ms; transition-delay:calc(300ms + var(--i) * 60ms); }
+  .st.in .vis i { background:var(--accent-label); border-color:var(--accent-label); }
+  .pbar { flex:1; height:6px; border:1px solid var(--border-default); position:relative; overflow:hidden; }
+  .pbar span { position:absolute; left:0; top:0; bottom:0; width:var(--w); background:var(--accent-label); transform:scaleX(0); transform-origin:left; transition:transform 1200ms var(--ease-dec) 300ms; }
+  .st.in .pbar span { transform:none; }
+  .line { flex:1; height:1px; background:var(--accent-label); transform:scaleX(0); transform-origin:left; transition:transform 1000ms var(--ease-dec) 300ms; }
+  .st.in .line { transform:none; }
+  .num { font:900 56px/1 var(--f-display); color:var(--text-heading); font-variant-numeric:tabular-nums; letter-spacing:-.01em; }
+  .note { padding-top:12px; margin-top:auto; border-top:1px solid var(--border-default); }
+
+  @media (max-width:767px){
+    .cmp { padding:20px; }
+    .row { grid-template-columns:1fr auto; grid-template-areas:'l big' 'bar bar' 'ppl ppl'; }
+    .big { font-size:36px; }
+    .ppl i { width:12px; height:12px; }
+    .num { font-size:44px; }
+  }
+</style>

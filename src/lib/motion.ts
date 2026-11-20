@@ -43,7 +43,12 @@ const io = new IntersectionObserver(entries => entries.forEach(e => {
   el.dispatchEvent(new CustomEvent('reveal'));
   io.unobserve(el);
 }), { rootMargin: '0px 0px -12% 0px', threshold: 0.05 });
-document.querySelectorAll('[data-reveal], [data-split], [data-draw], [data-count], [data-anim]').forEach(el => io.observe(el));
+document.querySelectorAll<HTMLElement>('[data-reveal], [data-split], [data-draw], [data-count], [data-anim]').forEach(el => {
+  // Anything already on screen at load (like the bottom of the hero) plays straight away.
+  const r = el.getBoundingClientRect();
+  if (r.top < innerHeight && r.bottom > 0 && scrollY < 10) { requestAnimationFrame(() => { el.classList.add('in'); el.dispatchEvent(new CustomEvent('reveal')); }); return; }
+  io.observe(el);
+});
 
 /* 4. Count up: <span data-count="70" data-suffix="%">70%</span> */
 document.querySelectorAll<HTMLElement>('[data-count]').forEach(el => {

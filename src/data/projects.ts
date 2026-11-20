@@ -13,19 +13,32 @@ export type Project = {
   year?: string;
   live?: string;
   cover?: string;         // 16:10, /work/<slug>/cover.webp
-  reel?: string;          // hero video, /work/<slug>/reel.mp4 (muted, 6 to 8s loop)
+  scene?: string;         // hero scenery still, /work/<slug>/hero.webp (2880x1800, template in Figma: 14 · Hero backgrounds)
+  reel?: string;          // hero motion on top of the still, /work/<slug>/hero.mp4 (muted, 6 to 8s loop)
   published: boolean;     // has a full case study page
 };
 
 export const projects: Project[] = [
   {
-    slug: 'virelle',
-    name: 'Virelle Wellness Hub',
-    short: 'A wellness store in Lagos and Abuja with an AI product finder, and the CRM its staff run it on.',
+    slug: 'virelle-store',
+    name: 'Virelle Store',
+    short: 'A wellness store in Lagos and Abuja people can trust, with an AI product finder and a checkout without typing.',
     role: 'Design + build',
-    useCase: 'Store + CRM',
+    useCase: 'Online store',
     kind: 'client',
-    tags: ['product', 'team-tools', 'brand'],
+    tags: ['product', 'brand'],
+    color: '--project-virelle',
+    year: '2026',
+    published: true,
+  },
+  {
+    slug: 'virelle-crm',
+    name: 'Virelle CRM',
+    short: 'The tool Virelle\'s team runs the store on. Every order from payment to the door, nothing lost.',
+    role: 'Design + build',
+    useCase: 'Team tool',
+    kind: 'client',
+    tags: ['team-tools', 'product'],
     color: '--project-virelle',
     year: '2026',
     published: true,
@@ -89,4 +102,4 @@ export const projects: Project[] = [
 ];
 
 export const caseHref = (p: Project) => p.published ? `/work/${p.slug}` : '/work';
-export const heroReel = projects.filter(p => ['virelle', 'mylo', 'wintech-templates'].includes(p.slug));
+export const heroReel = projects.filter(p => ['virelle-store', 'mylo', 'chatgrow'].includes(p.slug));

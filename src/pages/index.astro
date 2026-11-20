@@ -18,8 +18,8 @@ const steps = [
     wins:[{ title:'ProductCard.astro', path:'~/virelle', note:'Custom visual: the code', x:0, y:0, w:380, h:300 }, { title:'Preview', path:'localhost:4321', note:'Custom visual: the live preview', x:282, y:120, w:340, h:260 }] },
   { n:'05', t:'Ship it, then measure', d:'Launch, then watch what changed: return rate for customers, time per task for the team.', cover:'Visual · launch and numbers' },
 ];
-const featured = projects[0];
-const grid = projects.slice(1, 4);
+const duo = ['virelle-store', 'virelle-crm'].map(sl => projects.find(p => p.slug === sl)!);
+const grid = ['mylo', 'goalden', 'chatgrow'].map(sl => projects.find(p => p.slug === sl)!);
 const codeLines = [':root {','  --bg-page: #FFFFFF;','  --text-primary: #000000;','  --border-default: #EBEBEB;','  --radius-button: 4px;','}','','[data-theme="dark"] {','  --bg-page: #000000;','  --text-primary: #FFFFFF;','  --border-default: #1A1A1A;','}'];
 const surfIcons = [['Web','globe'],['iOS and Android','smartphone'],['Admin and CRM','layout-dashboard'],['Email','mail'],['Brand identity','layers'],['Packaging','package'],['Social and ads','image'],['Motion','video']];
 const compare = [
@@ -56,7 +56,9 @@ const devices = [
     <div class="reel" aria-hidden="true">
       {heroReel.map((p, i) => (
         <div class:list={['frame', { on: i === 0 }]}>
-          {p.reel ? <video src={p.reel} muted loop playsinline preload="none" /> : <span class="mono-tag c-subtle reel-label">Project reel · video slot</span>}
+          {p.scene && <img class="scene" src={p.scene} alt="" loading={i === 0 ? 'eager' : 'lazy'} />}
+          {p.reel && <video src={p.reel} poster={p.scene} muted loop playsinline preload="none" />}
+          {!p.scene && !p.reel && <span class="mono-tag c-subtle reel-label">Hero scene · 2880 × 1800 · /work/{p.slug}/hero.webp</span>}
         </div>
       ))}
       <div class="fade"></div>
@@ -64,7 +66,7 @@ const devices = [
 
     <div class="hero-in">
       <div class="copy">
-        <div class="timer" data-reveal="fade"><span class="prog" id="hero-prog"></span></div>
+        <div class="hline"></div>
         <span class="eyebrow c-muted" style="margin-top:28px;--d:100ms" data-reveal>Product design, built in code</span>
         <h1 class="display-xl c-primary" style="margin-top:20px" data-split>Products people<br />come back to</h1>
         <p class="body c-secondary" style="margin-top:20px;--d:350ms" data-reveal>I design the app customers use and the tools the team runs it on.<br />Then I build both in code, motion and sound included.</p>
@@ -78,7 +80,7 @@ const devices = [
       </div>
 
       <aside class="np" aria-live="polite" data-reveal="fade" style="--d:500ms">
-        <div class="np-line"></div>
+        <div class="segs" role="tablist" aria-label="Projects">{heroReel.map((p, i) => <button class="seg" role="tab" data-go={i} aria-label={p.name}><span></span></button>)}</div>
         <div class="np-items">
           {heroReel.map((p, i) => (
             <div class:list={['np-item', { on: i === 0 }]}>
@@ -105,7 +107,7 @@ const devices = [
         <p class="small c-subtle" style="margin-top:12px;max-width:412px">Client projects and my own products. Based in Lagos, working remote worldwide.</p>
         <div class="btns" style="margin-top:28px">
           <button class="btn btn-s btn-solid" data-copy="xbigbrainnx@gmail.com">Copy my email</button>
-          <a href="/work/virelle" class="btn btn-s btn-outline">See a case study</a>
+          <a href="/work/virelle-store" class="btn btn-s btn-outline">See a case study</a>
         </div>
         <ol class="steplist" style="margin-top:40px"><span class="ind" aria-hidden="true"></span>
           {steps.map((s, i) => <li><a href={`#step-${s.n}`} data-step={s.n} class:list={{ on: i === 0 }}><span class="eyebrow num">{s.n}</span><span class="nm">{s.t}</span></a></li>)}
@@ -146,10 +148,19 @@ const devices = [
           <div class="btns"><a href="/work" class="btn btn-s btn-outline">All case studies</a><a href="/cv" class="btn btn-s btn-outline">Get my CV</a><a href="/writing" class="btn btn-s btn-outline">Writing</a></div>
         </div>
       </div>
-      <a href={caseHref(featured)} class="work" style="margin-top:56px" data-sfx="click" data-reveal data-spot>
-        <CoverPh label={`Cover · ${featured.name}`} h={620} src={featured.cover} class="big" />
-        <div class="cap"><span class="eyebrow c-primary ttl">{featured.name}<Icon name="arrow-up-right" size={14} class="go" /></span><span class="caption c-muted" style="max-width:400px">A wellness store with an AI product finder, and the CRM three staff run it on.</span></div>
-      </a>
+      <div class="duo-h" style="margin-top:56px" data-reveal>
+        <span class="eyebrow c-subtle">Virelle Wellness Hub</span>
+        <span class="duo-rule" aria-hidden="true"></span>
+        <span class="eyebrow c-muted">Two sides of one business</span>
+      </div>
+      <div class="duo" data-stagger="120">
+        {duo.map((p, i) => (
+          <a href={caseHref(p)} class="work" data-sfx="click" data-reveal data-spot>
+            <CoverPh label={`Cover · ${p.name}`} h={520} src={p.cover} class="big" />
+            <div class="cap"><span class="label c-accent">{i === 0 ? 'What customers see' : 'What the team runs on'}</span><span class="eyebrow c-primary ttl">{p.name}<Icon name="arrow-up-right" size={14} class="go" /></span><span class="caption c-muted" style="max-width:420px">{p.short}</span></div>
+          </a>
+        ))}
+      </div>
       <div class="wgrid" style="margin-top:56px" data-stagger="110">
         {grid.map(p => (
           <a href={caseHref(p)} class="work" data-sfx="click" data-reveal data-spot>
@@ -169,7 +180,7 @@ const devices = [
           <span class="eyebrow c-muted" data-reveal>Design engineering</span>
           <h2 class="h2 c-heading" data-split>I build what<br />I design</h2>
           <p class="lede c-secondary" style="max-width:480px">The colors, type and spacing in my Figma file are the same values in the code. What you approve is what goes live.</p>
-          <div class="btns"><a href="/work/virelle#build" class="btn btn-s btn-outline">See the code</a><a href="#how-i-work" class="btn btn-s btn-outline">How I work</a></div>
+          <div class="btns"><a href="/work/virelle-store" class="btn btn-s btn-outline">See the code</a><a href="#how-i-work" class="btn btn-s btn-outline">How I work</a></div>
         </div>
         <div class="shead-r points" data-stagger="90">
           <div class="pt" data-reveal><span class="eyebrow c-primary">One source of truth</span><span class="body c-secondary">Light and dark, named once in Figma and used by the code.</span></div>
@@ -198,7 +209,7 @@ const devices = [
           <span class="eyebrow c-muted" data-reveal>Figma to production</span>
           <h2 class="h2 c-heading" data-split>From a Figma file<br />to a live product</h2>
           <p class="lede c-secondary" style="max-width:480px">Bring me your screens, or let me design them. I turn them into a working product with real data, motion and both themes.</p>
-          <div class="btns"><a href="/work/virelle" class="btn btn-s btn-outline">See Virelle</a><a href="/contact" class="btn btn-s btn-outline">Book a call</a></div>
+          <div class="btns"><a href="/work/virelle-store" class="btn btn-s btn-outline">See Virelle</a><a href="/contact" class="btn btn-s btn-outline">Book a call</a></div>
         </div>
         <div class="shead-r points" data-stagger="90">
           <div class="pt" data-reveal><span class="eyebrow c-primary">Every state, designed</span><span class="body c-secondary">Empty, loading, error and success, in light and dark.</span></div>
@@ -245,7 +256,7 @@ const devices = [
         <div class="shead-l"><span class="eyebrow c-muted" data-reveal>One product, every surface</span><h2 class="h2 c-heading" data-split>What I design<br />is what ships</h2></div>
         <div class="shead-r" data-reveal style="--d:150ms">
           <p class="lede c-secondary">The store, the app, the team’s CRM, the box it ships in and the posts that sell it. One system across all of them, so nothing drifts.</p>
-          <div class="btns"><a href="/work/virelle" class="btn btn-s btn-outline">See Virelle</a><a href="/work?f=brand" class="btn btn-s btn-outline">Brand work</a></div>
+          <div class="btns"><a href="/work/virelle-store" class="btn btn-s btn-outline">See Virelle</a><a href="/work?f=brand" class="btn btn-s btn-outline">Brand work</a></div>
         </div>
       </div>
       <div class="dg" data-w="1200" data-h="420" style="margin-top:56px">
@@ -391,14 +402,12 @@ const devices = [
   .reel { position:absolute; inset:-64px 0 0 0; background:var(--bg-alt); }
   .frame { position:absolute; inset:0; opacity:0; transition:opacity 800ms var(--ease); }
   .frame.on { opacity:1; }
-  .frame video { width:100%; height:100%; object-fit:cover; }
+  .frame video, .frame .scene { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 0; }
   .reel-label { position:absolute; left:1040px; top:150px; }
   .fade { position:absolute; left:0; right:0; top:340px; bottom:0; background:linear-gradient(to bottom, transparent 0, var(--bg-page) 384px); }
   .hero-in { position:relative; height:100%; max-width:1440px; margin:0 auto; }
   .copy { position:absolute; left:160px; top:316px; width:560px; display:flex; flex-direction:column; }
-  .timer { height:2px; position:relative; }
-  .timer::before { content:''; position:absolute; left:0; right:0; top:0; height:1px; background:var(--border-divider); }
-  .prog { position:absolute; left:0; top:0; height:2px; width:100%; background:var(--text-secondary); transform:scaleX(0); transform-origin:left; }
+  .hline { height:1px; background:var(--text-secondary); opacity:.7; }
   .copy-link { background:none; border:0; padding:0; cursor:pointer; }
   .rule { border:0; height:1px; background:var(--border-default); margin:0; }
   .logos { display:flex; gap:20px; align-items:center; }
@@ -442,7 +451,10 @@ const devices = [
   .cap { display:flex; flex-direction:column; gap:8px; padding-top:16px; }
   .work:hover :global(.cover-ph) { border-color:var(--border-strong); }
   .wgrid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
-  @media (max-width:1023px){ .wgrid { grid-template-columns:1fr; } .work :global(.big) { height:auto!important; aspect-ratio:16/10; } }
+  .duo-h { display:flex; align-items:center; gap:16px; margin-bottom:16px; }
+  .duo-rule { flex:1; height:1px; background:var(--border-default); }
+  .duo { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+  @media (max-width:1023px){ .wgrid, .duo { grid-template-columns:1fr; } .duo-h .eyebrow.c-muted { display:none; } .work :global(.big) { height:auto!important; aspect-ratio:16/10; } }
 
   /* Points list (right column) */
   .points { gap:0; }
@@ -525,7 +537,7 @@ const devices = [
   .np-title span { display:block; transform:translateY(100%); transition:transform 600ms var(--ease-dec) 120ms; }
   .np-item.on .np-title span { transform:none; }
   .lg { display:inline-flex; transition:transform var(--dur-2) var(--ease-dec); }
-  .lg:hover { transform:translateY(-3px); }
+  .lg { cursor:default; user-select:none; }
   .motion .rule.grow { transform-origin:left; transform:scaleX(0); transition:transform 900ms var(--ease-dec) var(--d,0ms); opacity:1; }
   .motion .rule.grow.in { transform:none; }
   .steplist { position:relative; }
@@ -585,8 +597,7 @@ const devices = [
   // Hero reel: left timer line + right segments drive frames and Now Playing.
   const frames = [...document.querySelectorAll<HTMLElement>('.reel .frame')];
   const items = [...document.querySelectorAll<HTMLElement>('.np-item')];
-  const segs: HTMLElement[] = [];
-  const prog = document.getElementById('hero-prog')!;
+  const segs = [...document.querySelectorAll<HTMLElement>('.seg span')];
   const DUR = 7000, reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let i = 0, t0 = performance.now();
   const show = (n: number) => {
@@ -598,12 +609,13 @@ const devices = [
   const tick = (now: number) => {
     if (!document.hidden && !reduce) {
       const p = Math.min(1, (now - t0) / DUR);
-      segs[i]?.style.setProperty('--p', String(p)); prog.style.transform = `scaleX(${p})`;
+      segs[i]?.style.setProperty('--p', String(p));
       if (p >= 1) show(i + 1);
     }
     requestAnimationFrame(tick);
   };
-    show(0); requestAnimationFrame(tick);
+    document.querySelectorAll<HTMLElement>('[data-go]').forEach(b => b.addEventListener('click', () => { show(Number(b.dataset.go)); play('tick'); }));
+  show(0); requestAnimationFrame(tick);
 
   // Copy buttons
   document.querySelectorAll<HTMLElement>('[data-copy]').forEach(b => b.addEventListener('click', async () => {

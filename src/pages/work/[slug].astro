@@ -10,6 +10,7 @@ import Zoom from '../../components/story/Zoom.astro';
 import Flow from '../../components/story/Flow.astro';
 import Tries from '../../components/story/Tries.astro';
 import Phones from '../../components/story/Phones.astro';
+import Results from '../../components/story/Results.astro';
 import { stories } from '../../data/stories';
 import { projects } from '../../data/projects';
 
@@ -30,7 +31,7 @@ const md = (t: string) => t.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;'
   <!-- Header -->
   <header class="cs-head sec">
     <div class="sec-in hd">
-      <a href="/work" class="back eyebrow c-muted" data-reveal><Icon name="arrow-left" size={12} /> All work</a>
+      <div class="top-free" aria-hidden="true"></div>
       <span class="label c-accent" data-reveal style="--d:80ms">{story.label}</span>
       <h1 class="display-l c-heading" data-split>{story.title.split('\n').map((l, i) => <>{i > 0 && <br />}{l}</>)}</h1>
       <p class="subtitle-s c-secondary" data-reveal style="--d:250ms">{story.subtitle}</p>
@@ -110,20 +111,7 @@ const md = (t: string) => t.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;'
   </div>
 
   <!-- Results -->
-  <section class="sec bt">
-    <div class="sec-in">
-      <span class="eyebrow c-muted" data-reveal>Results</span>
-      <div class="res" data-stagger="120">
-        {story.results.map(r => (
-          <div class="r" data-reveal>
-            <span class="num" data-count={r.count} data-suffix={r.suffix ?? ''}>{r.n}</span>
-            <span class="bar"></span>
-            <span class="small c-muted">{r.label}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
+  <Results results={story.results} />
 
   <!-- Work with me + next -->
   <section class="sec bg-alt">
@@ -151,7 +139,7 @@ const md = (t: string) => t.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;'
   .progress span { display:block; height:100%; background:var(--spectrum-x); transform-origin:left; transform:scaleX(var(--p,0)); }
   .cs-head { padding-bottom:64px; }
   .hd { display:flex; flex-direction:column; align-items:center; text-align:center; gap:20px; max-width:880px; }
-  .back { display:inline-flex; align-items:center; gap:6px; margin-bottom:24px; transition:color var(--dur-2); } .back:hover { color:var(--text-primary); }
+  .top-free { height:40px; }
   .subtitle-s { font:400 18px/29px var(--f-body); max-width:640px; }
   .facts { display:grid; grid-template-columns:repeat(4, 1fr); width:100%; margin-top:24px; border-top:1px solid var(--border-default); }
   .facts > div { display:flex; flex-direction:column; gap:6px; padding:16px 12px; text-align:left; }
@@ -202,12 +190,6 @@ const md = (t: string) => t.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;'
   .related:hover :global(.icon) { transform:translateX(6px); }
   .media figure { display:flex; flex-direction:column; gap:12px; }
   .pair { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-  .res { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:32px; margin-top:32px; }
-  .r { display:flex; flex-direction:column; gap:12px; }
-  .num { font:900 48px/52px var(--f-display); color:var(--text-heading); letter-spacing:-.02em; }
-  .r .bar { height:2px; background:var(--border-strong); position:relative; overflow:hidden; }
-  .r .bar::after { content:''; position:absolute; inset:0; background:var(--text-primary); transform:scaleX(0); transform-origin:left; transition:transform 1200ms var(--ease-dec) calc(var(--d,0ms) + 200ms); }
-  .r.in .bar::after { transform:none; }
   .more { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:56px; }
   .mcard { display:flex; flex-direction:column; gap:12px; }
   .mcard :global(.cover-ph > *) { transition:transform 900ms var(--ease-dec); }

@@ -13,7 +13,7 @@ export type Media =
   // Mylo's build-up: sketch, then each gem adds a layer
   | { kind: 'build'; stages: { gem: string; t: string; d: string; src?: string }[] }
   // What we tried, in order, and what each attempt taught us
-  | { kind: 'tries'; items: { t: string; why: string; then: string; src?: string }[] };
+  | { kind: 'tries'; items: { t: string; why: string; then: string; did?: string; src?: string }[] };
 
 export type Chapter = {
   id: string;
@@ -29,6 +29,13 @@ export type Chapter = {
   todo?: string;
 };
 
+export type Results = {
+  head: string;
+  lede?: string;
+  compare?: { label: string; before: number; after: number; beforeLabel: string; afterLabel: string };
+  stats: { n: string; count?: number; suffix?: string; label: string; note?: string }[];
+};
+
 export type Story = {
   slug: string;
   label: string;
@@ -37,25 +44,25 @@ export type Story = {
   facts: [string, string][];
   arc: { v: string; t: string }[];
   chapters: Chapter[];
-  results: { n: string; count?: number; suffix?: string; label: string }[];
+  results: Results;
   related?: { slug: string; line: string };
 };
 
 export const stories: Story[] = [
-  /* ============================ VIRELLE ============================ */
+  /* ============================ VIRELLE STORE ============================ */
   {
-    slug: 'virelle',
+    slug: 'virelle-store',
     label: 'Case study · Client',
-    title: 'A store people trust,\nand the CRM behind it',
-    subtitle: 'Virelle Wellness Hub sells supplements, skincare, fragrance and whole foods in Lagos and Abuja. Selling is half the job. Getting paid without friction and getting every order out on time is the other half.',
-    facts: [['Role', 'Design + build'], ['Surfaces', 'Store, checkout, CRM'], ['Team', 'Founder + 2 staff'], ['Launched', 'November 2026']],
-    arc: [{ v: 'V1', t: 'Vibe coded to go live' }, { v: 'System', t: 'Components and colour' }, { v: 'Checkout', t: 'Pay without stress' }, { v: 'CRM', t: 'Orders out, nothing lost' }],
+    title: 'A wellness store\npeople can trust',
+    subtitle: 'Virelle Wellness Hub sells supplements, skincare, fragrance and whole foods in Lagos and Abuja. People buy health products online with a lot of doubt. The store had to answer that doubt, then make paying as easy as browsing.',
+    facts: [['Role', 'Design + build'], ['Surfaces', 'Store, checkout, Ask Vira'], ['Client', 'Virelle Wellness Hub'], ['Launched', 'November 2026']],
+    arc: [{ v: 'V1', t: 'Vibe coded to go live' }, { v: 'System', t: 'Components and colour' }, { v: 'Checkout', t: 'Pay without stress' }, { v: 'Live', t: 'Launched and measured' }],
     chapters: [
       {
         id: 'problem', step: 'The problem', kicker: '01 · The problem', title: 'Buying wellness products here is a gamble',
         body: ['People buy supplements and skincare from Instagram vendors and hope for the best. The founder kept hearing the same complaints, so the store had to answer every one of them.'],
         list: ['Fake products, which is a real health risk', 'Expired stock nobody warns you about', 'Delivery dates that are a guess', 'Nobody replies when you have a question at night'],
-        note: 'Build one store people can trust with their health, and one place for the team to run it.',
+        note: 'Build one store people can trust with their health.',
       },
       {
         id: 'v1', step: 'Version 1', kicker: '02 · Version 1', title: 'We vibe coded it first',
@@ -86,22 +93,76 @@ export const stories: Story[] = [
         ] },
       },
       {
-        id: 'crm', step: 'The CRM', kicker: '05 · The CRM', title: 'Fulfilling the order matters as much as the sale',
-        body: ['Selling and getting paid is one part. The other part is getting every order to the customer and taking care of them after, without losing any information on the way.',
-               'So I studied how Virelle actually works: who receives the orders, who packs them and who sends them out. The CRM is built around that, so the team can sort orders quickly and the details stay correct from the moment someone pays to the moment it arrives.',
-               'For delivery, I connected Terminal Africa, an API that connects riders. Delivery options show up right at checkout, and the store offers the two cheapest ones, so customers don\'t overpay and the team doesn\'t have to call around for a rider.'],
-        table: { head: ['Who', 'What they see'], rows: [['Founder', 'Everything, and the only one who can change bank details'], ['Developer', 'Invites, activity logs, limited access'], ['Orders', 'Orders only']] },
-        list: ['Lagos and Abuja run as separate delivery queues', 'Walk-in orders can be added by hand and booked with a rider', 'The courier wallet balance is visible to everyone', 'Bookkeeping in one place: profits, deliveries and fees'],
-        media: { kind: 'pair', items: [{ label: 'CRM · Orders' }, { label: 'CRM · Mobile' }] },
-        more: { title: 'How an order moves through the CRM', body: ['Customer pays on the store, the order lands in the right city queue, the packer marks it packed, the rider is booked through Terminal Africa and the customer gets updates by email. Every step is logged with who did it.'] },
-      },
-      {
-        id: 'result', step: 'The result', kicker: '06 · The result', title: 'Live, and measured',
-        body: ['Virelle Wellness Hub launched in November 2026. First vibe coded, then a design system, then a checkout and CRM built around how the team really works. Now I\'m watching how often customers come back and how long each task takes the team.'],
+        id: 'result', step: 'The result', kicker: '05 · The result', title: 'Live, and measured',
+        body: ['Virelle Wellness Hub launched in November 2026. First vibe coded, then a design system, then a checkout that takes the typing out of paying. Now I\'m watching how often customers come back.',
+               'Behind the store is the tool the team runs it on. That\'s its own story: [the Virelle CRM](/work/virelle-crm).'],
         todo: 'Add the first real numbers here once they are in.',
       },
     ],
-    results: [{ n: 'Nov 2026', label: 'Launched' }, { n: '2', count: 2, label: 'Cheapest delivery options at checkout' }, { n: '3', count: 3, label: 'Staff roles, one CRM' }],
+    results: {
+      head: 'Live, and taking real orders',
+      lede: 'Launched in November 2026. The first real numbers go here as soon as they are in.',
+      stats: [
+        { n: '4', count: 4, label: 'Steps from bag to paid', note: 'Bag, address, delivery, pay. Nothing thrown at you that you don\'t need.' },
+        { n: '1', count: 1, label: 'Pin instead of a typed address', note: 'Use your GPS, drop a pin and the address fills in.' },
+        { n: '2', count: 2, label: 'Cheapest delivery options', note: 'Pulled live from the riders, so customers don\'t overpay.' },
+      ],
+    },
+    related: { slug: 'virelle-crm', line: 'Also read the Virelle CRM, the tool the team runs the store on' },
+  },
+
+  /* ============================ VIRELLE CRM ============================ */
+  {
+    slug: 'virelle-crm',
+    label: 'Case study · Client',
+    title: 'The CRM that gets\nevery order out',
+    subtitle: 'Selling and getting paid is one part of running Virelle. The other part is getting every order to the customer and taking care of them after, without losing any information on the way.',
+    facts: [['Role', 'Design + build'], ['Users', 'Founder + 2 staff'], ['Cities', 'Lagos and Abuja'], ['Launched', 'November 2026']],
+    arc: [{ v: 'Study', t: 'How the team works' }, { v: 'Roles', t: 'See what your job needs' }, { v: 'Queues', t: 'One per city' }, { v: 'Riders', t: 'Booked from the order' }],
+    chapters: [
+      {
+        id: 'problem', step: 'The problem', kicker: '01 · The problem', title: 'Fulfilling the order matters as much as the sale',
+        body: ['A store can look great and still lose customers after they pay. Orders get missed, details get typed wrong, and nobody knows which rider has what.',
+               'The store is [the other half of this story](/work/virelle-store). This is the tool behind it.'],
+        note: 'One place for the team to run the store, where the details stay correct from payment to delivery.',
+      },
+      {
+        id: 'study', step: 'How the team works', kicker: '02 · Study it first', title: 'I studied how Virelle actually works',
+        body: ['Before designing a single screen, I looked at who receives the orders, who packs them and who sends them out. The CRM is built around that, so the team can sort orders quickly and nothing gets lost between people.'],
+        media: { kind: 'flow', caption: 'How an order moves through the CRM. Every step is logged with who did it.', steps: [
+          { t: 'Paid', d: 'The customer pays on the store and the order lands in the right city queue.', demo: 'pay' },
+          { t: 'Packed', d: 'The packer marks it packed. Everyone can see where it is.', demo: 'bag' },
+          { t: 'Rider', d: 'A rider is booked through Terminal Africa, right from the order.', demo: 'delivery' },
+          { t: 'Delivered', d: 'The customer gets updates by email until it arrives.', demo: 'map' },
+        ] },
+      },
+      {
+        id: 'roles', step: 'Roles', kicker: '03 · Roles', title: 'Everyone sees what their job needs',
+        body: ['Three people run Virelle day to day, and each one sees only what their job needs. Fewer things on screen means fewer mistakes, and the sensitive parts stay with the founder.'],
+        table: { head: ['Who', 'What they see'], rows: [['Founder', 'Everything, and the only one who can change bank details'], ['Developer', 'Invites, activity logs, limited access'], ['Orders', 'Orders only']] },
+        media: { kind: 'pair', items: [{ label: 'CRM · Orders' }, { label: 'CRM · Mobile' }] },
+      },
+      {
+        id: 'delivery', step: 'Delivery', kicker: '04 · Delivery', title: 'No more calling around for a rider',
+        body: ['For delivery, I connected Terminal Africa, an API that connects riders. Delivery options show up right at checkout, and the store offers the two cheapest ones, so customers don\'t overpay and the team doesn\'t have to call around for a rider.'],
+        list: ['Lagos and Abuja run as separate delivery queues', 'Walk-in orders can be added by hand and booked with a rider', 'The courier wallet balance is visible to everyone', 'Bookkeeping in one place: profits, deliveries and fees'],
+      },
+      {
+        id: 'result', step: 'The result', kicker: '05 · The result', title: 'Live with the store',
+        body: ['The CRM went live with the store in November 2026. Now I\'m watching how long each task takes the team, from the moment someone pays to the moment it arrives.'],
+        todo: 'Add the first real numbers here once they are in.',
+      },
+    ],
+    results: {
+      head: 'One place to run the store',
+      lede: 'Built around how the team really works, not around a template. The first timing numbers go here once they are in.',
+      stats: [
+        { n: '3', count: 3, label: 'Roles, one CRM', note: 'Each person sees only what their job needs.' },
+        { n: '2', count: 2, label: 'City queues', note: 'Lagos and Abuja run separately, so orders never mix.' },
+        { n: '4', count: 4, label: 'Steps, all logged', note: 'Paid, packed, rider, delivered. Every step shows who did it.' },
+      ],
+    },
+    related: { slug: 'virelle-store', line: 'Also read the Virelle store, the side customers see' },
   },
 
   /* ============================ MYLO ============================ */
@@ -124,16 +185,16 @@ export const stories: Story[] = [
         media: { kind: 'cover', label: 'Mylo · early faces', src: '/work/mylo/v1-faces.webp', ratio: '16 / 9', caption: 'Early Mylo. A plain white character and a set of simple faces. Cute, but nothing that made us come back.' },
       },
       {
-        id: 'tries', step: 'What we tried', kicker: '03 · What we tried', title: 'One fix at a time, until it stuck',
-        body: ['We didn\'t redesign everything at once. We added one thing, used the app ourselves and watched what happened.'],
+        id: 'tries', step: 'What I tried', kicker: '03 · What I tried', title: 'One fix at a time, until it stuck',
+        body: ['I didn\'t redesign everything at once. I added one thing, we used the app ourselves, and I watched what happened. Each fix showed me the next problem.'],
         media: { kind: 'tries', items: [
-          { t: 'A game', src: '/work/mylo/game-chess.webp', why: 'We thought a game would give us a reason to come back.', then: 'It worked for a while, then the game got old.' },
-          { t: 'Streaks', src: '/work/mylo/streak.webp', why: 'A streak made us want to show up every day.', then: 'But miss one day and you lose the count, and the motivation with it.' },
-          { t: 'Streak freeze', src: '/work/mylo/streak-freeze.webp', why: 'A freeze lets you save your streak and pick up where you stopped.', then: 'People could recover instead of quitting. But the app still didn\'t look good enough to come back to.' },
-          { t: 'A full UI redesign', src: '/work/mylo/new-today.webp', why: 'A normal user needs the app to feel good, not just work.', then: 'The new UI showed the next problem: onboarding felt gated. You couldn\'t get into the app.' },
-          { t: 'New onboarding', src: '/work/mylo/onboarding.webp', why: 'We had to make people comfortable before asking anything of them.', then: 'People got in, and we started thinking about what keeps them for months, not days.' },
+          { t: 'A game', src: '/work/mylo/game-chess.webp', why: 'I thought a game would give us a reason to open the app every day.', then: 'It worked for a while. Then the game got old, and so did the reason to come back.', did: 'I kept the games but put them behind your goals. You finish your goal first, then you play. And I added streaks.' },
+          { t: 'Streaks', src: '/work/mylo/streak.webp', why: 'A streak gives you something to protect, so you show up every day.', then: 'Miss one day and the count goes back to zero. The motivation goes with it.', did: 'I added a streak freeze, so one missed day doesn\'t wipe out weeks of showing up.' },
+          { t: 'Streak freeze', src: '/work/mylo/streak-freeze.webp', why: 'I wanted people to recover from a bad day instead of quitting.', then: 'It worked, people came back after a miss. But the app still didn\'t look good enough to want to open.', did: 'I redesigned the whole UI, so a normal user would enjoy being in it, not just use it.' },
+          { t: 'A full UI redesign', src: '/work/mylo/new-today.webp', why: 'A normal user needs the app to feel good, not just work.', then: 'The new UI showed the next problem. Onboarding felt gated, and people couldn\'t get into the app.', did: 'I rebuilt onboarding to make people comfortable first and ask for things later.' },
+          { t: 'New onboarding', src: '/work/mylo/onboarding.webp', why: 'I had to make people comfortable before asking anything of them.', then: 'People got in. Now the question was what keeps them for months, not days.', did: 'I went to the habit books, starting with Atomic Habits, and turned the app into a story with XP and levels.' },
         ] },
-        more: { title: 'Read how we solved each one', body: ['Each change went to the founding team first. We used the app every day for a stretch, noted where we dropped off and only then moved to the next fix. That loop is what got us from a plain app to something we open without thinking.'] },
+        more: { title: 'How I tested each fix', body: ['Each change went to the founding team first. We used the app every day for a stretch, I noted where we dropped off and only then moved to the next fix. That loop is what got us from a plain app to something we open without thinking.'] },
       },
       {
         id: 'habits', step: 'Atomic Habits', kicker: '04 · The psychology', title: 'Always something to look forward to',
@@ -171,7 +232,16 @@ export const stories: Story[] = [
         body: ['With Mylo the character, the levels and the friend loop in place, more than twice as many people were still using the app on day 10.'],
       },
     ],
-    results: [{ n: '30%', count: 30, suffix: '%', label: 'Day 10, before' }, { n: '70%', count: 70, suffix: '%', label: 'Day 10, after' }],
+    results: {
+      head: 'More than twice as many people still open Mylo on day 10',
+      lede: 'The character, the levels and the friend loop went in one at a time. Day-10 retention is the number I watched the whole way.',
+      compare: { label: 'Day-10 retention', before: 30, after: 70, beforeLabel: 'Before', afterLabel: 'After' },
+      stats: [
+        { n: '5', count: 5, label: 'Fixes, tested one at a time', note: 'Game, streaks, freeze, redesign, onboarding. Each one showed me the next problem.' },
+        { n: '12', count: 12, label: 'Faces for Mylo', note: 'Happy when you check in, sleepy at night, proud when you finish.' },
+        { n: '16', count: 16, label: 'Outfits to unlock', note: 'Something new to look forward to as you level up.' },
+      ],
+    },
     related: { slug: 'goalden', line: 'Also read Goalden, a goal app that breaks your year into today' },
   },
 
@@ -217,7 +287,15 @@ export const stories: Story[] = [
         todo: 'Add version 2 tester numbers when ready.',
       },
     ],
-    results: [{ n: '100', count: 100, label: 'Testers on version 1' }, { n: '8', count: 8, label: 'Coaches in version 2' }],
+    results: {
+      head: '100 testers showed me what version 1 was missing',
+      lede: 'The UI did its job. What it lacked was a reason to come back, and that is what version 2 is built around.',
+      stats: [
+        { n: '100', count: 100, label: 'Testers on version 1', note: 'Most of them dropped between day 1 and day 20. That drop is the whole lesson.' },
+        { n: '8', count: 8, label: 'Coaches in version 2', note: 'Each with its own personality and body type. Things started going right once they were in.' },
+        { n: '4', count: 4, label: 'Steps from year to today', note: 'Quarter, month, week, day. Every task traces back to the big goal.' },
+      ],
+    },
     related: { slug: 'mylo', line: 'Also read Mylo, the goal app you do with friends' },
   },
 
@@ -234,7 +312,7 @@ export const stories: Story[] = [
         id: 'problem', step: 'The problem', kicker: '01 · The problem', title: 'A hotel runs on more data than one screen can hold',
         body: ['A designer I know was building ChatGrow and I offered to help. The screens were there, but a hotel creates a lot of information at once: who\'s arriving, which rooms are clean, what the kitchen is cooking, who still owes money, and what Booking.com just sent over.',
                'My part was to sort it. How that information gets collected, where it lives and how it shows up, so the person at the front desk finds what they need in a few seconds.'],
-        media: { kind: 'cover', label: 'ChatGrow · Front desk', src: '/work/chatgrow/front-desk.webp', ratio: '1400 / 915', caption: 'The front desk: arrivals, departures, today\'s bookings and what needs attention.' },
+        media: { kind: 'cover', label: 'ChatGrow · Front desk', src: '/work/chatgrow/front-desk.webp', ratio: '2400 / 1559', caption: 'The front desk: arrivals, departures, today\'s bookings and what needs attention.' },
       },
       {
         id: 'map', step: 'How a hotel works', kicker: '02 · Map it first', title: 'Follow the guest, then follow the money',
@@ -252,25 +330,33 @@ export const stories: Story[] = [
         id: 'connect', step: 'Connected modules', kicker: '03 · Connect it', title: 'One action updates every place that needs it',
         body: ['The brief asked for every module to be connected, so nothing gets typed twice. A booking fills the room calendar. A restaurant order from a QR code lands in the kitchen and gets charged to the guest\'s room bill.',
                'The room calendar shows a whole month, so staff can pick a free room and dates straight from it.'],
-        media: { kind: 'cover', label: 'ChatGrow · Room calendar', src: '/work/chatgrow/calendar.webp', ratio: '1400 / 915', caption: 'Month view. Pick a free room and date range straight from the calendar.' },
+        media: { kind: 'cover', label: 'ChatGrow · Room calendar', src: '/work/chatgrow/calendar.webp', ratio: '2400 / 1559', caption: 'Month view. Pick a free room and date range straight from the calendar.' },
       },
       {
         id: 'qr', step: 'QR ordering', kicker: '04 · The guest side', title: 'Order from the table, charge it to the room',
         body: ['Guests scan a QR code at the table, order from their phone and choose to pay by card or charge it to their room. The order goes straight to the kitchen, and the guest can watch it move from received to served.'],
-        media: { kind: 'cover', label: 'ChatGrow · QR ordering', src: '/work/chatgrow/qr-ordering.webp', ratio: '1400 / 910', caption: 'Menu, order and live status, all from the guest\'s phone.' },
+        media: { kind: 'cover', label: 'ChatGrow · QR ordering', src: '/work/chatgrow/qr-ordering.webp', ratio: '2400 / 1559', caption: 'Menu, order and live status, all from the guest\'s phone.' },
       },
       {
         id: 'states', step: 'Every state', kicker: '05 · Every state', title: 'Plan for when things go wrong',
         body: ['Real systems spend a lot of time in odd states. I designed them too: empty, loading, error, saved and no permission. If a front desk worker opens settings they can\'t change, the screen tells them why and how to ask for access, instead of a blank page.',
                'Everything matched the existing UI exactly, same type sizes and the same system, so my screens sit next to the designer\'s without a seam.'],
-        media: { kind: 'cover', label: 'ChatGrow · No permission state', src: '/work/chatgrow/no-permission.webp', ratio: '1400 / 915', caption: 'No permission: what happened, why, and what to do next.' },
+        media: { kind: 'cover', label: 'ChatGrow · No permission state', src: '/work/chatgrow/no-permission.webp', ratio: '2400 / 1559', caption: 'No permission: what happened, why, and what to do next.' },
       },
       {
         id: 'result', step: 'What I took away', kicker: '06 · What I took away', title: 'Good information design is mostly sorting',
         body: ['Most of the work here didn\'t show up as pretty screens. It was deciding what belongs together, what comes first and what each person actually needs to see. It\'s the same thinking I use on every product, just with a lot more data.'],
       },
     ],
-    results: [{ n: '5', count: 5, label: 'Areas in the menu' }, { n: '5', count: 5, label: 'States per screen' }],
+    results: {
+      head: 'Five clear areas instead of one long list',
+      lede: 'Most of this work doesn\'t show up as pretty screens. It shows up as staff finding what they need in a few seconds.',
+      stats: [
+        { n: '5', count: 5, label: 'Areas in the menu', note: 'Grouped by who does the work, not by how the data is stored.' },
+        { n: '5', count: 5, label: 'States per screen', note: 'Empty, loading, error, saved and no permission. No blank pages.' },
+        { n: '1', count: 1, label: 'Place to type each thing', note: 'A booking fills the calendar. A QR order lands in the kitchen and on the room bill.' },
+      ],
+    },
   },
 ];
 
