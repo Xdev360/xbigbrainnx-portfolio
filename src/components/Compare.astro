@@ -2,8 +2,10 @@
 // Before/after slider. Drag, click or use arrow keys. Plays a small hint when it first scrolls in.
 interface Props { before: string; after: string; beforeSrc?: string; afterSrc?: string; caption?: string; ratio?: string }
 const { before, after, beforeSrc, afterSrc, caption, ratio = '16 / 9' } = Astro.props;
+const [rw, rh] = ratio.split('/').map(n => Number(n.trim()));
+const portrait = rh > rw;
 ---
-<figure class="cmpw" data-reveal>
+<figure class:list={["cmpw", { portrait }]} data-reveal>
   <div class="cmp" style={`aspect-ratio:${ratio}`} data-compare tabindex="0" role="slider" aria-label={`Compare ${before} and ${after}`} aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
     <div class="side after">
       {afterSrc ? <img src={afterSrc} alt={after} loading="lazy" /> : <div class="ph"><span class="mono-tag c-subtle">{after}</span><span class="meta c-subtle">Screens coming</span></div>}
@@ -19,6 +21,8 @@ const { before, after, beforeSrc, afterSrc, caption, ratio = '16 / 9' } = Astro.
 </figure>
 <style>
   .cmpw { display:flex; flex-direction:column; gap:12px; }
+  .cmpw.portrait { max-width:380px; margin:0 auto; width:100%; }
+  .cmpw.portrait .cmp { border-radius:28px; border-color:var(--border-strong); }
   .cmp { --x:50%; position:relative; overflow:hidden; border:1px solid var(--border-default); background:var(--bg-alt); cursor:ew-resize; touch-action:pan-y; user-select:none; }
   .side { position:absolute; inset:0; }
   .side img { width:100%; height:100%; object-fit:cover; }

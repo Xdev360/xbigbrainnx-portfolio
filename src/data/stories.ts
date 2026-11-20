@@ -2,9 +2,10 @@
 // Only facts he has stated. Real screens and Mylo's layers drop into the `src` fields when they arrive.
 
 export type Media =
-  | { kind: 'compare'; before: string; after: string; beforeSrc?: string; afterSrc?: string; caption?: string }
+  | { kind: 'compare'; before: string; after: string; beforeSrc?: string; afterSrc?: string; caption?: string; ratio?: string }
   | { kind: 'cover'; label: string; src?: string; caption?: string; ratio?: string }
   | { kind: 'pair'; items: { label: string; src?: string }[]; caption?: string }
+  | { kind: 'phones'; items: { label: string; src: string }[]; caption?: string }
   // Scroll-zoom: one screen, the camera moves to each focus point while the note changes
   | { kind: 'zoom'; label: string; src?: string; stops: { x: number; y: number; scale: number; title: string; text: string }[] }
   // Step flow, e.g. the payment flow
@@ -120,17 +121,17 @@ export const stories: Story[] = [
       {
         id: 'v1', step: 'Version 1', kicker: '02 · Version 1', title: 'Our rule: it has to work for us first',
         body: ['Before we let anyone outside try a product, it has to work for us. The first Mylo didn\'t. It was too plain. We called it Mylo and gave it one face, the base face, and that was it. My partners and I kept forgetting to open it.'],
-        media: { kind: 'cover', label: 'Mylo · version 1', caption: 'The first version. One face, no personality.' },
+        media: { kind: 'cover', label: 'Mylo · early faces', src: '/work/mylo/v1-faces.webp', ratio: '16 / 9', caption: 'Early Mylo. A plain white character and a set of simple faces. Cute, but nothing that made us come back.' },
       },
       {
         id: 'tries', step: 'What we tried', kicker: '03 · What we tried', title: 'One fix at a time, until it stuck',
         body: ['We didn\'t redesign everything at once. We added one thing, used the app ourselves and watched what happened.'],
         media: { kind: 'tries', items: [
-          { t: 'A game', why: 'We thought a game would give us a reason to come back.', then: 'It worked for a while, then the game got old.' },
-          { t: 'Streaks', why: 'A streak made us want to show up every day.', then: 'But miss one day and you lose the count, and the motivation with it.' },
-          { t: 'Streak freeze', why: 'A freeze lets you save your streak and pick up where you stopped.', then: 'People could recover instead of quitting. But the app still didn\'t look good enough to come back to.' },
-          { t: 'A full UI redesign', why: 'A normal user needs the app to feel good, not just work.', then: 'The new UI showed the next problem: onboarding felt gated. You couldn\'t get into the app.' },
-          { t: 'New onboarding', why: 'We had to make people comfortable before asking anything of them.', then: 'People got in, and we started thinking about what keeps them for months, not days.' },
+          { t: 'A game', src: '/work/mylo/game-chess.webp', why: 'We thought a game would give us a reason to come back.', then: 'It worked for a while, then the game got old.' },
+          { t: 'Streaks', src: '/work/mylo/streak.webp', why: 'A streak made us want to show up every day.', then: 'But miss one day and you lose the count, and the motivation with it.' },
+          { t: 'Streak freeze', src: '/work/mylo/streak-freeze.webp', why: 'A freeze lets you save your streak and pick up where you stopped.', then: 'People could recover instead of quitting. But the app still didn\'t look good enough to come back to.' },
+          { t: 'A full UI redesign', src: '/work/mylo/new-today.webp', why: 'A normal user needs the app to feel good, not just work.', then: 'The new UI showed the next problem: onboarding felt gated. You couldn\'t get into the app.' },
+          { t: 'New onboarding', src: '/work/mylo/onboarding.webp', why: 'We had to make people comfortable before asking anything of them.', then: 'People got in, and we started thinking about what keeps them for months, not days.' },
         ] },
         more: { title: 'Read how we solved each one', body: ['Each change went to the founding team first. We used the app every day for a stretch, noted where we dropped off and only then moved to the next fix. That loop is what got us from a plain app to something we open without thinking.'] },
       },
@@ -138,17 +139,17 @@ export const stories: Story[] = [
         id: 'habits', step: 'Atomic Habits', kicker: '04 · The psychology', title: 'Always something to look forward to',
         body: ['We moved from looking at productivity apps to reading books about habits, starting with Atomic Habits. It talks about how many days it takes before showing up stops feeling like effort.',
                'So we built Mylo like a story. XP, levels and new features that unlock as you go, so across those first months there\'s always something new waiting for you. You keep opening the app because you want to see what\'s next.'],
-        media: { kind: 'cover', label: 'Mylo · levels and XP', caption: 'Levels that unlock new features over the first months.' },
+        media: { kind: 'phones', items: [{ label: 'Your level', src: '/work/mylo/levels.webp' }, { label: 'Today', src: '/work/mylo/new-today.webp' }], caption: 'Levels unlock new things over the first months. Flame opens games and challenges.' },
       },
       {
         id: 'mylo', step: 'Meet Mylo', kicker: '05 · Meet Mylo', title: 'How Mylo became Mylo',
         body: ['The base face wasn\'t enough. Mylo needed a personality you\'d miss. It started as a sketch, then got colour, emotions, outfits and accessories. Scroll to watch it happen.'],
         media: { kind: 'build', stages: [
-          { gem: 'Sketch', t: 'A plain sketch', d: 'Where every character starts. Shape first, nothing else.' },
-          { gem: 'Colour', t: 'Colour', d: 'The colour gem gives Mylo its palette, warm and friendly.' },
-          { gem: 'Emotion', t: 'Emotions', d: 'Mylo reacts. Happy when you check in, worried when you go quiet.' },
-          { gem: 'Outfit', t: 'Outfits', d: 'Outfits you unlock as you level up.' },
-          { gem: 'Accessories', t: 'Accessories', d: 'The small extras that make your Mylo yours.' },
+          { gem: 'Sketch', t: 'A plain sketch', d: 'Where every character starts. Shape first, nothing else.', src: '/work/mylo/build-1-sketch.webp' },
+          { gem: 'Colour', t: 'Colour', d: 'The colour gem fills Mylo in. Soft, warm and friendly, never loud.', src: '/work/mylo/build-2-colour.webp' },
+          { gem: 'Emotion', t: 'Emotions', d: 'Now Mylo can feel things. 12 faces: happy when you check in, sleepy at night, proud when you finish.', src: '/work/mylo/build-3-emotion.webp' },
+          { gem: 'Outfit', t: 'Outfits', d: '16 outfits you unlock as you level up. You pick what your Mylo wears.', src: '/work/mylo/build-4-outfit.webp' },
+          { gem: 'Accessories', t: 'Accessories', d: 'Beanies, headphones, crowns, shades. The extras that make your Mylo yours.', src: '/work/mylo/build-5-accessories.webp' },
         ] },
       },
       {
@@ -157,10 +158,16 @@ export const stories: Story[] = [
                'Then a new problem: what if people just chat instead of doing their goals? So you complete your goal before you can chat, and before you can play the games.',
                'And how do you know someone really did the goal, and didn\'t just tick the box? Now you check in with a photo, the way you\'d share a streak on Snapchat. Your friends see it. Real accountability, real transparency.'],
         list: ['Complete your goal to unlock chat and games', 'Check in with a photo, so friends can see it\'s real', 'See your friends\' goals and react to them'],
-        media: { kind: 'compare', before: 'Old Mylo', after: 'New Mylo', caption: 'Drag to compare the first Mylo with the one we use today.' },
+        media: { kind: 'phones', items: [{ label: 'Room chat', src: '/work/mylo/room-chat.webp' }], caption: 'A room: chat, voice notes, Mylo stickers and cheers when someone finishes.' },
+
       },
       {
-        id: 'result', step: 'The result', kicker: '07 · The result', title: 'Day-10 retention went from 30% to 70%',
+        id: 'then-now', step: 'Then and now', kicker: '07 · Then and now', title: 'The same screen, a different reason to open it',
+        body: ['Here\'s the Today screen from the old redesign next to the one we launch with. Less on screen, your friends\' progress up front, Mylo right there with you, and the next level always in view.'],
+        media: { kind: 'compare', before: 'Old redesign', after: 'Launch', beforeSrc: '/work/mylo/old-today.webp', afterSrc: '/work/mylo/new-today.webp', ratio: '393 / 852', caption: 'The Today screen. Drag to compare the old redesign with the one we launch with.' },
+      },
+      {
+        id: 'result', step: 'The result', kicker: '08 · The result', title: 'Day-10 retention went from 30% to 70%',
         body: ['With Mylo the character, the levels and the friend loop in place, more than twice as many people were still using the app on day 10.'],
       },
     ],

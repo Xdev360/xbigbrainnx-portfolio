@@ -51,9 +51,12 @@ const { stages } = Astro.props;
   .layer { position:absolute; inset:0; display:grid; place-items:center; opacity:0; transform:scale(.92); transition:opacity 600ms var(--ease-dec), transform 700ms var(--ease-dec); }
   .layer img { width:80%; height:80%; object-fit:contain; }
   .layer.on { opacity:1; transform:none; }
-  .layer.past { opacity:1; transform:none; }
+  .layer.past { opacity:0; transform:scale(1.02); }
+  .layer.on img { animation:breathe 2.4s ease-in-out 900ms infinite; transform-origin:50% 90%; }
+  @keyframes breathe { 50% { transform:scale(1.03); } }
+  .layer.on.hop img { animation:hop 450ms cubic-bezier(.3,1.6,.5,1), breathe 2.4s ease-in-out 900ms infinite; }
+  @keyframes hop { 0% { transform:scale(1); } 40% { transform:scale(.92, .96); } 100% { transform:scale(1); } }
   .ph { display:flex; flex-direction:column; align-items:center; gap:6px; padding:16px 20px; background:var(--bg-page); border:1px solid var(--border-default); }
-  .layer.past .ph { opacity:0; }  /* placeholders don't stack; real PNG layers do */
   .gem { position:absolute; left:50%; top:50%; display:flex; flex-direction:column; align-items:center; gap:8px; pointer-events:none; opacity:0; }
   .gem-shape { width:28px; height:28px; transform:rotate(45deg); background:linear-gradient(135deg, #F30058, #FFA41C 40%, #19F2FF 75%, #3084FF); }
   .gem-label { color:var(--text-primary); padding:2px 6px; background:var(--bg-page); border:1px solid var(--border-strong); }
@@ -95,6 +98,7 @@ const { stages } = Astro.props;
         label.textContent = steps[i].textContent!.trim();
         gem.classList.remove('fly'); burst.classList.remove('go'); void gem.offsetWidth;
         gem.classList.add('fly'); burst.classList.add('go'); play('pop'); buzz(10);
+        const L = layers[i]; L.classList.remove('hop'); setTimeout(() => { void L.offsetWidth; L.classList.add('hop'); }, 700);
       }
     };
     const onScroll = () => {

@@ -9,6 +9,7 @@ import Build from '../../components/story/Build.astro';
 import Zoom from '../../components/story/Zoom.astro';
 import Flow from '../../components/story/Flow.astro';
 import Tries from '../../components/story/Tries.astro';
+import Phones from '../../components/story/Phones.astro';
 import { stories } from '../../data/stories';
 import { projects } from '../../data/projects';
 
@@ -78,12 +79,13 @@ const proj = projects.find(p => p.slug === slug);
           </div>
           {c.media && (
             <div class="media">
-              {c.media.kind === 'compare' && <Compare before={c.media.before} after={c.media.after} beforeSrc={c.media.beforeSrc} afterSrc={c.media.afterSrc} caption={c.media.caption} />}
+              {c.media.kind === 'compare' && <Compare before={c.media.before} after={c.media.after} beforeSrc={c.media.beforeSrc} afterSrc={c.media.afterSrc} caption={c.media.caption} ratio={c.media.ratio} />}
               {c.media.kind === 'cover' && <figure data-reveal><CoverPh label={c.media.label} ratio={c.media.ratio ?? '16 / 9'} src={c.media.src} />{c.media.caption && <figcaption class="meta c-subtle">{c.media.caption}</figcaption>}</figure>}
               {c.media.kind === 'build' && <Build stages={c.media.stages} />}
               {c.media.kind === 'zoom' && <Zoom label={c.media.label} src={c.media.src} stops={c.media.stops} />}
               {c.media.kind === 'flow' && <Flow steps={c.media.steps} caption={c.media.caption} />}
               {c.media.kind === 'tries' && <Tries items={c.media.items} />}
+              {c.media.kind === 'phones' && <Phones items={c.media.items} caption={c.media.caption} />}
               {c.media.kind === 'pair' && <div class="pair" data-stagger="120">{c.media.items.map(m => <div data-reveal><CoverPh label={m.label} ratio="4 / 3" src={m.src} /></div>)}</div>}
             </div>
           )}

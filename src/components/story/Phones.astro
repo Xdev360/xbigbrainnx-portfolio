@@ -1,0 +1,30 @@
+---
+// Phone screens on a stage. They rise in one after another and tilt gently toward the pointer.
+interface Props { items: { label: string; src: string }[]; caption?: string }
+const { items, caption } = Astro.props;
+---
+<figure class="phones" data-reveal data-tilt>
+  <div class="stage" data-stagger="140">
+    {items.map((it, i) => (
+      <div class="ph" data-reveal data-reveal-child style={`--i:${i}`}>
+        <img src={it.src} alt={it.label} loading="lazy" />
+        <span class="mono-tag c-subtle">{it.label}</span>
+      </div>
+    ))}
+  </div>
+  {caption && <figcaption class="meta c-subtle">{caption}</figcaption>}
+</figure>
+<style>
+  .phones { display:flex; flex-direction:column; gap:12px; }
+  .stage { display:flex; justify-content:center; align-items:flex-start; gap:40px; padding:48px 24px; background:var(--bg-alt); border:1px solid var(--border-default); perspective:1200px; }
+  .ph { display:flex; flex-direction:column; align-items:center; gap:12px; transform-style:preserve-3d; }
+  .ph:nth-child(2) { margin-top:48px; }
+  .ph img { width:min(260px, 38vw); border-radius:28px; border:1px solid var(--border-strong); transform:rotateY(calc(var(--tx,0) * 8deg)) rotateX(calc(var(--ty,0) * -6deg)); transition:transform 600ms var(--ease-dec); }
+</style>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-tilt]').forEach(el => {
+    if (!matchMedia('(hover: hover)').matches) return;
+    el.addEventListener('pointermove', e => { const r = el.getBoundingClientRect(); el.style.setProperty('--tx', String((e.clientX - r.left) / r.width - .5)); el.style.setProperty('--ty', String((e.clientY - r.top) / r.height - .5)); });
+    el.addEventListener('pointerleave', () => { el.style.setProperty('--tx', '0'); el.style.setProperty('--ty', '0'); });
+  });
+</script>

@@ -9,6 +9,7 @@ const { items } = Astro.props;
     <li class="try" data-reveal>
       <span class="mark" aria-hidden="true"></span>
       <div class="head"><span class="label c-accent">Try {String(i + 1).padStart(2, '0')}</span><h4 class="h3 c-heading">{it.t}</h4></div>
+      {it.src && <img class="shot" src={it.src} alt={it.t} loading="lazy" />}
       <div class="cols">
         <div><span class="eyebrow c-subtle">Why we tried it</span><p class="small c-secondary">{it.why}</p></div>
         <div><span class="eyebrow c-subtle">What happened</span><p class="small c-secondary">{it.then}</p></div>
@@ -24,6 +25,13 @@ const { items } = Astro.props;
   .mark { position:absolute; left:-36px; top:2px; width:11px; height:11px; transform:rotate(45deg); background:var(--bg-page); border:1px solid var(--border-strong); transition:background var(--dur-3), border-color var(--dur-3); }
   .try.lit .mark { background:var(--accent-label); border-color:var(--accent-label); }
   .head { display:flex; flex-direction:column; gap:8px; }
+  .try { display:grid; grid-template-columns:1fr 160px; grid-template-rows:auto 1fr; column-gap:40px; row-gap:16px; align-items:start; }
+  .try > .head, .try > .cols { grid-column:1; }
+  .shot { grid-column:2; grid-row:1 / span 2; width:160px; border-radius:20px; border:1px solid var(--border-strong); transform:rotate(var(--r,2deg)) translateY(12px); opacity:.0; transition:transform 700ms var(--ease-dec), opacity 500ms; }
+  .try:nth-child(odd) .shot { --r:-2deg; }
+  .try.lit .shot { opacity:1; transform:rotate(var(--r,2deg)); }
+  .shot:hover { transform:rotate(0) scale(1.04); }
+  @media (max-width:767px){ .try { grid-template-columns:1fr; } .shot { grid-column:1; grid-row:auto; width:160px; margin-top:12px; } }
   .cols { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
   .cols > div { display:flex; flex-direction:column; gap:6px; padding-top:12px; border-top:1px solid var(--border-default); }
   @media (max-width:767px){ .cols { grid-template-columns:1fr; } }

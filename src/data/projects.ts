@@ -39,6 +39,7 @@ export const projects: Project[] = [
     kind: 'own',
     tags: ['product', 'mascots', 'own'],
     color: '--project-mylo',
+    cover: '/work/mylo/cover.webp',
     published: true,
   },
   {
