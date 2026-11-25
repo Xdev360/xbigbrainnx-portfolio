@@ -7,6 +7,8 @@ import CoverPh from '../components/CoverPh.astro';
 import WinPh from '../components/WinPh.astro';
 import Intro from '../components/Intro.astro';
 import MyloKingdom from '../components/hero/MyloKingdom.astro';
+import DeviceShow from '../components/hero/DeviceShow.astro';
+import { heroShows } from '../data/heroShows';
 import { projects, heroReel, caseHref } from '../data/projects';
 
 const steps = [
@@ -58,12 +60,13 @@ const devices = [
   <section class="hero" data-reel>
     <div class="reel" aria-hidden="true">
       {heroReel.map((p, i) => (
-        <div class:list={['frame', { on: i === 0 }]} data-dur={p.slug === 'mylo' ? 14000 : 7000}>
+        <div class:list={['frame', { on: i === 0 }]} data-dur={p.slug === 'mylo' ? 14000 : heroShows[p.slug]?.T ?? 7000}>
           {p.slug === 'mylo' && <MyloKingdom />}
+          {heroShows[p.slug] && <DeviceShow {...heroShows[p.slug]} />}
           {p.scene && <img class="scene" src={p.scene} alt="" loading={i === 0 ? 'eager' : 'lazy'} />}
           {p.reel && <video src={p.reel} poster={p.scene} muted loop playsinline preload="none" />}
           {p.rive && <canvas class="rive-scene" data-rive={p.rive} width="2880" height="1800" aria-hidden="true"></canvas>}
-          {!p.scene && !p.reel && !p.rive && p.slug !== 'mylo' && <span class="mono-tag c-subtle reel-label">Hero scene · 2880 × 1800 · /work/{p.slug}/hero.webp</span>}
+          {!p.scene && !p.reel && !p.rive && p.slug !== 'mylo' && !heroShows[p.slug] && <span class="mono-tag c-subtle reel-label">Hero scene · 2880 × 1800 · /work/{p.slug}/hero.webp</span>}
         </div>
       ))}
       <div class="fade"></div>
